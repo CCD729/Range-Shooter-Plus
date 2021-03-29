@@ -83,7 +83,7 @@ public class LevelSceneManager : MonoBehaviour
         crossHair.enabled = false;
         Ammo.enabled = false;
         Ring.enabled = false;
-        var random = new Random();
+        //var random = new Random();
         int index = Random.Range(0,3);
         EndScoreText.text = endList[index] + "You got: " + score.ToString();
         EndScoreText.enabled = true;
