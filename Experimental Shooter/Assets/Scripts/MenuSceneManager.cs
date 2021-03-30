@@ -5,9 +5,17 @@ using UnityEngine.SceneManagement;
 
 public class MenuSceneManager : MonoBehaviour
 {
-    public void StartGame()
+    public void StartTimeTrial()
     {
-        SceneManager.LoadScene("Level");
+        SceneManager.LoadScene("TimeTrial");
+    }
+    public void StartShootingRange()
+    {
+        SceneManager.LoadScene("ShootingRange");
+    }
+    public void OpenSettings()
+    {
+        //TO DO: SettingsMenu
     }
     public void ExitGame()
     {
