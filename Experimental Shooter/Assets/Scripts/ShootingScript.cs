@@ -21,7 +21,7 @@ public class ShootingScript : MonoBehaviour
     public Text scoreText, ammoText, timeText;
     public GameObject[] BulletTextures;
     public ParticleSystem hitTargetParticle, hitOthersParticle;
-    private GameObject character;
+    public GameObject playerCam;
     private int count;
 
     //Reload Assets
@@ -70,7 +70,7 @@ public class ShootingScript : MonoBehaviour
         scoreText.text = "Score: " + count.ToString();
         timeText.text = "Time: " + timeLeft.ToString();
         Time.timeScale = 1;
-        character = this.transform.parent.gameObject;
+        //player = this.transform.parent.gameObject;
     }
 
     void Update()
@@ -298,7 +298,7 @@ public class ShootingScript : MonoBehaviour
     }
     public void Recoil()
     {
-        GetComponent<CameraController>().Recoil();
+        playerCam.GetComponent<CameraController>().Recoil();
     }
     public void ShootingSound()
     {
