@@ -16,7 +16,7 @@ public class ShootingScript : MonoBehaviour
     //Magazine size
     public int magSize = 30;
     //References
-    public GameObject bullet, gun;
+    public GameObject bullet, gun, gunPOV;
     public Transform firePoint, detectPoint;
     public Text scoreText, ammoText, timeText;
     public GameObject[] BulletTextures;
@@ -103,6 +103,7 @@ public class ShootingScript : MonoBehaviour
             reloading = true;
             ammoText.text = "Reloading";
             gun.GetComponent<animController>().ReloadAnimation();
+            gunPOV.GetComponent<animController>().ReloadAnimation();
             circleProgressBar.GetComponent<ReloadRingAnim>().Play();
             bulletIcon.enabled = true;
             circleProgressBar.enabled = true;
@@ -136,6 +137,7 @@ public class ShootingScript : MonoBehaviour
                         reloading = true;
                         ammoText.text = "Reloading";
                         gun.GetComponent<animController>().ReloadAnimation();
+                        gunPOV.GetComponent<animController>().ReloadAnimation();
                         circleProgressBar.GetComponent<ReloadRingAnim>().Play();
                         crossHair.enabled = false;
                         bulletIcon.enabled = true;
