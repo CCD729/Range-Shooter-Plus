@@ -8,10 +8,12 @@ public class LevelSceneManager : MonoBehaviour
 {
     public Text scoreText, ammoText, timeText, EndScoreText;
     public GameObject ContinueButton, RestartButton, EndButton, SensSlider, gun;
+    public ShootingScript gameRules;
     public Image crossHair, Ammo, Ring;
     public Camera cam;
     List<string> endList;
     private bool reloading = false;
+    private string currentScene;
 
     void Start()
     {
@@ -23,6 +25,7 @@ public class LevelSceneManager : MonoBehaviour
 		SensSlider.SetActive(false);
         Ammo.enabled = false;
         Ring.enabled = false;
+        currentScene = SceneManager.GetActiveScene().name;
     }
     void Update()
     {
@@ -50,9 +53,15 @@ public class LevelSceneManager : MonoBehaviour
     }
     public void Resume()
     {
-        scoreText.enabled = true;
+        if (gameRules.mode_Scored)
+        {
+            scoreText.enabled = true;
+        }
+        if (gameRules.mode_Timed)
+        {
+            timeText.enabled = true;
+        }
         ammoText.enabled = true;
-        timeText.enabled = true;
         ContinueButton.SetActive(false);
         RestartButton.SetActive(false);
 		SensSlider.SetActive(false);
@@ -117,6 +126,6 @@ public class LevelSceneManager : MonoBehaviour
     }
     public void Restart()
     {
-        SceneManager.LoadScene("Level");
+        SceneManager.LoadScene(currentScene);
     }
 }

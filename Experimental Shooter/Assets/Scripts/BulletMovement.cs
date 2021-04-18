@@ -7,7 +7,7 @@ public class BulletMovement : MonoBehaviour
     [SerializeField]
     private float timeoutLifetime = 2f;
     [SerializeField]
-    private bool destroySelfAfterTimeout = true, destroySelfOnCollision = true;
+    private bool destroySelfAfterTimeout = true;
     [SerializeField]
     private float speed = 80f;
 
@@ -29,15 +29,16 @@ public class BulletMovement : MonoBehaviour
         if (!hit)
         {
             //Make the bullet fly
-            transform.Translate(Vector3.up * Time.fixedDeltaTime * speed);
+            //  transform.Translate(Vector3.up * Time.fixedDeltaTime * speed);
         }
         else
         {
             //lerp the bullet to target pos
             //t += Time.deltaTime * speed/6f;
             //transform.position = Vector3.Lerp(startPoint, hitPoint, t);
-            transform.position = Vector3.MoveTowards(transform.position, hitPoint, Time.deltaTime * speed);
+                //transform.position = Vector3.MoveTowards(transform.position, hitPoint, Time.fixedDeltaTime * speed);
         }
+        transform.Translate(Vector3.forward * Time.fixedDeltaTime * speed);
         /* if (t >= 1f)
          {
              this.Destroy();
@@ -52,15 +53,16 @@ public class BulletMovement : MonoBehaviour
         if (destroySelfAfterTimeout && destroyTime <= Time.time)
             this.Destroy();
     }
-    void OnCollisionEnter(Collision collision)
+    /*void OnCollisionEnter(Collision collision)
     {
         //Destroy the bullet on collision
         if (destroySelfOnCollision)
         {
+            if(!collision.gameObject.CompareTag("Player"))
             //TODO: Particle/SFX
             this.Destroy();
         }
-    }
+    }*/
 
     /*
     void OnTriggerStay(Collider other)

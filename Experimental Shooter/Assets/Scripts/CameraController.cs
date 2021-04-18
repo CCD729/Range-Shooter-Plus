@@ -9,6 +9,7 @@ public class CameraController : MonoBehaviour
     private Vector2 mouseCurrent;
     public float sensitivity = 2f;
     private GameObject character;
+    public GameObject gunPosParent;
     bool gamePlaying;
     bool recoil = false;
 
@@ -38,7 +39,11 @@ public class CameraController : MonoBehaviour
                 mouseCurrent.y += 0.5f;
                 mouseCurrent.x += Random.Range(-0.5f, 0.5f);
             }
+            //in-game model vertical axis for better view (WIP)
+            //gunPosParent.transform.localRotation = Quaternion.AngleAxis(-mouseCurrent.y, Vector3.right);
+            //camera vertical axis
             transform.localRotation = Quaternion.AngleAxis(-mouseCurrent.y, Vector3.right);
+            //player horizontal axis (without model and animation so just horizontal)
             character.transform.localRotation = Quaternion.AngleAxis(mouseCurrent.x, character.transform.up);
             if (recoil)
             {

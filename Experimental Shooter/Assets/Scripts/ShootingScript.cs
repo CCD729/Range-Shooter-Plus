@@ -11,8 +11,8 @@ public class ShootingScript : MonoBehaviour
     private bool levelPaused = false;
     //Bullets per second
     public float firingRate = 10f;
-    //Auto? Semi-auto?
-    public bool autoTrigger;
+    //Auto? Semi-auto? is this gamemode Timed?
+    public bool autoTrigger,mode_Timed, mode_Scored;
     //Magazine size
     public int magSize = 30;
     //References
@@ -69,6 +69,11 @@ public class ShootingScript : MonoBehaviour
         timeLeft = timeLimit;
         scoreText.text = "Score: " + count.ToString();
         timeText.text = "Time: " + timeLeft.ToString();
+        if (!mode_Scored)
+            scoreText.enabled = false;
+        if (!mode_Timed)
+            timeText.enabled = false;
+
         Time.timeScale = 1;
         //player = this.transform.parent.gameObject;
     }
@@ -120,7 +125,7 @@ public class ShootingScript : MonoBehaviour
                 ammoText.text = currentMag.ToString() + "/30";
             bulletEnough = currentMag > 0;
             // Get a ray from the camera pointing forwards
-            ray = new Ray(this.transform.position, this.transform.forward);
+            ray = new Ray(playerCam.transform.position, playerCam.transform.forward);
             if (Input.GetMouseButton(0))
             {
                 //Do nothing if reloading 
@@ -181,16 +186,19 @@ public class ShootingScript : MonoBehaviour
                     fRatePassed = true;
                 }
             }
-            if (timeLeft > 0f)
+            if (mode_Timed)
             {
-                timeLeft -= Time.fixedDeltaTime;
-                timeText.text = "Time: " + timeLeft.ToString("F2");
-            }
-            else
-            {
-                timeLeft = 0.00f;
-                timeText.text = "Time: 0.00";
-                this.End();
+                if (timeLeft > 0f)
+                {
+                    timeLeft -= Time.fixedDeltaTime;
+                    timeText.text = "Time: " + timeLeft.ToString("F2");
+                }
+                else
+                {
+                    timeLeft = 0.00f;
+                    timeText.text = "Time: 0.00";
+                    this.End();
+                }
             }
         }
     }
@@ -198,6 +206,7 @@ public class ShootingScript : MonoBehaviour
 
     void Shoot()
     {
+        Vector3 targetPoint;
         fRatePassed = false;
         currentMag--;
         // Check if we hit anything
@@ -205,6 +214,7 @@ public class ShootingScript : MonoBehaviour
         // If we did...Shoot to the hitposition
         if (!hit)
         {
+            /*
             //Modify The angle a bit if not hitting anything
             var straightQ = Quaternion.LookRotation(-this.transform.up, this.transform.forward);
             Vector3 straightV = straightQ.eulerAngles;
@@ -212,9 +222,14 @@ public class ShootingScript : MonoBehaviour
             //Shoot
             //TODO: Destroy hitted object if target, Score, Recoil, HittingSound, and HittingSparkles
             var clone = Instantiate(bullet, firePoint.position, Quaternion.Euler(modifiedV));
+            */
+            targetPoint = playerCam.transform.forward * 1000;
+            var bulletObject = Instantiate(bullet, firePoint.position, firePoint.rotation);
+            bulletObject.transform.LookAt(targetPoint);
         }
         else
         {
+            /* 
             //Shoot to hit pos
             Vector3 relativePos = raycastHit.point - detectPoint.position;
             Quaternion preQ = Quaternion.LookRotation(relativePos);
@@ -223,8 +238,13 @@ public class ShootingScript : MonoBehaviour
             Vector3 modifiedV = preV + new Vector3(90f, 0f, 0f);
             //TODO: Recoil, HittingSound, and HittingSparkles
             var clone = Instantiate(bullet, firePoint.position, Quaternion.Euler(modifiedV));
-            clone.GetComponent<BulletMovement>().hit = true;
-            clone.GetComponent<BulletMovement>().hitPoint = raycastHit.point;
+            */
+            targetPoint = raycastHit.point;
+
+            var bulletObject = Instantiate(bullet, firePoint.position, firePoint.rotation);
+            bulletObject.transform.LookAt(targetPoint);
+            bulletObject.GetComponent<BulletMovement>().hit = true;
+            bulletObject.GetComponent<BulletMovement>().hitPoint = raycastHit.point;
 
             //Create bullet hit effects
             if (!raycastHit.collider.gameObject.CompareTag("Target") && !raycastHit.collider.gameObject.CompareTag("MovingTarget") && !raycastHit.collider.gameObject.CompareTag("RailTarget"))
