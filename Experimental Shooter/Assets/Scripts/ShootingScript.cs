@@ -268,7 +268,7 @@ public class ShootingScript : MonoBehaviour
                     count++;
                     scoreText.text = "Score: " + count.ToString();
                 }
-                target.GetComponent<TargetBehavior>().Hit(raycastHit.point, this.transform.forward);
+                target.GetComponent<TargetBehavior>().Hit(raycastHit.point, playerCam.transform.forward);
             }
             //Moving target hit
             if (target.CompareTag("MovingTarget"))
@@ -278,7 +278,7 @@ public class ShootingScript : MonoBehaviour
                     count += 2;
                     scoreText.text = "Score: " + count.ToString();
                 }
-                target.GetComponent<MovingTargetBehavior>().Hit(raycastHit.point, this.transform.forward);
+                target.GetComponent<MovingTargetBehavior>().Hit(raycastHit.point, playerCam.transform.forward);
             }
             //Another version of moving target (needs optimization)
             if (target.CompareTag("RailTarget"))
@@ -288,7 +288,7 @@ public class ShootingScript : MonoBehaviour
                     count += 1;
                     scoreText.text = "Score: " + count.ToString();
                 }
-                target.GetComponent<RailTargetBehavior>().Hit(raycastHit.point, this.transform.forward);
+                target.GetComponent<RailTargetBehavior>().Hit(raycastHit.point, playerCam.transform.forward);
             }
         }
         this.Recoil();

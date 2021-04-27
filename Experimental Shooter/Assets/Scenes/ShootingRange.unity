@@ -2386,7 +2386,6 @@ GameObject:
   - component: {fileID: 549686703}
   - component: {fileID: 549686704}
   - component: {fileID: 549686705}
-  - component: {fileID: 549686706}
   m_Layer: 0
   m_Name: PlayerGroup
   m_TagString: Untagged
@@ -2444,20 +2443,6 @@ MonoBehaviour:
   jumpSpeed: 2
   gravity: 8
   controller: {fileID: 549686704}
---- !u!136 &549686706
-CapsuleCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 549686702}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
-  m_Enabled: 0
-  m_Radius: 1
-  m_Height: 6
-  m_Direction: 1
-  m_Center: {x: 0, y: 3, z: 0}
 --- !u!4 &551398682 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 3005073453509179846, guid: 13abff1f35ac4974d8950cf5e5be5d73,
