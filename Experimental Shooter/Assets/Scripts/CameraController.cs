@@ -2,21 +2,28 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.Events;
 
 public class CameraController : MonoBehaviour
 {
-	public Slider slider;
+	public Slider sensSlider, fovSlider;
     private Vector2 mouseCurrent;
-    public float sensitivity = 2f;
+    public float mouseSensitivity = 20f;
+    public float fieldOfView = 100f;
     private GameObject character;
     public GameObject gunPosParent;
     bool gamePlaying;
     bool recoil = false;
+    bool mouseSensChanged, fovChanged = false;
 
     void Start()
     {
-        sensitivity = PlayerPrefs.GetFloat("Sensitivity", 2f);
-        slider.value = sensitivity;
+        mouseSensitivity = PlayerPrefs.GetFloat("mouseSensitivity", 20f);
+        fieldOfView = PlayerPrefs.GetFloat("FOV", 100f);
+        gameObject.GetComponent<Camera>().fieldOfView = fieldOfView;
+        sensSlider.value = mouseSensitivity;
+        fovSlider.value = fieldOfView;
+
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
         mouseCurrent.x = 0;
@@ -28,7 +35,7 @@ public class CameraController : MonoBehaviour
     {
         if (gamePlaying)
         {
-            var mouseGet = new Vector2(Input.GetAxis("Mouse X") * sensitivity, Input.GetAxis("Mouse Y") * sensitivity);
+            var mouseGet = new Vector2(Input.GetAxis("Mouse X") * mouseSensitivity / 8, Input.GetAxis("Mouse Y") * mouseSensitivity / 8);
             mouseCurrent += mouseGet;
             if (mouseCurrent.y >= 90)
                 mouseCurrent.y = 90;
@@ -50,12 +57,35 @@ public class CameraController : MonoBehaviour
                 recoil = false;
             }
         }
-		
+        /*if (mouseSensChanged)
+        {
+            Debug.Log("SHITTTTT");
+            mouseSensChanged = false;
+            UpdateMouseSensitivity();
+        }
+        if (fovChanged)
+        {
+            fovChanged = false;
+            UpdateCameraFOV();
+        }*/
+
+        //No solutions so far, must force update
+        UpdateMouseSensitivity();
+        UpdateCameraFOV();
     }
 
-	public void Sensitivity(float sens) {
-		sensitivity = slider.value;
-        PlayerPrefs.SetFloat("Sensitivity", slider.value);
+	public void SetMouseSensitivitySlider(float sens) {
+        //Debug.Log("sens="+sens);
+        //Debug.Log("mouseSens=" + mouseSensitivity);
+        PlayerPrefs.SetFloat("mouseSensitivity", sens);
+        //mouseSensChanged = true;
+    }
+    public void SetFOVSlider(float fov)
+    {
+        //Debug.Log("prevFOV=" + gameObject.GetComponent<Camera>().fieldOfView);
+        //Debug.Log("currentFOV=" + gameObject.GetComponent<Camera>().fieldOfView);
+        PlayerPrefs.SetFloat("FOV", fov);
+        //fovChanged = true;
     }
 
     public void StopCam()
@@ -69,5 +99,14 @@ public class CameraController : MonoBehaviour
     public void Recoil()
     {
         recoil = true;
+    }
+    void UpdateMouseSensitivity()
+    {
+        mouseSensitivity = PlayerPrefs.GetFloat("mouseSensitivity");
+    }
+    void UpdateCameraFOV()
+    {
+        fieldOfView = PlayerPrefs.GetFloat("FOV");
+        gameObject.GetComponent<Camera>().fieldOfView = fieldOfView;
     }
 }

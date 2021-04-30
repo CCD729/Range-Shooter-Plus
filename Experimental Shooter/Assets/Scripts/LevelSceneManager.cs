@@ -7,7 +7,7 @@ using UnityEngine.SceneManagement;
 public class LevelSceneManager : MonoBehaviour
 {
     public Text scoreText, ammoText, timeText, EndScoreText;
-    public GameObject ContinueButton, RestartButton, EndButton, SensSlider, gun;
+    public GameObject ContinueButton, RestartButton, EndButton, SensSlider, fovSlider, gun;
     public ShootingScript gameRules;
     public Image crossHair, Ammo, Ring;
     public Camera cam;
@@ -23,6 +23,7 @@ public class LevelSceneManager : MonoBehaviour
         EndButton.SetActive(false);
         EndScoreText.enabled = false;
 		SensSlider.SetActive(false);
+        fovSlider.SetActive(false);
         Ammo.enabled = false;
         Ring.enabled = false;
         currentScene = SceneManager.GetActiveScene().name;
@@ -46,6 +47,7 @@ public class LevelSceneManager : MonoBehaviour
         RestartButton.SetActive(true);
         EndButton.SetActive(true);
 		SensSlider.SetActive(true);
+        fovSlider.SetActive(true);
         cam.GetComponent<CameraController>().StopCam();
         Ring.GetComponent<ReloadRingAnim>().Pause();
         Cursor.lockState = CursorLockMode.None;
@@ -65,6 +67,7 @@ public class LevelSceneManager : MonoBehaviour
         ContinueButton.SetActive(false);
         RestartButton.SetActive(false);
 		SensSlider.SetActive(false);
+        fovSlider.SetActive(false);
         EndButton.SetActive(false);
         if (reloading)
         {
