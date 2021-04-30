@@ -1733,6 +1733,7 @@ RectTransform:
   - {fileID: 137743436}
   - {fileID: 456132850}
   - {fileID: 1517188922}
+  - {fileID: 2032064347}
   m_Father: {fileID: 500604247}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -2580,6 +2581,7 @@ Transform:
   m_Children:
   - {fileID: 1075746000}
   - {fileID: 639765600}
+  - {fileID: 1950663013}
   m_Father: {fileID: 0}
   m_RootOrder: 7
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -2613,7 +2615,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b94b0b329532d734d9373b25df30f2b7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  speed: 7
+  speed: 5
   jumpSpeed: 2
   gravity: 8
   controller: {fileID: 549686704}
@@ -4848,6 +4850,7 @@ MonoBehaviour:
   scoreText: {fileID: 753591718}
   ammoText: {fileID: 137743437}
   timeText: {fileID: 456132851}
+  skillText: {fileID: 2032064348}
   EndScoreText: {fileID: 1517188924}
   ContinueButton: {fileID: 1126872933}
   RestartButton: {fileID: 1573962312}
@@ -5054,15 +5057,23 @@ MonoBehaviour:
   autoTrigger: 1
   mode_Timed: 0
   mode_Scored: 0
+  skill: 0
+  skillKey: 103
+  skillCoolDown: 1
+  skillReady: 1
   magSize: 30
   bullet: {fileID: 8388713027766119384, guid: 2646ff4814621c64d9452ebec4911ab1, type: 3}
   gun: {fileID: 1476967121}
   gunPOV: {fileID: 1503812598}
+  impactGrenadeObj: {fileID: 3148491177129973620, guid: 087171c79cef3cf4a8fde2ee00df8aca,
+    type: 3}
   firePoint: {fileID: 3466265151481785253}
   detectPoint: {fileID: 1032451191}
+  projectileFirePoint: {fileID: 1950663013}
   scoreText: {fileID: 753591718}
   ammoText: {fileID: 137743437}
   timeText: {fileID: 456132851}
+  skillText: {fileID: 2032064348}
   BulletTextures:
   - {fileID: 5043035395654994199, guid: 7d9cd7a73dbcd8d4ca99de1f754abd5b, type: 3}
   - {fileID: 5072703508634147705, guid: 38ba141f9341aa94ba93b5cdf9c2fb59, type: 3}
@@ -5082,6 +5093,8 @@ MonoBehaviour:
   HittingAudioObject: {fileID: 4748676996689262915, guid: 94bd8ee6d9a31de40a1c1d2a2ab910d4,
     type: 3}
   reloadTime: 1.5
+  skillTime: 1
+  skillUsing: 0
 --- !u!4 &1037682095
 Transform:
   m_ObjectHideFlags: 0
@@ -10207,15 +10220,22 @@ MonoBehaviour:
   autoTrigger: 1
   mode_Timed: 0
   mode_Scored: 0
+  skill: 0
+  skillKey: 103
+  skillCoolDown: 5
+  skillReady: 1
   magSize: 30
   bullet: {fileID: 415529222112994334, guid: e56a7135123658c41bfea89f6e452875, type: 3}
   gun: {fileID: 1476967121}
   gunPOV: {fileID: 0}
+  impactGrenadeObj: {fileID: 0}
   firePoint: {fileID: 3466265151481785253}
   detectPoint: {fileID: 1032451191}
+  projectileFirePoint: {fileID: 0}
   scoreText: {fileID: 753591718}
   ammoText: {fileID: 137743437}
   timeText: {fileID: 456132851}
+  skillText: {fileID: 0}
   BulletTextures:
   - {fileID: 5043035395654994199, guid: 7d9cd7a73dbcd8d4ca99de1f754abd5b, type: 3}
   - {fileID: 5072703508634147705, guid: 38ba141f9341aa94ba93b5cdf9c2fb59, type: 3}
@@ -10235,6 +10255,8 @@ MonoBehaviour:
   HittingAudioObject: {fileID: 4748676996689262915, guid: 94bd8ee6d9a31de40a1c1d2a2ab910d4,
     type: 3}
   reloadTime: 1.5
+  skillTime: 1
+  skillUsing: 0
 --- !u!4 &1834183542 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 4693686601696463121, guid: 63f4d507bb2eefc4b81cf421603e1b36,
@@ -10862,6 +10884,36 @@ CharacterController:
   m_SkinWidth: 0.0001
   m_MinMoveDistance: 0.001
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!1 &1950663012
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1950663013}
+  m_Layer: 0
+  m_Name: Projectile Firepoint
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1950663013
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1950663012}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 4.6, z: 1.06}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 549686703}
+  m_RootOrder: 2
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1956953560
 GameObject:
   m_ObjectHideFlags: 0
@@ -11426,6 +11478,85 @@ Transform:
     type: 3}
   m_PrefabInstance: {fileID: 2027572773}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &2032064346
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2032064347}
+  - component: {fileID: 2032064349}
+  - component: {fileID: 2032064348}
+  m_Layer: 5
+  m_Name: Text_Skill(TEMP)
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &2032064347
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2032064346}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 344830060}
+  m_RootOrder: 4
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 1, y: 0}
+  m_AnchorMax: {x: 1, y: 0}
+  m_AnchoredPosition: {x: -19.94, y: -147.1}
+  m_SizeDelta: {x: 300, y: 61}
+  m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &2032064348
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2032064346}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5f7201a12d95ffc409449d95f23cf332, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Material: {fileID: 2100000, guid: 9a03c7cc95fb47a4f8d124afef642ced, type: 2}
+  m_Color: {r: 1, g: 1, b: 1, a: 0.78431374}
+  m_RaycastTarget: 1
+  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+  m_Maskable: 1
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  m_FontData:
+    m_Font: {fileID: 12800000, guid: 2080eb09aaddb574780d4a5834680bee, type: 3}
+    m_FontSize: 20
+    m_FontStyle: 0
+    m_BestFit: 0
+    m_MinSize: 0
+    m_MaxSize: 300
+    m_Alignment: 5
+    m_AlignByGeometry: 0
+    m_RichText: 1
+    m_HorizontalOverflow: 0
+    m_VerticalOverflow: 0
+    m_LineSpacing: 1
+  m_Text: Skill Ready
+--- !u!222 &2032064349
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2032064346}
+  m_CullTransparentMesh: 0
 --- !u!1 &2045478893
 GameObject:
   m_ObjectHideFlags: 0

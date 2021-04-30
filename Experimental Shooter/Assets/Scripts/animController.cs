@@ -15,4 +15,8 @@ public class animController : MonoBehaviour
     {
         animator.Play("Reload", -1, 0f);
     }
+    public void SkillAnimation()
+    {
+        animator.Play("SkillPause", -1, 0f);
+    }
 }

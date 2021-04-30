@@ -5,6 +5,11 @@ using UnityEngine.UI;
 
 public class ShootingScript : MonoBehaviour
 {
+    //create enum for future additions
+    enum Skill
+    {
+        impactGrenade
+    }
     //Scene management
     public GameObject sceneManmager;
     private bool levelEnded = false;
@@ -12,13 +17,24 @@ public class ShootingScript : MonoBehaviour
     //Bullets per second
     public float firingRate = 10f;
     //Auto? Semi-auto? is this gamemode Timed?
-    public bool autoTrigger,mode_Timed, mode_Scored;
+    public bool autoTrigger, mode_Timed, mode_Scored;
+    //Skill/Equipment (when therea re more skills would put data in dictionary for better management)
+    [SerializeField]
+    private Skill skill;
+    [SerializeField]
+    private KeyCode skillKey = KeyCode.G;
+    [SerializeField]
+    private float skillCoolDown = 5f;
+    private float skillCDCounter = 0f;
+    [SerializeField]
+    private bool skillReady = true;
+
     //Magazine size
     public int magSize = 30;
     //References
-    public GameObject bullet, gun, gunPOV;
-    public Transform firePoint, detectPoint;
-    public Text scoreText, ammoText, timeText;
+    public GameObject bullet, gun, gunPOV, impactGrenadeObj;
+    public Transform firePoint, detectPoint, projectileFirePoint;
+    public Text scoreText, ammoText, timeText, skillText;
     public GameObject[] BulletTextures;
     public ParticleSystem hitTargetParticle, hitOthersParticle;
     public GameObject playerCam;
@@ -47,6 +63,14 @@ public class ShootingScript : MonoBehaviour
     private float reloadingTime = 0f;
     //Reload status
     private bool reloading = false;
+    //Skill interval
+    [SerializeField]
+    private float skillTime = 1f;
+    //Skill counter
+    private float skillUsingTime = 0f;
+    //Skill status
+    [SerializeField]
+    private bool skillUsing = false;
     //Check if bullets are enough to shoot
     private bool bulletEnough = true;
 
@@ -76,11 +100,17 @@ public class ShootingScript : MonoBehaviour
 
         Time.timeScale = 1;
         //player = this.transform.parent.gameObject;
+
+        if (skill == Skill.impactGrenade)
+        {
+            skillTime = 1f;
+            skillCoolDown = 5f;
+        }
     }
 
     void Update()
     {
-        if(count == 50)
+        if(mode_Scored && count == 50)
         {
             this.Perfect();
         }
@@ -103,7 +133,7 @@ public class ShootingScript : MonoBehaviour
             this.Resume();
         }
         //Manual reload
-        if (Input.GetKeyDown(KeyCode.R) && currentMag < magSize && !reloading && !levelPaused && !levelEnded)
+        if (Input.GetKeyDown(KeyCode.R) && currentMag < magSize && !reloading && !skillUsing && !levelPaused && !levelEnded)
         {
             reloading = true;
             ammoText.text = "Reloading";
@@ -115,6 +145,31 @@ public class ShootingScript : MonoBehaviour
             crossHair.enabled = false;
             this.ReloadSound();
             Debug.Log("Reloading...");
+        }
+
+        //Skill CoolDown Counter
+        if (!skillUsing && skillCDCounter > 0f)
+        {
+            skillCDCounter -= Time.deltaTime;
+        }
+        else if (!skillUsing && !skillReady)
+        {
+            skillCDCounter = -1f;
+            skillReady = true;
+            skillText.text = "Skill Ready";
+            Debug.Log("Skill Ready");
+        }
+
+        //Skill Use
+        if (Input.GetKeyDown(skillKey) && !reloading && !skillUsing && skillReady && !levelPaused && !levelEnded)
+        {
+            skillReady = false;
+            skillUsing = true;
+            skillText.text = "Skill Active";
+            gun.GetComponent<animController>().SkillAnimation();
+            gunPOV.GetComponent<animController>().SkillAnimation();
+            StartCoroutine(ThrowImpactGrenade(0.5f));
+            Debug.Log("Skill Active...");
         }
     }
     void FixedUpdate()
@@ -128,8 +183,8 @@ public class ShootingScript : MonoBehaviour
             ray = new Ray(playerCam.transform.position, playerCam.transform.forward);
             if (Input.GetMouseButton(0))
             {
-                //Do nothing if reloading 
-                if (!reloading)
+                //Do nothing if reloading or using a skill
+                if (!reloading && !skillUsing)
                 {
                     //Start shooting if mag has bullets
                     if (bulletEnough)
@@ -152,7 +207,6 @@ public class ShootingScript : MonoBehaviour
                     }
                 }
             }
-
             //Reload logic
             if (reloading)
             {
@@ -171,6 +225,23 @@ public class ShootingScript : MonoBehaviour
                     crossHair.enabled = true;
                     circleProgressBar.GetComponent<ReloadRingAnim>().Complete();
                     Debug.Log("Reloaded");
+                }
+            }
+            //Skill duration logic
+            if (skillUsing)
+            {
+
+                if (skillUsingTime < skillTime)
+                {
+                    skillUsingTime += Time.fixedDeltaTime;
+                }
+                else
+                {
+                    skillUsingTime = 0f;
+                    skillUsing = false;
+                    skillCDCounter = skillCoolDown;
+                    skillText.text = "Skill Cooling Down";
+                    Debug.Log("Skill Used. Cooling Down...");
                 }
             }
             //Firing rate recover logic
@@ -263,7 +334,7 @@ public class ShootingScript : MonoBehaviour
             var target = raycastHit.collider.gameObject;
             if (target.CompareTag("Target"))
             {
-                if (!target.GetComponent<TargetBehavior>().hit)
+                if (mode_Scored && !target.GetComponent<TargetBehavior>().hit)
                 {
                     count++;
                     scoreText.text = "Score: " + count.ToString();
@@ -273,7 +344,7 @@ public class ShootingScript : MonoBehaviour
             //Moving target hit
             if (target.CompareTag("MovingTarget"))
             {
-                if (!target.GetComponent<MovingTargetBehavior>().hit)
+                if (mode_Scored && !target.GetComponent<MovingTargetBehavior>().hit)
                 {
                     count += 2;
                     scoreText.text = "Score: " + count.ToString();
@@ -283,7 +354,7 @@ public class ShootingScript : MonoBehaviour
             //Another version of moving target (needs optimization)
             if (target.CompareTag("RailTarget"))
             {
-                if (!target.GetComponent<RailTargetBehavior>().hit)
+                if (mode_Scored && !target.GetComponent<RailTargetBehavior>().hit)
                 {
                     count += 1;
                     scoreText.text = "Score: " + count.ToString();
@@ -329,6 +400,17 @@ public class ShootingScript : MonoBehaviour
     public void ReloadSound()
     {
         gun.GetComponent<SoundScript>().ReloadSound();
+    }
+    IEnumerator ThrowImpactGrenade(float time)
+    {
+        yield return new WaitForSeconds(time);
+        var impactGrenadeObject = Instantiate(impactGrenadeObj, projectileFirePoint.transform.position, Quaternion.Euler(playerCam.transform.forward));
+        impactGrenadeObject.transform.LookAt(playerCam.transform.forward * 1000);
+        //Modify the throwing angle so the grenade is a bit higher than horizontal
+        Vector3 currentRotation = impactGrenadeObject.transform.eulerAngles;
+        Vector3 modifiedRotation = currentRotation + new Vector3(0f, 0f, 0f);
+        impactGrenadeObject.transform.localRotation = Quaternion.Euler(modifiedRotation);
+
     }
     IEnumerator HitOtherBulletEffects(float time, Vector3 location, Quaternion facingDir)
     {

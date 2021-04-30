@@ -6,7 +6,7 @@ using UnityEngine.SceneManagement;
 
 public class LevelSceneManager : MonoBehaviour
 {
-    public Text scoreText, ammoText, timeText, EndScoreText;
+    public Text scoreText, ammoText, timeText, skillText, EndScoreText;
     public GameObject ContinueButton, RestartButton, EndButton, SensSlider, fovSlider, gun;
     public ShootingScript gameRules;
     public Image crossHair, Ammo, Ring;
@@ -40,6 +40,7 @@ public class LevelSceneManager : MonoBehaviour
         scoreText.enabled = false;
         ammoText.enabled = false;
         timeText.enabled = false;
+        skillText.enabled = false;
         crossHair.enabled = false;
         Ammo.enabled = false;
         Ring.enabled = false;
@@ -64,6 +65,7 @@ public class LevelSceneManager : MonoBehaviour
             timeText.enabled = true;
         }
         ammoText.enabled = true;
+        skillText.enabled = true;
         ContinueButton.SetActive(false);
         RestartButton.SetActive(false);
 		SensSlider.SetActive(false);
@@ -92,6 +94,7 @@ public class LevelSceneManager : MonoBehaviour
         scoreText.enabled = false;
         ammoText.enabled = false;
         timeText.enabled = false;
+        skillText.enabled = false;
         crossHair.enabled = false;
         Ammo.enabled = false;
         Ring.enabled = false;
@@ -112,6 +115,7 @@ public class LevelSceneManager : MonoBehaviour
         scoreText.enabled = false;
         ammoText.enabled = false;
         timeText.enabled = false;
+        skillText.enabled = false;
         crossHair.enabled = false;
         Ammo.enabled = false;
         Ring.enabled = false;

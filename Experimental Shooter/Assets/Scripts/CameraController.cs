@@ -8,13 +8,16 @@ public class CameraController : MonoBehaviour
 {
 	public Slider sensSlider, fovSlider;
     private Vector2 mouseCurrent;
-    public float mouseSensitivity = 20f;
-    public float fieldOfView = 100f;
+    [SerializeField]
+    private float mouseSensitivity = 20f;
+    [SerializeField]
+    private float fieldOfView = 100f;
     private GameObject character;
     public GameObject gunPosParent;
     bool gamePlaying;
     bool recoil = false;
-    bool mouseSensChanged, fovChanged = false;
+    //Currently slider events are not working as expected so slider data are force updated
+    //bool mouseSensChanged, fovChanged = false;
 
     void Start()
     {
@@ -46,7 +49,7 @@ public class CameraController : MonoBehaviour
                 mouseCurrent.y += 0.5f;
                 mouseCurrent.x += Random.Range(-0.5f, 0.5f);
             }
-            //in-game model vertical axis for better view (WIP)
+            //in-game model vertical axis rotationfor better view (WIP)
             //gunPosParent.transform.localRotation = Quaternion.AngleAxis(-mouseCurrent.y, Vector3.right);
             //camera vertical axis
             transform.localRotation = Quaternion.AngleAxis(-mouseCurrent.y, Vector3.right);
