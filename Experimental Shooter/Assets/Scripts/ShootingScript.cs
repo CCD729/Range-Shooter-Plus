@@ -277,6 +277,8 @@ public class ShootingScript : MonoBehaviour
 
     void Shoot()
     {
+        gun.GetComponent<animController>().ShootAnimation();
+        gunPOV.GetComponent<animController>().ShootAnimation();
         Vector3 targetPoint;
         fRatePassed = false;
         currentMag--;

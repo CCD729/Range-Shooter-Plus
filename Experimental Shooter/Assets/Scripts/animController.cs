@@ -19,4 +19,8 @@ public class animController : MonoBehaviour
     {
         animator.Play("SkillPause", -1, 0f);
     }
+    public void ShootAnimation()
+    {
+        animator.Play("Shoot", -1, 0f);
+    }
 }
