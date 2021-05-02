@@ -365,6 +365,40 @@ public class ShootingScript : MonoBehaviour
         this.Recoil();
         this.ShootingSound();
     }
+
+    public void hitByProjectile(GameObject target)
+    {
+        if (target.CompareTag("Target"))
+        {
+            if (mode_Scored && !target.GetComponent<TargetBehavior>().hit)
+            {
+                count++;
+                scoreText.text = "Score: " + count.ToString();
+            }
+            target.GetComponent<TargetBehavior>().HitByProjectile();
+        }
+        //Moving target hit
+        if (target.CompareTag("MovingTarget"))
+        {
+            if (mode_Scored && !target.GetComponent<MovingTargetBehavior>().hit)
+            {
+                count += 2;
+                scoreText.text = "Score: " + count.ToString();
+            }
+            target.GetComponent<TargetBehavior>().HitByProjectile();
+        }
+        //Another version of moving target (needs optimization)
+        if (target.CompareTag("RailTarget"))
+        {
+            if (mode_Scored && !target.GetComponent<RailTargetBehavior>().hit)
+            {
+                count += 1;
+                scoreText.text = "Score: " + count.ToString();
+            }
+            target.GetComponent<TargetBehavior>().HitByProjectile();
+        }
+    }
+
     public void Pause()
     {
         Time.timeScale = 0;

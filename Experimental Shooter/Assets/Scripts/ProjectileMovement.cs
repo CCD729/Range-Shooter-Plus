@@ -4,21 +4,56 @@ using UnityEngine;
 
 public class ProjectileMovement : MonoBehaviour
 {
+    enum ProjectileType
+    {
+        impactGrenade
+    }
+    private GameObject EventSystem;
     [SerializeField]
     private float timeoutLifetime = 5f;
     [SerializeField]
     private bool destroySelfAfterTimeout = true;
     [SerializeField]
     private float speed = 8f;
+    [SerializeField]
+    private ProjectileType projectileType;
+
+    [SerializeField]
+    private bool Is_Explosive = false;
+    [SerializeField]
+    private GameObject explosionVisualObj;
+    [SerializeField]
+    private float explosionRadius = 1f;
+    [SerializeField]
+    private float explosionForce = 1f;
+    [SerializeField]
+    private float explosionDamage = 1f;
+    [SerializeField]
+    private float explosionUpwardModifier = 1f;
+    [SerializeField]
+    private float explosionVisualTime = 1f;
 
     public Vector3 spawnPoint;
     private Rigidbody rb;
     private float destroyTime;
 
     void Start()
-    {   //Set timer 
+    {
+        EventSystem = GameObject.Find("CustomEventSystem");
+        //Set timer 
         destroyTime = Time.time + timeoutLifetime;
         spawnPoint = transform.position;
+
+        //type identifier and some extra info
+        if (projectileType == ProjectileType.impactGrenade)
+        {
+            Is_Explosive = true;
+            explosionRadius = 3f;
+            explosionForce = 5f;
+            explosionDamage = 10f;
+            explosionUpwardModifier = 1f;
+            explosionVisualTime = 1.5f;
+        }
 
         //Let the Projectile fly
         rb = GetComponent<Rigidbody>();
@@ -35,6 +70,7 @@ public class ProjectileMovement : MonoBehaviour
         //Deploy explosion effect on collision
         if (!collision.gameObject.CompareTag("Player"))
         {
+            //Debug.Log(collision.gameObject);
             this.Impact();
         }
     }
@@ -51,13 +87,41 @@ public class ProjectileMovement : MonoBehaviour
     //Explosion effects
     public void Impact()
     {
+        //TODO: Explosion Behavior
         //TODO: Particle/SFX
-
-        this.Destroy();
+        if (Is_Explosive)
+        {
+            if (projectileType == ProjectileType.impactGrenade)
+            {
+                ExplosionPhysics(transform.position, explosionRadius, explosionForce, explosionDamage);
+                ExplosionVisual(transform.position, explosionRadius, explosionVisualTime);
+            }
+            this.Destroy();
+        }
     }
     public void Destroy()
     {
         //TODO: SFX and PARTICLES
         Destroy(gameObject);
+    }
+    void ExplosionPhysics(Vector3 center, float radius, float force, float damage)
+    {
+        Collider[] hitColliders = Physics.OverlapSphere(center, radius);
+        foreach (var hitCollider in hitColliders)
+        {
+            //TODO: calculate damage
+            //hitCollider.SendMessage("AddDamage");
+            if(hitCollider.gameObject.GetComponent<Rigidbody>() != null)
+            hitCollider.gameObject.GetComponent<Rigidbody>().AddExplosionForce(force, center, radius, explosionUpwardModifier, ForceMode.Impulse);
+            if (hitCollider.gameObject.CompareTag("Target") || hitCollider.gameObject.CompareTag("MovingTarget") || hitCollider.gameObject.CompareTag("RailTarget"))
+            {
+                EventSystem.GetComponent<ShootingScript>().hitByProjectile(hitCollider.gameObject);
+            }
+        }
+    }
+    void ExplosionVisual(Vector3 center, float radius, float time)
+    {
+        var visualEffectObj = Instantiate(explosionVisualObj, center, Quaternion.Euler(0,0,0));
+        visualEffectObj.GetComponent<ObjectDestroyer>().Destroy();
     }
 }

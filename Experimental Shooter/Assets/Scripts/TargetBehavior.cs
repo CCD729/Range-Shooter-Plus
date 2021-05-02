@@ -27,7 +27,7 @@ public class TargetBehavior : MonoBehaviour
     IEnumerator PhysicsPush(float time, Vector3 hitPos, Vector3 hitDir)
     {
         yield return new WaitForSeconds(time);
-        rb.AddForceAtPosition(hitDir, hitPos, ForceMode.Impulse);
+        rb.AddForceAtPosition(hitDir*2, hitPos, ForceMode.Impulse);
     }
 
 
@@ -62,6 +62,16 @@ public class TargetBehavior : MonoBehaviour
         }
         StartCoroutine(PhysicsPush(0.1f, hitPos, hitDir));
     }
+
+    public void HitByProjectile()
+    {
+        if (!hit)
+        {
+            StartCoroutine(ChangeMaterial(0.1f));
+            hit = true;
+        }
+    }
+
     IEnumerator Recover(float time)
     {
         yield return new WaitForSeconds(time);
