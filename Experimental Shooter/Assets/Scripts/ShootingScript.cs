@@ -10,77 +10,113 @@ public class ShootingScript : MonoBehaviour
     {
         impactGrenade
     }
-    //Scene management
-    public GameObject sceneManmager;
-    private bool levelEnded = false;
-    private bool levelPaused = false;
-    //Bullets per second
-    public float firingRate = 10f;
-    //Auto? Semi-auto? is this gamemode Timed?
-    public bool autoTrigger, mode_Timed, mode_Scored;
-    //Skill/Equipment (when therea re more skills would put data in dictionary for better management)
-    [SerializeField]
-    private Skill skill;
-    [SerializeField]
-    private KeyCode skillKey = KeyCode.G;
-    [SerializeField]
-    private float skillCoolDown = 5f;
-    private float skillCDCounter = 0f;
-    [SerializeField]
-    private bool skillReady = true;
+    //Scene Manager
+    [Header("Scene Manager")]
+    [Tooltip("Current Active SceneManager")]
+    public GameObject sceneManager;
 
-    //Magazine size
-    public int magSize = 30;
-    //References
-    public GameObject bullet, gun, gunPOV, impactGrenadeObj;
-    public Transform firePoint, detectPoint, projectileFirePoint;
-    public Text scoreText, ammoText, timeText, skillText;
-    public GameObject[] BulletTextures;
-    public ParticleSystem hitTargetParticle, hitOthersParticle;
+    [Header("Camera")]
+    [Tooltip("Current player's camera")]
     public GameObject playerCam;
-    private int count;
 
-    //Reload Assets
-    public Image crossHair, bulletIcon, circleProgressBar;
+    [Header("Images")]
+    public Image img_crossHair;
+    public Image img_bulletIcon;
+    public Image img_reloadRing;
 
-    [SerializeField]
-    private float timeLimit = 45.00f;
-    private float timeLeft = 45.00f;
+    [Header("Textures")]
+    [Tooltip("Current bullethole textures")]
+    public GameObject[] BulletTextures;
 
-    private Ray ray;
-    private RaycastHit raycastHit;
-    public LayerMask layerMask;
+    [Header("Partical System")]
+    [SerializeField] private ParticleSystem hitTargetParticle;
+    [SerializeField] private ParticleSystem hitOthersParticle;
 
-    //Hitting Sound
+    [Header("Audio Objects")]
     public GameObject HittingAudioObject;
 
+    [Header("Game Rules")]
+    [Tooltip("Current score (if the gamemode is scored)")]
+    public int score;
+    [Tooltip("Current gamemode is timed or not")]
+    public bool mode_Timed;
+    [Tooltip("Current gamemode is scored or not")]
+    public bool mode_Scored;
+    [Tooltip("Time limit")]
+    [SerializeField] private float timeLimit = 45.00f;
+    private float timeLeft = 45.00f;
+
+    [Header("Weapon")]
+    [Tooltip("Current primary weapon gameObject")]
+    public GameObject primaryWeapon;
+    [Tooltip("Current primary weapon gameObject for 1st person camera")]
+    public GameObject primaryWeaponPOV;
+    [Tooltip("Current secondary weapon gameObject")]
+    public GameObject secondaryWeapon;
+    [Tooltip("Current secondary weapon gameObject for 1st person camera")]
+    public GameObject secondaryWeaponPOV;
+    [Tooltip("Bullet gameObject for current equiped weapon (if it's a gun)")]
+    public GameObject bullet;
+
+    //TODO: weapon details should come with weapon, consider making enums and dictionary or general weapon class
+    public float firingRate = 10f;
+    public bool autoTrigger;
+    public int magSize = 30;
+    public float reloadTime = 1.5f;
+
+    [Header("Equipment/Skill")]
+    //TODO: Create dictionary containing equipments so this becomes "skillObj"s and the current obj are passed in dynamically
+    [Tooltip("Current equiped skill/equipment gameObject (WIP)")]
+    public GameObject impactGrenadeObj;
+    [Tooltip("Current primary skill/equipment gameObject (WIP)")]
+    public GameObject primarySkillObj;
+    [Tooltip("Current secondary skill/equipment gameObject (WIP)")]
+    public GameObject secondarySkillObj;
+
+    //Skill/Equipment (when there are more skills would put data in dictionary for better management)
+    [SerializeField] private Skill skill;
+    [SerializeField] private KeyCode skillKey = KeyCode.G;
+    [SerializeField] private float skillCoolDown = 5f;
+    [SerializeField] private bool skillReady = true;
+    [SerializeField] private float skillTime = 1f; //Skill Interval
+    private float skillCDCounter = 0f;
+
+    [Header("Bool Conditions")]
+    [SerializeField] private bool levelEnded = false;
+    [SerializeField] private bool levelPaused = false;
+    [SerializeField] private bool reloading = false;
+    [SerializeField] private bool skillUsing = false;
+
+    [Header("Quick References")]
+    public Transform firePoint;
+    //public Transform detectPoint;
+    public Transform projectileFirePoint;
+    public Text scoreText;
+    public Text ammoText;
+    public Text timeText;
+    public Text skillText;
+
+    [Header("Raycasting LayerMask")]
+    public LayerMask layerMask;
+
+    ///PRIVATE VARIABLES
+    //Ray
+    private Ray ray;
+    private RaycastHit raycastHit;
     //Current bullets left in mag
     private int currentMag = 30;
-    //Reload interval
-    [SerializeField]
-    private float reloadTime = 1.5f;
     //Reload counter
     private float reloadingTime = 0f;
-    //Reload status
-    private bool reloading = false;
-    //Skill interval
-    [SerializeField]
-    private float skillTime = 1f;
     //Skill counter
     private float skillUsingTime = 0f;
-    //Skill status
-    [SerializeField]
-    private bool skillUsing = false;
     //Check if bullets are enough to shoot
     private bool bulletEnough = true;
-
     //Firing rate interval
     private float fRateInt;
     //Firing gap counter
     private float fGapCount = 0f;
     //able to shoot status
     private bool fRatePassed = true;
-
     //IMPORTANT: UPDATING PRESSINFO
     private bool EscPressed = false;
 
@@ -89,9 +125,9 @@ public class ShootingScript : MonoBehaviour
     {
         //Set firing interval according to input firing rate
         fRateInt = 1f / firingRate;
-        count = 0;
+        score = 0;
         timeLeft = timeLimit;
-        scoreText.text = "Score: " + count.ToString();
+        scoreText.text = "Score: " + score.ToString();
         timeText.text = "Time: " + timeLeft.ToString();
         if (!mode_Scored)
             scoreText.enabled = false;
@@ -110,7 +146,7 @@ public class ShootingScript : MonoBehaviour
 
     void Update()
     {
-        if(mode_Scored && count == 50)
+        if(mode_Scored && score == 50)
         {
             this.Perfect();
         }
@@ -137,12 +173,12 @@ public class ShootingScript : MonoBehaviour
         {
             reloading = true;
             ammoText.text = "Reloading";
-            gun.GetComponent<animController>().ReloadAnimation();
-            gunPOV.GetComponent<animController>().ReloadAnimation();
-            circleProgressBar.GetComponent<ReloadRingAnim>().Play();
-            bulletIcon.enabled = true;
-            circleProgressBar.enabled = true;
-            crossHair.enabled = false;
+            primaryWeapon.GetComponent<animController>().ReloadAnimation();
+            primaryWeaponPOV.GetComponent<animController>().ReloadAnimation();
+            img_reloadRing.GetComponent<ReloadRingAnim>().Play();
+            img_bulletIcon.enabled = true;
+            img_reloadRing.enabled = true;
+            img_crossHair.enabled = false;
             this.ReloadSound();
             Debug.Log("Reloading...");
         }
@@ -166,8 +202,8 @@ public class ShootingScript : MonoBehaviour
             skillReady = false;
             skillUsing = true;
             skillText.text = "Skill Active";
-            gun.GetComponent<animController>().SkillAnimation();
-            gunPOV.GetComponent<animController>().SkillAnimation();
+            primaryWeapon.GetComponent<animController>().SkillAnimation();
+            primaryWeaponPOV.GetComponent<animController>().SkillAnimation();
             StartCoroutine(ThrowImpactGrenade(0.5f));
             Debug.Log("Skill Active...");
         }
@@ -196,12 +232,12 @@ public class ShootingScript : MonoBehaviour
                     {
                         reloading = true;
                         ammoText.text = "Reloading";
-                        gun.GetComponent<animController>().ReloadAnimation();
-                        gunPOV.GetComponent<animController>().ReloadAnimation();
-                        circleProgressBar.GetComponent<ReloadRingAnim>().Play();
-                        crossHair.enabled = false;
-                        bulletIcon.enabled = true;
-                        circleProgressBar.enabled = true;
+                        primaryWeapon.GetComponent<animController>().ReloadAnimation();
+                        primaryWeaponPOV.GetComponent<animController>().ReloadAnimation();
+                        img_reloadRing.GetComponent<ReloadRingAnim>().Play();
+                        img_crossHair.enabled = false;
+                        img_bulletIcon.enabled = true;
+                        img_reloadRing.enabled = true;
                         this.ReloadSound();
                         Debug.Log("Reloading...");
                     }
@@ -220,10 +256,10 @@ public class ShootingScript : MonoBehaviour
                     currentMag = magSize;
                     reloading = false;
                     ammoText.text = currentMag.ToString() + "/30";
-                    bulletIcon.enabled = false;
-                    circleProgressBar.enabled = false;
-                    crossHair.enabled = true;
-                    circleProgressBar.GetComponent<ReloadRingAnim>().Complete();
+                    img_bulletIcon.enabled = false;
+                    img_reloadRing.enabled = false;
+                    img_crossHair.enabled = true;
+                    img_reloadRing.GetComponent<ReloadRingAnim>().Complete();
                     Debug.Log("Reloaded");
                 }
             }
@@ -277,8 +313,8 @@ public class ShootingScript : MonoBehaviour
 
     void Shoot()
     {
-        gun.GetComponent<animController>().ShootAnimation();
-        gunPOV.GetComponent<animController>().ShootAnimation();
+        primaryWeapon.GetComponent<animController>().ShootAnimation();
+        primaryWeaponPOV.GetComponent<animController>().ShootAnimation();
         Vector3 targetPoint;
         fRatePassed = false;
         currentMag--;
@@ -338,8 +374,8 @@ public class ShootingScript : MonoBehaviour
             {
                 if (mode_Scored && !target.GetComponent<TargetBehavior>().hit)
                 {
-                    count++;
-                    scoreText.text = "Score: " + count.ToString();
+                    score++;
+                    scoreText.text = "Score: " + score.ToString();
                 }
                 target.GetComponent<TargetBehavior>().Hit(raycastHit.point, playerCam.transform.forward);
             }
@@ -348,8 +384,8 @@ public class ShootingScript : MonoBehaviour
             {
                 if (mode_Scored && !target.GetComponent<MovingTargetBehavior>().hit)
                 {
-                    count += 2;
-                    scoreText.text = "Score: " + count.ToString();
+                    score += 2;
+                    scoreText.text = "Score: " + score.ToString();
                 }
                 target.GetComponent<MovingTargetBehavior>().Hit(raycastHit.point, playerCam.transform.forward);
             }
@@ -358,8 +394,8 @@ public class ShootingScript : MonoBehaviour
             {
                 if (mode_Scored && !target.GetComponent<RailTargetBehavior>().hit)
                 {
-                    count += 1;
-                    scoreText.text = "Score: " + count.ToString();
+                    score += 1;
+                    scoreText.text = "Score: " + score.ToString();
                 }
                 target.GetComponent<RailTargetBehavior>().Hit(raycastHit.point, playerCam.transform.forward);
             }
@@ -374,8 +410,8 @@ public class ShootingScript : MonoBehaviour
         {
             if (mode_Scored && !target.GetComponent<TargetBehavior>().hit)
             {
-                count++;
-                scoreText.text = "Score: " + count.ToString();
+                score++;
+                scoreText.text = "Score: " + score.ToString();
             }
             target.GetComponent<TargetBehavior>().HitByProjectile();
         }
@@ -384,8 +420,8 @@ public class ShootingScript : MonoBehaviour
         {
             if (mode_Scored && !target.GetComponent<MovingTargetBehavior>().hit)
             {
-                count += 2;
-                scoreText.text = "Score: " + count.ToString();
+                score += 2;
+                scoreText.text = "Score: " + score.ToString();
             }
             target.GetComponent<TargetBehavior>().HitByProjectile();
         }
@@ -394,8 +430,8 @@ public class ShootingScript : MonoBehaviour
         {
             if (mode_Scored && !target.GetComponent<RailTargetBehavior>().hit)
             {
-                count += 1;
-                scoreText.text = "Score: " + count.ToString();
+                score += 1;
+                scoreText.text = "Score: " + score.ToString();
             }
             target.GetComponent<TargetBehavior>().HitByProjectile();
         }
@@ -404,12 +440,12 @@ public class ShootingScript : MonoBehaviour
     public void Pause()
     {
         Time.timeScale = 0;
-        sceneManmager.GetComponent<LevelSceneManager>().Pause(reloading);
+        sceneManager.GetComponent<LevelSceneManager>().Pause(reloading);
         levelPaused = true;
     }
     public void Resume()
     {
-        sceneManmager.GetComponent<LevelSceneManager>().Resume();
+        sceneManager.GetComponent<LevelSceneManager>().Resume();
         levelPaused = false;
         Time.timeScale = 1;
     }
@@ -417,13 +453,13 @@ public class ShootingScript : MonoBehaviour
     {
         Time.timeScale = 0;
         levelEnded = true;
-        sceneManmager.GetComponent<LevelSceneManager>().End(count);
+        sceneManager.GetComponent<LevelSceneManager>().End(score);
     }
     public void Perfect()
     {
         Time.timeScale = 0;
         levelEnded = true;
-        sceneManmager.GetComponent<LevelSceneManager>().Perfect();
+        sceneManager.GetComponent<LevelSceneManager>().Perfect();
     }
     public void Recoil()
     {
@@ -431,11 +467,11 @@ public class ShootingScript : MonoBehaviour
     }
     public void ShootingSound()
     {
-        gun.GetComponent<SoundScript>().ShootSound();
+        primaryWeapon.GetComponent<SoundScript>().ShootSound();
     }
     public void ReloadSound()
     {
-        gun.GetComponent<SoundScript>().ReloadSound();
+        primaryWeapon.GetComponent<SoundScript>().ReloadSound();
     }
     IEnumerator ThrowImpactGrenade(float time)
     {
