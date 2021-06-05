@@ -5074,8 +5074,8 @@ MonoBehaviour:
   autoTrigger: 1
   magSize: 30
   reloadTime: 1.5
-  impactGrenadeObj: {fileID: 3148491177129973620, guid: 087171c79cef3cf4a8fde2ee00df8aca,
-    type: 3}
+  skillObjs:
+  - {fileID: 3148491177129973620, guid: 087171c79cef3cf4a8fde2ee00df8aca, type: 3}
   primarySkillObj: {fileID: 0}
   secondarySkillObj: {fileID: 0}
   skill: 0
@@ -10244,7 +10244,7 @@ MonoBehaviour:
   autoTrigger: 1
   magSize: 30
   reloadTime: 1.5
-  impactGrenadeObj: {fileID: 0}
+  skillObjs: []
   primarySkillObj: {fileID: 0}
   secondarySkillObj: {fileID: 0}
   skill: 0

@@ -10,6 +10,16 @@ public class ShootingScript : MonoBehaviour
     {
         impactGrenade
     }
+    enum Firearm
+    {
+        subMachineGun,
+        pistol
+    }
+    enum Melee
+    {
+        combatKnife
+    }
+
     //Scene Manager
     [Header("Scene Manager")]
     [Tooltip("Current Active SceneManager")]
@@ -66,8 +76,7 @@ public class ShootingScript : MonoBehaviour
 
     [Header("Equipment/Skill")]
     //TODO: Create dictionary containing equipments so this becomes "skillObj"s and the current obj are passed in dynamically
-    [Tooltip("Current equiped skill/equipment gameObject (WIP)")]
-    public GameObject impactGrenadeObj;
+    public GameObject[] skillObjs;
     [Tooltip("Current primary skill/equipment gameObject (WIP)")]
     public GameObject primarySkillObj;
     [Tooltip("Current secondary skill/equipment gameObject (WIP)")]
@@ -476,7 +485,7 @@ public class ShootingScript : MonoBehaviour
     IEnumerator ThrowImpactGrenade(float time)
     {
         yield return new WaitForSeconds(time);
-        var impactGrenadeObject = Instantiate(impactGrenadeObj, projectileFirePoint.transform.position, Quaternion.Euler(playerCam.transform.forward));
+        var impactGrenadeObject = Instantiate(skillObjs[0], projectileFirePoint.transform.position, Quaternion.Euler(playerCam.transform.forward));
         impactGrenadeObject.transform.LookAt(playerCam.transform.forward * 1000);
         //Modify the throwing angle so the grenade is a bit higher than horizontal
         Vector3 currentRotation = impactGrenadeObject.transform.eulerAngles;
