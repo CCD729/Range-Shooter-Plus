@@ -2,22 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public enum WeaponType
-{
-    SubMachinegun,
-    AssaultRifle,
-    SniperRifle,
-    TacticalRifle,
-    Shotgun,
-    Handgun,
-    Melee
-}
-public enum FireSelect
-{
-    auto,
-    burst,
-    semi
-}
+//WIP, might abandon this approach and use prefabs instead
 public class Weapon
 {
     //Weapon properties
@@ -34,6 +19,9 @@ public class Weapon
     public float firingRate = 10f;
     public int magSize = 30;
     public float reloadTime = 1.5f;
+    public float maxHorizontalRecoil = 0.5f;
+    public float minHorizontalRecoil = 0f;
+    public float verticalRecoil = 0.5f;
     //Weapon fireSelector
     public FireSelect defaultFireMode = FireSelect.auto;
     public FireSelect[] FireModes;

@@ -16,6 +16,9 @@ public class CameraController : MonoBehaviour
     public GameObject gunPosParent;
     bool gamePlaying;
     bool recoil = false;
+    float maxHorizontalRecoil = 0.5f;
+    float minHorizontalRecoil = 0f;
+    float verticalRecoil = 0.5f;
     //Currently slider events are not working as expected so slider data are force updated
     //bool mouseSensChanged, fovChanged = false;
 
@@ -46,8 +49,8 @@ public class CameraController : MonoBehaviour
                 mouseCurrent.y = -90;
             if (recoil)
             {
-                mouseCurrent.y += 0.5f;
-                mouseCurrent.x += Random.Range(-0.5f, 0.5f);
+                mouseCurrent.y += verticalRecoil;
+                mouseCurrent.x +=( (Random.Range(0, 2) * 2 - 1) * Random.Range(maxHorizontalRecoil, minHorizontalRecoil) );
             }
             //in-game model vertical axis rotationfor better view (WIP)
             //gunPosParent.transform.localRotation = Quaternion.AngleAxis(-mouseCurrent.y, Vector3.right);
@@ -102,6 +105,12 @@ public class CameraController : MonoBehaviour
     public void Recoil()
     {
         recoil = true;
+    }
+    public void UpdateWeaponInfo(float maxHRecoil, float minHRecoil, float VRecoil)
+    {
+        maxHorizontalRecoil = maxHRecoil;
+        minHorizontalRecoil = minHRecoil;
+        verticalRecoil = VRecoil;
     }
     void UpdateMouseSensitivity()
     {

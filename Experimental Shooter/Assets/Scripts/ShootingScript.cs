@@ -28,6 +28,8 @@ public class ShootingScript : MonoBehaviour
     [Header("Camera")]
     [Tooltip("Current player's camera")]
     public GameObject playerCam;
+    [Tooltip("Current player's weapon POV camera")]
+    public GameObject weaponCam;
 
     [Header("Images")]
     public Image img_crossHair;
@@ -57,13 +59,24 @@ public class ShootingScript : MonoBehaviour
     private float timeLeft = 45.00f;
 
     [Header("Weapon")]
-    [Tooltip("Current primary weapon gameObject")]
+    //WIP weapon system rework
+    /*[Tooltip("Current primary weapon instance")]
+    public Weapon primaryWeapon;
+    [Tooltip("Current primary weapon instance for 1st person camera")]
+    public Weapon primaryWeaponPOV;
+    [Tooltip("Current secondary weapon instance")]
+    public Weapon secondaryWeapon;
+    [Tooltip("Current secondary weapon instance for 1st person camera")]
+    public Weapon secondaryWeaponPOV;*/
+    [Tooltip("Current weapon gameObject")]
+    public GameObject currentWeapon;
+    [Tooltip("Primary weapon gameObject")]
     public GameObject primaryWeapon;
-    [Tooltip("Current primary weapon gameObject for 1st person camera")]
+    [Tooltip("Primary weapon gameObject for 1st person camera")]
     public GameObject primaryWeaponPOV;
-    [Tooltip("Current secondary weapon gameObject")]
+    [Tooltip("Secondary weapon gameObject")]
     public GameObject secondaryWeapon;
-    [Tooltip("Current secondary weapon gameObject for 1st person camera")]
+    [Tooltip("Secondary weapon gameObject for 1st person camera")]
     public GameObject secondaryWeaponPOV;
     [Tooltip("Bullet gameObject for current equiped weapon (if it's a gun)")]
     public GameObject bullet;
@@ -151,6 +164,8 @@ public class ShootingScript : MonoBehaviour
             skillTime = 1f;
             skillCoolDown = 5f;
         }
+
+        UpdateCamWeaponInfo();
     }
 
     void Update()
@@ -481,6 +496,11 @@ public class ShootingScript : MonoBehaviour
     public void ReloadSound()
     {
         primaryWeapon.GetComponent<SoundScript>().ReloadSound();
+    }
+    public void UpdateCamWeaponInfo()
+    {
+        WeaponInfo currentWeaponInfo = currentWeapon.GetComponent<WeaponInfo>();
+        playerCam.GetComponent<CameraController>().UpdateWeaponInfo(currentWeaponInfo.maxHorizontalRecoil, currentWeaponInfo.minHorizontalRecoil, currentWeaponInfo.verticalRecoil);
     }
     IEnumerator ThrowImpactGrenade(float time)
     {
