@@ -22,6 +22,7 @@ public class WeaponInfo : MonoBehaviour
 {
     //Weapon properties
     new public string name;
+    public int weaponID;
     public float damage;
     public WeaponType weaponType;
 

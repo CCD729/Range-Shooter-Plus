@@ -8,6 +8,7 @@ TagManager:
   - Weapon
   - MovingTarget
   - RailTarget
+  - Pickups
   layers:
   - Default
   - TransparentFX
@@ -22,7 +23,7 @@ TagManager:
   - Hitables
   - Particles
   - Weapon
-  - 
+  - Pickups
   - 
   - 
   - 

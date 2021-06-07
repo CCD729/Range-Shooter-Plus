@@ -1280,6 +1280,7 @@ GameObject:
   - component: {fileID: 8944858624347851451}
   - component: {fileID: 4863978362096572220}
   - component: {fileID: 4863978362096572221}
+  - component: {fileID: 8137345040648637533}
   m_Layer: 9
   m_Name: Machine GunPOV
   m_TagString: Weapon
@@ -1348,6 +1349,34 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9c572e9749c441744b1859dbb70e8b98, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &8137345040648637533
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7315146883840908528}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c7a43a1e42abab04da7b48b09daf33ac, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  name: Sub_Machine_Gun
+  weaponID: 1
+  damage: 25
+  weaponType: 0
+  melee: 0
+  meleeRange: 0
+  attackDelay: 0
+  attackBackSwing: 0
+  firingRate: 20
+  magSize: 30
+  reloadTime: 1.5
+  maxHorizontalRecoil: 1
+  minHorizontalRecoil: 0.1
+  verticalRecoil: 0.75
+  defaultFireMode: 0
+  FireModes: 0000000002000000
 --- !u!1 &7781930540297740867
 GameObject:
   m_ObjectHideFlags: 0
