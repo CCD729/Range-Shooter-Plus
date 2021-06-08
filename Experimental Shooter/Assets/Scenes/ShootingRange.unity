@@ -2518,6 +2518,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 1075746000}
+  - {fileID: 1525930412}
   - {fileID: 639765600}
   - {fileID: 1950663013}
   m_Father: {fileID: 0}
@@ -3163,7 +3164,7 @@ Transform:
   - {fileID: 5739572218747998871}
   - {fileID: 975027248}
   m_Father: {fileID: 549686703}
-  m_RootOrder: 1
+  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!81 &639765601
 AudioListener:
@@ -4798,7 +4799,7 @@ MonoBehaviour:
   EndButton: {fileID: 2016212541}
   SensSlider: {fileID: 143441276}
   fovSlider: {fileID: 572823520}
-  weapon: {fileID: 0}
+  currentWeapon: {fileID: 0}
   cam: {fileID: 639765602}
   gameRules: {fileID: 1037682094}
 --- !u!4 &993408379
@@ -4990,6 +4991,7 @@ MonoBehaviour:
   weaponCam: {fileID: 975027247}
   weaponContainer: {fileID: 5739572218747998864}
   weaponContainerPOV: {fileID: 1573929549794852495}
+  weaponBackDisplayContainer: {fileID: 1525930411}
   img_crossHair: {fileID: 869326447}
   img_bulletIcon: {fileID: 149911019}
   img_reloadRing: {fileID: 803886183}
@@ -5009,13 +5011,15 @@ MonoBehaviour:
   timeLimit: -1
   weaponEquipped: 0
   weaponFull: 0
-  weaponSlot: 0
+  currentWeaponSlot: 0
   currentWeapon: {fileID: 0}
   currentWeaponPOV: {fileID: 0}
   primaryWeapon: {fileID: 0}
   primaryWeaponPOV: {fileID: 0}
+  primaryWeaponBackDisplay: {fileID: 0}
   secondaryWeapon: {fileID: 0}
   secondaryWeaponPOV: {fileID: 0}
+  secondaryWeaponBackDisplay: {fileID: 0}
   bullet: {fileID: 8388713027766119384, guid: 2646ff4814621c64d9452ebec4911ab1, type: 3}
   skillObjs:
   - {fileID: 3148491177129973620, guid: 087171c79cef3cf4a8fde2ee00df8aca, type: 3}
@@ -5066,11 +5070,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ae46121c92d8b6841aa84467b5134fe6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  dropForce: 3
+  dropForceUpward: 3
   pickupablesWeapon:
   - {fileID: 8879790994088495456, guid: 61db2d3c96b9db5439709df425888d0b, type: 3}
   pickupablesWeaponPOV:
   - {fileID: 8302243221152466711, guid: 430886eaad68f4f4aa2e6062282e258f, type: 3}
+  player: {fileID: 549686702}
   shootingScript: {fileID: 1037682094}
+  levelSceneManager: {fileID: 993408378}
 --- !u!1 &1042418763
 GameObject:
   m_ObjectHideFlags: 0
@@ -8411,6 +8419,36 @@ MonoBehaviour:
   m_EffectColor: {r: 0, g: 0, b: 0, a: 0.5}
   m_EffectDistance: {x: 1, y: -1}
   m_UseGraphicAlpha: 1
+--- !u!1 &1525930411
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1525930412}
+  m_Layer: 0
+  m_Name: WeaponBackContainer
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1525930412
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1525930411}
+  m_LocalRotation: {x: 0.3535534, y: -0.61237246, z: 0.3535534, w: 0.61237246}
+  m_LocalPosition: {x: 0.15, y: 4.25, z: -1.15}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 549686703}
+  m_RootOrder: 1
+  m_LocalEulerAnglesHint: {x: 60, y: -90, z: 0}
 --- !u!1001 &1540280133
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -9620,6 +9658,7 @@ MonoBehaviour:
   weaponCam: {fileID: 0}
   weaponContainer: {fileID: 0}
   weaponContainerPOV: {fileID: 0}
+  weaponBackDisplayContainer: {fileID: 0}
   img_crossHair: {fileID: 0}
   img_bulletIcon: {fileID: 0}
   img_reloadRing: {fileID: 0}
@@ -9639,13 +9678,15 @@ MonoBehaviour:
   timeLimit: 45
   weaponEquipped: 0
   weaponFull: 0
-  weaponSlot: 0
+  currentWeaponSlot: 0
   currentWeapon: {fileID: 0}
   currentWeaponPOV: {fileID: 0}
   primaryWeapon: {fileID: 0}
   primaryWeaponPOV: {fileID: 0}
+  primaryWeaponBackDisplay: {fileID: 0}
   secondaryWeapon: {fileID: 0}
   secondaryWeaponPOV: {fileID: 0}
+  secondaryWeaponBackDisplay: {fileID: 0}
   bullet: {fileID: 415529222112994334, guid: e56a7135123658c41bfea89f6e452875, type: 3}
   skillObjs: []
   primarySkillObj: {fileID: 0}
@@ -10324,7 +10365,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 549686703}
-  m_RootOrder: 2
+  m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1956953560
 GameObject:

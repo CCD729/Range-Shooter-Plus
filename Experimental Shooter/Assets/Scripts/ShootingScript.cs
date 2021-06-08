@@ -35,6 +35,8 @@ public class ShootingScript : MonoBehaviour
     public GameObject weaponContainer;
     [Tooltip("Current player's weapon container for 1st person camera")]
     public GameObject weaponContainerPOV;
+    [Tooltip("Current player's weapon container for unequipped weapon on back")]
+    public GameObject weaponBackDisplayContainer;
 
     [Header("Images")]
     public Image img_crossHair;
@@ -77,8 +79,8 @@ public class ShootingScript : MonoBehaviour
     public bool weaponEquipped = false;
     [Tooltip("If both weapon slots equipped")]
     public bool weaponFull = false;
-    [Tooltip("Weapon slot active")] // CAUTION: Cannot switch slot if empty handed
-    public int weaponSlot = 0;
+    [Tooltip("Weapon slot active")] // CAUTION: Cannot switch slot if empty handed or switch to unequipped/fist
+    public int currentWeaponSlot = 0;
     [Tooltip("Current weapon gameObject")]
     public GameObject currentWeapon;
     [Tooltip("Current weapon gameObject for 1st person camera")]
@@ -87,10 +89,14 @@ public class ShootingScript : MonoBehaviour
     public GameObject primaryWeapon;
     [Tooltip("Primary weapon gameObject for 1st person camera")]
     public GameObject primaryWeaponPOV;
+    [Tooltip("Primary weapon gameObject for back display")]
+    public GameObject primaryWeaponBackDisplay;
     [Tooltip("Secondary weapon gameObject")]
     public GameObject secondaryWeapon;
     [Tooltip("Secondary weapon gameObject for 1st person camera")]
     public GameObject secondaryWeaponPOV;
+    [Tooltip("Secondary weapon gameObject for back display")]
+    public GameObject secondaryWeaponBackDisplay;
     [Tooltip("Bullet gameObject for current equiped weapon (if it's a gun)")]
     public GameObject bullet;
 

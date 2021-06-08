@@ -24,7 +24,7 @@ public class LevelSceneManager : MonoBehaviour
     public GameObject fovSlider;
     
     [Header("Other References")]
-    public GameObject weapon;
+    public GameObject currentWeapon;
     public Camera cam;
     public ShootingScript gameRules;
     
@@ -53,7 +53,7 @@ public class LevelSceneManager : MonoBehaviour
     public void Pause(bool reloadingStatus)
     {
         if (reloadingStatus)
-            weapon.GetComponent<SoundScript>().reloadSound.Pause();
+            currentWeapon.GetComponent<SoundScript>().reloadSound.Pause();
         reloading = reloadingStatus;
         scoreText.enabled = false;
         ammoText.enabled = false;
@@ -94,7 +94,7 @@ public class LevelSceneManager : MonoBehaviour
             img_bulletsIcon.enabled = true;
             img_reloadRing.enabled = true;
             reloading = true;
-            weapon.GetComponent<SoundScript>().reloadSound.UnPause();
+            currentWeapon.GetComponent<SoundScript>().reloadSound.UnPause();
         }
         else
         {
@@ -107,8 +107,8 @@ public class LevelSceneManager : MonoBehaviour
     }
     public void End(float score)
     {
-        if (weapon.GetComponent<SoundScript>().reloadSound.isPlaying)
-            weapon.GetComponent<SoundScript>().reloadSound.Pause();
+        if (currentWeapon.GetComponent<SoundScript>().reloadSound.isPlaying)
+            currentWeapon.GetComponent<SoundScript>().reloadSound.Pause();
         scoreText.enabled = false;
         ammoText.enabled = false;
         timeText.enabled = false;
@@ -128,8 +128,8 @@ public class LevelSceneManager : MonoBehaviour
     }
     public void Perfect()
     {
-        if (weapon.GetComponent<SoundScript>().reloadSound.isPlaying)
-            weapon.GetComponent<SoundScript>().reloadSound.Pause();
+        if (currentWeapon.GetComponent<SoundScript>().reloadSound.isPlaying)
+            currentWeapon.GetComponent<SoundScript>().reloadSound.Pause();
         scoreText.enabled = false;
         ammoText.enabled = false;
         timeText.enabled = false;
@@ -152,5 +152,9 @@ public class LevelSceneManager : MonoBehaviour
     public void Restart()
     {
         SceneManager.LoadScene(currentScene);
+    }
+    public void UpdateWeaponInfo()
+    {
+        currentWeapon = gameRules.currentWeapon;
     }
 }
