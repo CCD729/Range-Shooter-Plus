@@ -1499,7 +1499,6 @@ MonoBehaviour:
   maxHorizontalRecoil: 1
   minHorizontalRecoil: 0.1
   verticalRecoil: 0.75
-  firePointLocalDrift: {x: 0, y: -0.003, z: 1.453}
   defaultFireMode: 0
   FireModes: 0000000002000000
 --- !u!1 &9028901368032754084
