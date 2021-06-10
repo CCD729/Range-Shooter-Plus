@@ -63,6 +63,8 @@ public class PickupHandler : MonoBehaviour
                                 shootingScript.secondaryWeaponBackDisplay = pickupObj;
                                 shootingScript.secondaryWeaponBackDisplay.SetActive(false);
                                 shootingScript.primaryWeaponBackDisplay.SetActive(true);
+                                shootingScript.primaryWeapon.SetActive(false);
+                                shootingScript.primaryWeaponPOV.SetActive(false);
                                 shootingScript.firePoint = instanceWeapon.transform.Find("FirePoint");
                                 shootingScript.UpdateWeaponInfo();
                             }
