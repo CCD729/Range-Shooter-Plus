@@ -36,6 +36,11 @@ public class PickupHandler : MonoBehaviour
                         //Destroy(pickupObj);
                         pickupObj.GetComponent<Rigidbody>().isKinematic = true;
                         pickupObj.GetComponent<BoxCollider>().isTrigger = true;
+                        pickupObj.transform.SetParent(shootingScript.weaponBackDisplayContainer.transform);
+                        pickupObj.transform.localPosition = Vector3.zero;
+                        pickupObj.transform.localRotation = Quaternion.Euler(Vector3.zero);
+                        pickupObj.transform.localScale = Vector3.one;
+                        pickupObj.transform.SetLayerAllChildren(12);
                         GameObject instanceWeapon = Instantiate(targetWeapon);
                         GameObject instanceWeaponPOV = Instantiate(targetWeaponPOV);
                         instanceWeapon.transform.SetParent(shootingScript.weaponContainer.transform);
@@ -50,10 +55,6 @@ public class PickupHandler : MonoBehaviour
                         {
                             if (!shootingScript.weaponFull)
                             {
-                                pickupObj.transform.SetParent(shootingScript.weaponBackDisplayContainer.transform);
-                                pickupObj.transform.localPosition = Vector3.zero;
-                                pickupObj.transform.localRotation = Quaternion.Euler(Vector3.zero);
-                                pickupObj.transform.localScale = Vector3.one;
                                 shootingScript.weaponFull = true;
                                 shootingScript.currentWeaponSlot = 1;
                                 shootingScript.secondaryWeapon = instanceWeapon.gameObject;
@@ -75,13 +76,11 @@ public class PickupHandler : MonoBehaviour
                                 Destroy(shootingScript.currentWeapon);
                                 Destroy(shootingScript.currentWeaponPOV);
 
-                                pickupObj.transform.SetParent(shootingScript.weaponBackDisplayContainer.transform);
-                                pickupObj.transform.localPosition = Vector3.zero;
-                                pickupObj.transform.localRotation = Quaternion.Euler(Vector3.zero);
-                                pickupObj.transform.localScale = Vector3.one;
                                 if (shootingScript.currentWeaponSlot == 0)
                                 {
                                     shootingScript.primaryWeaponBackDisplay.transform.SetParent(null);
+                                    shootingScript.primaryWeaponBackDisplay.transform.SetLayerAllChildren(13);
+                                    //shootingScript.primaryWeaponBackDisplay = null;       // is this the correct way to do this when dropping for nothing?
                                     DropPhysics(shootingScript.primaryWeaponBackDisplay);
                                     //Add new
                                     shootingScript.primaryWeapon = instanceWeapon.gameObject;
@@ -95,6 +94,7 @@ public class PickupHandler : MonoBehaviour
                                 else
                                 {
                                     shootingScript.secondaryWeaponBackDisplay.transform.SetParent(null);
+                                    shootingScript.secondaryWeaponBackDisplay.transform.SetLayerAllChildren(13);
                                     DropPhysics(shootingScript.secondaryWeaponBackDisplay);
                                     //Add new
                                     shootingScript.secondaryWeapon = instanceWeapon.gameObject;
@@ -109,10 +109,6 @@ public class PickupHandler : MonoBehaviour
                         }
                         else
                         {
-                            pickupObj.transform.SetParent(shootingScript.weaponBackDisplayContainer.transform);
-                            pickupObj.transform.localPosition = Vector3.zero;
-                            pickupObj.transform.localRotation = Quaternion.Euler(Vector3.zero);
-                            pickupObj.transform.localScale = Vector3.one;
                             shootingScript.weaponEquipped = true;
                             shootingScript.primaryWeapon = instanceWeapon.gameObject;
                             shootingScript.primaryWeaponPOV = instanceWeaponPOV.gameObject;
@@ -123,7 +119,7 @@ public class PickupHandler : MonoBehaviour
                             shootingScript.primaryWeaponBackDisplay = pickupObj;
                             shootingScript.primaryWeaponBackDisplay.SetActive(false);
                         }
-                        shootingScript.firePoint = instanceWeapon.transform.Find("FirePoint");
+                        shootingScript.firePoint = instanceWeapon.transform.GetChild(0).Find("FirePoint");
                         shootingScript.UpdateWeaponInfo();
                         levelSceneManager.UpdateWeaponInfo();
                     }
@@ -147,5 +143,19 @@ public class PickupHandler : MonoBehaviour
         dropObj.GetComponent<Rigidbody>().velocity = player.GetComponent<CharacterController>().velocity;
         dropObj.GetComponent<Rigidbody>().AddForce(shootingScript.playerCam.transform.forward * dropForce, ForceMode.Impulse);
         dropObj.GetComponent<Rigidbody>().AddForce(shootingScript.playerCam.transform.up * dropForceUpward, ForceMode.Impulse);
+    }
+       
+}
+
+public static class Tools
+{
+    //Inspired by "Change GameObject layer at run time won't apply to child" at Unity Answers 
+    public static void SetLayerAllChildren(this Transform obj, int layer)
+    {
+        obj.gameObject.layer = layer;
+        for (int i = 0, count = obj.childCount; i < count; i++)
+        {
+            obj.GetChild(i).SetLayerAllChildren(layer);
+        }
     }
 }

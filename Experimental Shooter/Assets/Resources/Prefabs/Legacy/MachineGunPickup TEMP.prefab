@@ -1378,7 +1378,7 @@ GameObject:
   - component: {fileID: 8240551578320606700}
   - component: {fileID: 3863594517563067424}
   m_Layer: 13
-  m_Name: MachineGunPickup
+  m_Name: MachineGunPickup TEMP
   m_TagString: Pickups
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1489,7 +1489,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   player: {fileID: 0}
-  pickUpRange: 0
+  pickUpRange: 3
   pickupHandler: {fileID: 0}
 --- !u!1 &9004087337175362096
 GameObject:
