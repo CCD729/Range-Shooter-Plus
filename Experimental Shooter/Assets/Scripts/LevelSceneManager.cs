@@ -8,7 +8,9 @@ public class LevelSceneManager : MonoBehaviour
 {
     [Header("Gameplay UI Elements")]
     public Text scoreText;
-    public Text ammoText;
+    public Text ammoBackupText;
+    public Text ammoCurrentMagText;
+    public Text weaponText;
     public Text timeText;
     public Text skillText;
     public Text EndScoreText;
@@ -56,7 +58,9 @@ public class LevelSceneManager : MonoBehaviour
             currentWeapon.GetComponent<SoundScript>().reloadSound.Pause();
         reloading = reloadingStatus;
         scoreText.enabled = false;
-        ammoText.enabled = false;
+        ammoBackupText.enabled = false;
+        ammoCurrentMagText.enabled = false;
+        weaponText.enabled = false;
         timeText.enabled = false;
         skillText.enabled = false;
         img_crossHair.enabled = false;
@@ -82,7 +86,9 @@ public class LevelSceneManager : MonoBehaviour
         {
             timeText.enabled = true;
         }
-        ammoText.enabled = true;
+        ammoBackupText.enabled = true;
+        ammoCurrentMagText.enabled = true;
+        weaponText.enabled = true;
         skillText.enabled = true;
         ContinueButton.SetActive(false);
         RestartButton.SetActive(false);
@@ -110,7 +116,9 @@ public class LevelSceneManager : MonoBehaviour
         if (currentWeapon.GetComponent<SoundScript>().reloadSound.isPlaying)
             currentWeapon.GetComponent<SoundScript>().reloadSound.Pause();
         scoreText.enabled = false;
-        ammoText.enabled = false;
+        ammoBackupText.enabled = false;
+        ammoCurrentMagText.enabled = false;
+        weaponText.enabled = false;
         timeText.enabled = false;
         skillText.enabled = false;
         img_crossHair.enabled = false;
@@ -131,7 +139,9 @@ public class LevelSceneManager : MonoBehaviour
         if (currentWeapon.GetComponent<SoundScript>().reloadSound.isPlaying)
             currentWeapon.GetComponent<SoundScript>().reloadSound.Pause();
         scoreText.enabled = false;
-        ammoText.enabled = false;
+        ammoBackupText.enabled = false;
+        ammoCurrentMagText.enabled = false;
+        weaponText.enabled = false;
         timeText.enabled = false;
         skillText.enabled = false;
         img_crossHair.enabled = false;

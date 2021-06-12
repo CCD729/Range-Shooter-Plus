@@ -79,26 +79,48 @@ public class ShootingScript : MonoBehaviour
     public bool weaponEquipped = false;
     [Tooltip("If both weapon slots equipped")]
     public bool weaponFull = false;
+    [Tooltip("If run out of ammunation")]
+    public bool currentNoAmmo = false;
     [Tooltip("Weapon slot active")] // CAUTION: Cannot switch slot if empty handed or switch to unequipped/fist
     public int currentWeaponSlot = 0;
     [Tooltip("Current weapon gameObject")]
     public GameObject currentWeapon;
     [Tooltip("Current weapon gameObject for 1st person camera")]
     public GameObject currentWeaponPOV;
+    /*[Tooltip("Current weapon current ammo in magazine")]
+    public int currentWeaponCurrentMagAmmo = 0;
+    [Tooltip("Current weapon total ammo left")]
+    public int currentWeaponTotalAmmo = 0;
+    [Tooltip("Current weapon maximum ammo storage")]
+    public int currentWeaponMaxAmmo = 0;*/
     [Tooltip("Primary weapon gameObject")]
     public GameObject primaryWeapon;
     [Tooltip("Primary weapon gameObject for 1st person camera")]
     public GameObject primaryWeaponPOV;
     [Tooltip("Primary weapon gameObject for back display")]
     public GameObject primaryWeaponBackDisplay;
+    /*[Tooltip("Primary weapon current ammo in magazine")]
+    public int primaryWeaponCurrentMagAmmo = 0;
+    [Tooltip("Primary weapon total ammo left")]
+    public int primaryWeaponTotalAmmo = 0;
+    [Tooltip("Primary weapon maximum ammo storage")]
+    public int primaryWeaponMaxAmmo = 0;*/
     [Tooltip("Secondary weapon gameObject")]
     public GameObject secondaryWeapon;
     [Tooltip("Secondary weapon gameObject for 1st person camera")]
     public GameObject secondaryWeaponPOV;
     [Tooltip("Secondary weapon gameObject for back display")]
     public GameObject secondaryWeaponBackDisplay;
-    [Tooltip("Bullet gameObject for current equiped weapon (if it's a gun)")]
-    public GameObject bullet;
+/*    [Tooltip("Secondary weapon current ammo in magazine")]
+    public int secondaryWeaponCurrentMagAmmo = 0;
+    [Tooltip("Secondary weapon total ammo left")]
+    public int secondaryWeaponTotalAmmo = 0;
+    [Tooltip("Secondary weapon maximum ammo storage")]
+    public int secondaryWeaponMaxAmmo = 0;*/
+    [Tooltip("Bullet gameObject for equiped weapon (if it's a gun)")]
+    public GameObject currentBullet;
+    public GameObject primaryBullet;
+    public GameObject secondaryBullet;
 
     //TODO: weapon details should come with weapon, consider making enums and dictionary or general weapon class
     /*public float firingRate = 10f;
@@ -116,7 +138,6 @@ public class ShootingScript : MonoBehaviour
 
     //Skill/Equipment (when there are more skills would put data in dictionary for better management)
     [SerializeField] private Skill skill;
-    [SerializeField] private KeyCode skillKey = KeyCode.G;
     [SerializeField] private float skillCoolDown = 5f;
     [SerializeField] private bool skillReady = true;
     [SerializeField] private float skillTime = 1f; //Skill Interval
@@ -128,12 +149,14 @@ public class ShootingScript : MonoBehaviour
     [SerializeField] private bool reloading = false;
     [SerializeField] private bool skillUsing = false;
 
-    [Header("Quick References")]
+    [Header("References")]
     public Transform firePoint;
     //public Transform detectPoint;
     public Transform projectileFirePoint;
     public Text scoreText;
-    public Text ammoText;
+    public Text ammoBackupText;
+    public Text ammoCurrentMagText;
+    public Text weaponText;
     public Text timeText;
     public Text skillText;
     [Tooltip("If there's weaponset selected")]
@@ -142,12 +165,18 @@ public class ShootingScript : MonoBehaviour
     [Header("Raycasting LayerMask")]
     public LayerMask layerMask;
 
+    [Header("Key Bindings")]
+    [SerializeField] private KeyCode skillKey = KeyCode.G;
+    [SerializeField] private KeyCode reloadKey = KeyCode.R;
+    [SerializeField] private KeyCode attackKey = KeyCode.Mouse0;
+    [SerializeField] private KeyCode aimKey = KeyCode.Mouse1;
+
     ///PRIVATE VARIABLES
     //Ray
     private Ray ray;
     private RaycastHit raycastHit;
-    //Current bullets left in mag
-    private int currentMag = 30;
+    /*//Current bullets left in mag
+    private int currentMag = 0;*/
     //Reload counter
     private float reloadingTime = 0f;
     //Skill counter
@@ -184,7 +213,8 @@ public class ShootingScript : MonoBehaviour
             skillTime = 1f;
             skillCoolDown = 5f;
         }
-        UpdateWeaponInfo();
+        if(weaponEquipped)
+            UpdateWeaponInfo();
     }
 
     void Update()
@@ -212,10 +242,10 @@ public class ShootingScript : MonoBehaviour
             this.Resume();
         }
         //Manual reload
-        if (Input.GetKeyDown(KeyCode.R) && weaponEquipped && !reloading && !skillUsing && !levelPaused && !levelEnded && currentMag < currentWeapon.GetComponent<WeaponInfo>().magSize)
+        if (Input.GetKeyDown(reloadKey) && weaponEquipped && !currentNoAmmo && !reloading && !skillUsing && !levelPaused && !levelEnded && currentWeapon.GetComponent<WeaponInfo>().currentMagAmmo < currentWeapon.GetComponent<WeaponInfo>().magSize)
         {
             reloading = true;
-            ammoText.text = "Reloading";
+            //ammoText.text = "Reloading";
             currentWeapon.GetComponent<animController>().ReloadAnimation();
             currentWeaponPOV.GetComponent<animController>().ReloadAnimation();
             img_reloadRing.GetComponent<ReloadRingAnim>().Play();
@@ -255,12 +285,15 @@ public class ShootingScript : MonoBehaviour
     {
         if (!levelPaused && !levelEnded)
         {
-            if (!reloading)
-                ammoText.text = currentMag.ToString() + "/30";
-            bulletEnough = currentMag > 0;
+            if (weaponEquipped)
+            {
+                if (!reloading)
+                    ammoCurrentMagText.text = currentWeapon.GetComponent<WeaponInfo>().currentMagAmmo.ToString();
+                bulletEnough = currentWeapon.GetComponent<WeaponInfo>().currentMagAmmo > 0;
+            }
             // Get a ray from the camera pointing forwards
             ray = new Ray(playerCam.transform.position, playerCam.transform.forward);
-            if (Input.GetMouseButton(0))
+            if (Input.GetKey(attackKey))
             {
                 //Do nothing if reloading or using a skill or there's no weapon equipped
                 if (weaponEquipped && !reloading && !skillUsing )
@@ -273,16 +306,23 @@ public class ShootingScript : MonoBehaviour
                     }
                     else
                     {
-                        reloading = true;
-                        ammoText.text = "Reloading";
-                        currentWeapon.GetComponent<animController>().ReloadAnimation();
-                        currentWeaponPOV.GetComponent<animController>().ReloadAnimation();
-                        img_reloadRing.GetComponent<ReloadRingAnim>().Play();
-                        img_crossHair.enabled = false;
-                        img_bulletIcon.enabled = true;
-                        img_reloadRing.enabled = true;
-                        this.ReloadSound();
-                        Debug.Log("Reloading...");
+                        if (!currentNoAmmo)
+                        {
+                            reloading = true;
+                            //ammoText.text = "Reloading";
+                            currentWeapon.GetComponent<animController>().ReloadAnimation();
+                            currentWeaponPOV.GetComponent<animController>().ReloadAnimation();
+                            img_reloadRing.GetComponent<ReloadRingAnim>().Play();
+                            img_crossHair.enabled = false;
+                            img_bulletIcon.enabled = true;
+                            img_reloadRing.enabled = true;
+                            this.ReloadSound();
+                            Debug.Log("Reloading...");
+                        }
+                        else
+                        {
+                            //TODO: no ammo sound/display
+                        }
                     }
                 }
             }
@@ -296,9 +336,21 @@ public class ShootingScript : MonoBehaviour
                 else
                 {
                     reloadingTime = 0f;
-                    currentMag = currentWeapon.GetComponent<WeaponInfo>().magSize;
+                    if(currentWeapon.GetComponent<WeaponInfo>().backupAmmo > currentWeapon.GetComponent<WeaponInfo>().magSize - currentWeapon.GetComponent<WeaponInfo>().currentMagAmmo)
+                    {
+                        currentWeapon.GetComponent<WeaponInfo>().backupAmmo -= currentWeapon.GetComponent<WeaponInfo>().magSize - currentWeapon.GetComponent<WeaponInfo>().currentMagAmmo;
+                        currentWeapon.GetComponent<WeaponInfo>().currentMagAmmo = currentWeapon.GetComponent<WeaponInfo>().magSize;
+                    }
+                    else
+                    {
+                        currentWeapon.GetComponent<WeaponInfo>().currentMagAmmo += currentWeapon.GetComponent<WeaponInfo>().backupAmmo;
+                        currentWeapon.GetComponent<WeaponInfo>().backupAmmo = 0;
+                        currentNoAmmo = true; //TODO: set false with all ammo refill methods
+                    }
+                    
                     reloading = false;
-                    ammoText.text = currentMag.ToString() + "/30";
+                    ammoCurrentMagText.text = currentWeapon.GetComponent<WeaponInfo>().currentMagAmmo.ToString();
+                    ammoBackupText.text = currentWeapon.GetComponent<WeaponInfo>().backupAmmo.ToString();
                     img_bulletIcon.enabled = false;
                     img_reloadRing.enabled = false;
                     img_crossHair.enabled = true;
@@ -360,7 +412,7 @@ public class ShootingScript : MonoBehaviour
         currentWeaponPOV.GetComponent<animController>().ShootAnimation();
         Vector3 targetPoint;
         fRatePassed = false;
-        currentMag--;
+        currentWeapon.GetComponent<WeaponInfo>().currentMagAmmo--;
         // Check if we hit anything
         bool hit = Physics.Raycast(ray, out raycastHit, Mathf.Infinity, layerMask);
         // If we did...Shoot to the hitposition
@@ -376,7 +428,7 @@ public class ShootingScript : MonoBehaviour
             var clone = Instantiate(bullet, firePoint.position, Quaternion.Euler(modifiedV));
             */
             targetPoint = playerCam.transform.forward * 1000;
-            var bulletObject = Instantiate(bullet, firePoint.position, firePoint.rotation);
+            var bulletObject = Instantiate(currentBullet, firePoint.position, firePoint.rotation);
             bulletObject.transform.LookAt(targetPoint);
         }
         else
@@ -393,7 +445,7 @@ public class ShootingScript : MonoBehaviour
             */
             targetPoint = raycastHit.point;
 
-            var bulletObject = Instantiate(bullet, firePoint.position, firePoint.rotation);
+            var bulletObject = Instantiate(currentBullet, firePoint.position, firePoint.rotation);
             bulletObject.transform.LookAt(targetPoint);
             bulletObject.GetComponent<BulletMovement>().hit = true;
             bulletObject.GetComponent<BulletMovement>().hitPoint = raycastHit.point;
@@ -519,6 +571,9 @@ public class ShootingScript : MonoBehaviour
     public void UpdateWeaponInfo()
     {
         WeaponInfo currentWeaponInfo = currentWeapon.GetComponent<WeaponInfo>();
+        weaponText.text = currentWeaponInfo.name;
+        ammoCurrentMagText.text = currentWeaponInfo.currentMagAmmo.ToString();
+        ammoBackupText.text = currentWeaponInfo.backupAmmo.ToString();
         //Set firing interval according to input firing rate
         fRateInt = 1f / currentWeaponInfo.firingRate;
         playerCam.GetComponent<CameraController>().UpdateWeaponInfo(currentWeaponInfo.maxHorizontalRecoil, currentWeaponInfo.minHorizontalRecoil, currentWeaponInfo.verticalRecoil);

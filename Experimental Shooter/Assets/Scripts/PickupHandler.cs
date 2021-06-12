@@ -58,15 +58,15 @@ public class PickupHandler : MonoBehaviour
                                 shootingScript.currentWeaponSlot = 1;
                                 shootingScript.secondaryWeapon = instanceWeapon.gameObject;
                                 shootingScript.secondaryWeaponPOV = instanceWeaponPOV.gameObject;
+                                shootingScript.secondaryBullet = weaponInfo.bulletObj;
                                 shootingScript.currentWeapon = shootingScript.secondaryWeapon;
                                 shootingScript.currentWeaponPOV = shootingScript.secondaryWeaponPOV;
+                                shootingScript.currentBullet = shootingScript.secondaryBullet;
                                 shootingScript.secondaryWeaponBackDisplay = pickupObj;
                                 shootingScript.secondaryWeaponBackDisplay.SetActive(false);
                                 shootingScript.primaryWeaponBackDisplay.SetActive(true);
                                 shootingScript.primaryWeapon.SetActive(false);
                                 shootingScript.primaryWeaponPOV.SetActive(false);
-                                shootingScript.firePoint = instanceWeapon.transform.Find("FirePoint");
-                                shootingScript.UpdateWeaponInfo();
                             }
                             else
                             {
@@ -86,8 +86,10 @@ public class PickupHandler : MonoBehaviour
                                     //Add new
                                     shootingScript.primaryWeapon = instanceWeapon.gameObject;
                                     shootingScript.primaryWeaponPOV = instanceWeaponPOV.gameObject;
+                                    shootingScript.primaryBullet = weaponInfo.bulletObj;
                                     shootingScript.currentWeapon = shootingScript.primaryWeapon;
                                     shootingScript.currentWeaponPOV = shootingScript.primaryWeaponPOV;
+                                    shootingScript.currentBullet = shootingScript.primaryBullet;
                                     shootingScript.primaryWeaponBackDisplay = pickupObj;
                                 }
                                 else
@@ -97,8 +99,10 @@ public class PickupHandler : MonoBehaviour
                                     //Add new
                                     shootingScript.secondaryWeapon = instanceWeapon.gameObject;
                                     shootingScript.secondaryWeaponPOV = instanceWeaponPOV.gameObject;
+                                    shootingScript.secondaryBullet = weaponInfo.bulletObj;
                                     shootingScript.currentWeapon = shootingScript.secondaryWeapon;
                                     shootingScript.currentWeaponPOV = shootingScript.secondaryWeaponPOV;
+                                    shootingScript.currentBullet = shootingScript.secondaryBullet;
                                     shootingScript.secondaryWeaponBackDisplay = pickupObj;
                                 }
                             }
@@ -112,8 +116,10 @@ public class PickupHandler : MonoBehaviour
                             shootingScript.weaponEquipped = true;
                             shootingScript.primaryWeapon = instanceWeapon.gameObject;
                             shootingScript.primaryWeaponPOV = instanceWeaponPOV.gameObject;
+                            shootingScript.primaryBullet = weaponInfo.bulletObj;
                             shootingScript.currentWeapon = shootingScript.primaryWeapon;
                             shootingScript.currentWeaponPOV = shootingScript.primaryWeaponPOV;
+                            shootingScript.currentBullet = shootingScript.primaryBullet;
                             shootingScript.primaryWeaponBackDisplay = pickupObj;
                             shootingScript.primaryWeaponBackDisplay.SetActive(false);
                         }

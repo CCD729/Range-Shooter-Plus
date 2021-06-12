@@ -878,7 +878,7 @@ GameObject:
   - component: {fileID: 137743438}
   - component: {fileID: 137743437}
   m_Layer: 5
-  m_Name: Text_TotalAmmo
+  m_Name: Text_BackupAmmo
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -3320,7 +3320,7 @@ Camera:
     y: 0
     width: 1
     height: 1
-  near clip plane: 0.3
+  near clip plane: 0.01
   far clip plane: 1000
   field of view: 90
   orthographic: 0
@@ -4860,7 +4860,7 @@ Camera:
     y: 0
     width: 1
     height: 1
-  near clip plane: 0.3
+  near clip plane: 0.01
   far clip plane: 1000
   field of view: 70
   orthographic: 0
@@ -4910,7 +4910,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   scoreText: {fileID: 753591718}
-  ammoText: {fileID: 137743437}
+  ammoBackupText: {fileID: 137743437}
+  ammoCurrentMagText: {fileID: 1943734118}
+  weaponText: {fileID: 2115398735}
   timeText: {fileID: 456132851}
   skillText: {fileID: 2032064348}
   EndScoreText: {fileID: 1517188924}
@@ -5134,6 +5136,7 @@ MonoBehaviour:
   timeLimit: -1
   weaponEquipped: 0
   weaponFull: 0
+  currentNoAmmo: 0
   currentWeaponSlot: 0
   currentWeapon: {fileID: 0}
   currentWeaponPOV: {fileID: 0}
@@ -5143,13 +5146,14 @@ MonoBehaviour:
   secondaryWeapon: {fileID: 0}
   secondaryWeaponPOV: {fileID: 0}
   secondaryWeaponBackDisplay: {fileID: 0}
-  bullet: {fileID: 8388713027766119384, guid: 2646ff4814621c64d9452ebec4911ab1, type: 3}
+  currentBullet: {fileID: 0}
+  primaryBullet: {fileID: 0}
+  secondaryBullet: {fileID: 0}
   skillObjs:
   - {fileID: 3148491177129973620, guid: 087171c79cef3cf4a8fde2ee00df8aca, type: 3}
   primarySkillObj: {fileID: 0}
   secondarySkillObj: {fileID: 0}
   skill: 0
-  skillKey: 103
   skillCoolDown: 1
   skillReady: 1
   skillTime: 1
@@ -5160,13 +5164,19 @@ MonoBehaviour:
   firePoint: {fileID: 0}
   projectileFirePoint: {fileID: 1950663013}
   scoreText: {fileID: 753591718}
-  ammoText: {fileID: 137743437}
+  ammoBackupText: {fileID: 137743437}
+  ammoCurrentMagText: {fileID: 1943734118}
+  weaponText: {fileID: 2115398735}
   timeText: {fileID: 456132851}
   skillText: {fileID: 2032064348}
   hasWeaponSet: 0
   layerMask:
     serializedVersion: 2
     m_Bits: 1024
+  skillKey: 103
+  reloadKey: 114
+  attackKey: 323
+  aimKey: 324
 --- !u!4 &1037682095
 Transform:
   m_ObjectHideFlags: 0
@@ -9801,6 +9811,7 @@ MonoBehaviour:
   timeLimit: 45
   weaponEquipped: 0
   weaponFull: 0
+  currentNoAmmo: 0
   currentWeaponSlot: 0
   currentWeapon: {fileID: 0}
   currentWeaponPOV: {fileID: 0}
@@ -9810,12 +9821,13 @@ MonoBehaviour:
   secondaryWeapon: {fileID: 0}
   secondaryWeaponPOV: {fileID: 0}
   secondaryWeaponBackDisplay: {fileID: 0}
-  bullet: {fileID: 415529222112994334, guid: e56a7135123658c41bfea89f6e452875, type: 3}
+  currentBullet: {fileID: 0}
+  primaryBullet: {fileID: 0}
+  secondaryBullet: {fileID: 0}
   skillObjs: []
   primarySkillObj: {fileID: 0}
   secondarySkillObj: {fileID: 0}
   skill: 0
-  skillKey: 103
   skillCoolDown: 5
   skillReady: 1
   skillTime: 1
@@ -9826,13 +9838,19 @@ MonoBehaviour:
   firePoint: {fileID: 0}
   projectileFirePoint: {fileID: 0}
   scoreText: {fileID: 753591718}
-  ammoText: {fileID: 137743437}
+  ammoBackupText: {fileID: 0}
+  ammoCurrentMagText: {fileID: 0}
+  weaponText: {fileID: 0}
   timeText: {fileID: 456132851}
   skillText: {fileID: 0}
   hasWeaponSet: 0
   layerMask:
     serializedVersion: 2
     m_Bits: 1024
+  skillKey: 103
+  reloadKey: 114
+  attackKey: 323
+  aimKey: 324
 --- !u!4 &1834183542 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 4693686601696463121, guid: 63f4d507bb2eefc4b81cf421603e1b36,
@@ -12016,7 +12034,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 0}
   m_AnchorMax: {x: 1, y: 0}
-  m_AnchoredPosition: {x: -37.56, y: 12}
+  m_AnchoredPosition: {x: -37.56006, y: 12}
   m_SizeDelta: {x: 1000, y: 120}
   m_Pivot: {x: 1, y: 0}
 --- !u!114 &2115398735

@@ -1485,7 +1485,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c7a43a1e42abab04da7b48b09daf33ac, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  name: Sub_Machine_Gun
+  name: Submachine gun
   weaponID: 1
   damage: 25
   weaponType: 0
@@ -1495,12 +1495,17 @@ MonoBehaviour:
   attackBackSwing: 0
   firingRate: 20
   magSize: 30
+  currentMagAmmo: 30
+  backupAmmo: 120
+  maxAmmo: 240
   reloadTime: 1.5
   maxHorizontalRecoil: 1
   minHorizontalRecoil: 0.1
   verticalRecoil: 0.75
   defaultFireMode: 0
   FireModes: 0000000002000000
+  bulletObj: {fileID: 8388713027766119384, guid: 2646ff4814621c64d9452ebec4911ab1,
+    type: 3}
 --- !u!1 &9028901368032754084
 GameObject:
   m_ObjectHideFlags: 0
