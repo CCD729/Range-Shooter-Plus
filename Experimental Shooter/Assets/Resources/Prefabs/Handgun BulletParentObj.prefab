@@ -24,7 +24,7 @@ GameObject:
   - component: {fileID: 6744940787813217066}
   - component: {fileID: 4044550730239001171}
   m_Layer: 0
-  m_Name: BulletParentObj
+  m_Name: Handgun BulletParentObj
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -59,7 +59,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   timeoutLifetime: 2
   destroySelfAfterTimeout: 1
-  destroySelfOnCollision: 1
   speed: 400
   hit: 0
   hitPoint: {x: 0, y: 0, z: 0}
@@ -73,22 +72,12 @@ PrefabInstance:
     - target: {fileID: 415529222112994334, guid: e56a7135123658c41bfea89f6e452875,
         type: 3}
       propertyPath: m_Name
-      value: Bullet
+      value: Handgun Bullet
       objectReference: {fileID: 0}
     - target: {fileID: 2135354732523644078, guid: e56a7135123658c41bfea89f6e452875,
         type: 3}
       propertyPath: m_RootOrder
       value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2135354732523644078, guid: e56a7135123658c41bfea89f6e452875,
-        type: 3}
-      propertyPath: m_LocalScale.y
-      value: 0.40000004
-      objectReference: {fileID: 0}
-    - target: {fileID: 2135354732523644078, guid: e56a7135123658c41bfea89f6e452875,
-        type: 3}
-      propertyPath: m_LocalScale.z
-      value: 0.019999998
       objectReference: {fileID: 0}
     - target: {fileID: 2135354732523644078, guid: e56a7135123658c41bfea89f6e452875,
         type: 3}

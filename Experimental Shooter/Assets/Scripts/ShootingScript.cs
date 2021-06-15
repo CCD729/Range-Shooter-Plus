@@ -326,10 +326,10 @@ public class ShootingScript : MonoBehaviour
                     }
                 }
             }
-            //Reload logic
+            //Reload logic //TODO: Add Tactical Reload variants
             if (reloading)
             {
-                if (reloadingTime < currentWeapon.GetComponent<WeaponInfo>().reloadTime)
+                if (reloadingTime < currentWeapon.GetComponent<WeaponInfo>().tacticalReloadTime)
                 {
                     reloadingTime += Time.fixedDeltaTime;
                 }
