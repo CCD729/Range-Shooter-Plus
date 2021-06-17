@@ -788,7 +788,8 @@ MonoBehaviour:
   currentMagAmmo: 30
   backupAmmo: 120
   maxAmmo: 240
-  reloadTime: 1.5
+  tacticalReloadTime: 2
+  emptyReloadTime: 2.5
   maxHorizontalRecoil: 1
   minHorizontalRecoil: 0.1
   verticalRecoil: 0.75
