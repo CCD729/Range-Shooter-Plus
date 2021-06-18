@@ -29,7 +29,6 @@ public class ReloadRingAnim : MonoBehaviour
                 Ring.fillAmount = Mathf.Lerp(0f, 1f, t);
             }
         }
-        
     }
 
     public void Play(float newReloadTime)
