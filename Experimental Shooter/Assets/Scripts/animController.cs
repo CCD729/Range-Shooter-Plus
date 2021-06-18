@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class animController : MonoBehaviour
 {
-    private Animator animator;
+    public Animator animator;
 
     void Start()
     {
@@ -15,9 +15,9 @@ public class animController : MonoBehaviour
     {
         animator.Play("Reload", -1, 0f);
     }
-    public void SkillAnimation()
+    public void SkillPutdownAnimation()
     {
-        animator.Play("SkillPause", -1, 0f);
+        animator.Play("SkillPutdown", -1, 0f);
     }
     public void ShootAnimation()
     {

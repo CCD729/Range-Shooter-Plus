@@ -13,7 +13,7 @@ public class ReloadRingAnim : MonoBehaviour
 
     private bool gamePlaying = true;
 
-    void Update()
+    void FixedUpdate()
     {
         if (gamePlaying)
         {
@@ -25,17 +25,18 @@ public class ReloadRingAnim : MonoBehaviour
             }
             if (play)
             {
-                t += Time.deltaTime / reloadTime;
+                t += Time.fixedDeltaTime / reloadTime;
                 Ring.fillAmount = Mathf.Lerp(0f, 1f, t);
             }
         }
         
     }
 
-    public void Play()
+    public void Play(float newReloadTime)
     {
         t = 0f;
         Ring.fillAmount = 0;
+        reloadTime = newReloadTime;
         play = true;
     }
     public void Pause()

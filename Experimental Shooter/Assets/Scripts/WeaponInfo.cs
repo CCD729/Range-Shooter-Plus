@@ -40,6 +40,8 @@ public class WeaponInfo : MonoBehaviour
     public int maxAmmo = 240;
     public float tacticalReloadTime = 1.5f;
     public float emptyReloadTime = 1.5f;
+    public float ammoFillTime = 1.5f;
+    public bool requireActionPull = true;
     public float maxHorizontalRecoil = 0.5f;
     public float minHorizontalRecoil = 0f;
     public float verticalRecoil = 0.5f;

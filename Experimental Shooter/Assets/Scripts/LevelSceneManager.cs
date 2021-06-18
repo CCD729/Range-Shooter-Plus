@@ -30,7 +30,6 @@ public class LevelSceneManager : MonoBehaviour
     public Camera cam;
     public ShootingScript gameRules;
     
-    
     List<string> endList;
     private bool reloading = false;
     private string currentScene;
@@ -54,8 +53,9 @@ public class LevelSceneManager : MonoBehaviour
 
     public void Pause(bool reloadingStatus)
     {
-        if (reloadingStatus)
-            currentWeapon.GetComponent<SoundScript>().reloadSound.Pause();
+        currentWeapon.GetComponent<SoundScript>().weaponManipulationSound.Pause();
+        currentWeapon.GetComponent<SoundScript>().gunShootSound.Pause();
+        currentWeapon.GetComponent<SoundScript>().etcSound.Pause();
         reloading = reloadingStatus;
         scoreText.enabled = false;
         ammoBackupText.enabled = false;
@@ -100,12 +100,14 @@ public class LevelSceneManager : MonoBehaviour
             img_bulletsIcon.enabled = true;
             img_reloadRing.enabled = true;
             reloading = true;
-            currentWeapon.GetComponent<SoundScript>().reloadSound.UnPause();
         }
         else
         {
             img_crossHair.enabled = true;
         }
+        currentWeapon.GetComponent<SoundScript>().weaponManipulationSound.UnPause();
+        currentWeapon.GetComponent<SoundScript>().gunShootSound.UnPause();
+        currentWeapon.GetComponent<SoundScript>().etcSound.UnPause();
         img_reloadRing.GetComponent<ReloadRingAnim>().Resume();
         cam.GetComponent<CameraController>().ResumeCam();
         Cursor.lockState = CursorLockMode.Locked;
@@ -113,8 +115,9 @@ public class LevelSceneManager : MonoBehaviour
     }
     public void End(float score)
     {
-        if (currentWeapon.GetComponent<SoundScript>().reloadSound.isPlaying)
-            currentWeapon.GetComponent<SoundScript>().reloadSound.Pause();
+        currentWeapon.GetComponent<SoundScript>().weaponManipulationSound.Pause();
+        currentWeapon.GetComponent<SoundScript>().gunShootSound.Pause();
+        currentWeapon.GetComponent<SoundScript>().etcSound.Pause();
         scoreText.enabled = false;
         ammoBackupText.enabled = false;
         ammoCurrentMagText.enabled = false;
@@ -136,8 +139,9 @@ public class LevelSceneManager : MonoBehaviour
     }
     public void Perfect()
     {
-        if (currentWeapon.GetComponent<SoundScript>().reloadSound.isPlaying)
-            currentWeapon.GetComponent<SoundScript>().reloadSound.Pause();
+        currentWeapon.GetComponent<SoundScript>().weaponManipulationSound.Pause();
+        currentWeapon.GetComponent<SoundScript>().gunShootSound.Pause();
+        currentWeapon.GetComponent<SoundScript>().etcSound.Pause();
         scoreText.enabled = false;
         ammoBackupText.enabled = false;
         ammoCurrentMagText.enabled = false;

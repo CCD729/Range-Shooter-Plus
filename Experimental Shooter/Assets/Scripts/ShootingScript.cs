@@ -147,6 +147,8 @@ public class ShootingScript : MonoBehaviour
     [SerializeField] private bool levelEnded = false;
     [SerializeField] private bool levelPaused = false;
     [SerializeField] private bool reloading = false;
+    [SerializeField] private bool tacticalReloading = false;
+    [SerializeField] private bool emptyReloading = false;
     [SerializeField] private bool skillUsing = false;
 
     [Header("References")]
@@ -246,13 +248,27 @@ public class ShootingScript : MonoBehaviour
         {
             reloading = true;
             //ammoText.text = "Reloading";
-            currentWeapon.GetComponent<animController>().ReloadAnimation();
-            currentWeaponPOV.GetComponent<animController>().ReloadAnimation();
-            img_reloadRing.GetComponent<ReloadRingAnim>().Play();
+            if(currentWeapon.GetComponent<WeaponInfo>().currentMagAmmo == 0)
+            {
+                emptyReloading = true;
+                //currentWeapon.GetComponent<animController>().ReloadAnimation();
+                //currentWeaponPOV.GetComponent<animController>().ReloadAnimation();
+                currentWeapon.GetComponent<animController>().animator.SetBool("isEmptyReloading", true);
+                img_reloadRing.GetComponent<ReloadRingAnim>().Play(currentWeapon.GetComponent<WeaponInfo>().emptyReloadTime);
+                this.weaponEmptyReloadSound();
+            }
+            else
+            {
+                tacticalReloading = true;
+                //currentWeapon.GetComponent<animController>().ReloadAnimation();
+                //currentWeaponPOV.GetComponent<animController>().ReloadAnimation();
+                currentWeapon.GetComponent<animController>().animator.SetBool("isTacticalReloading", true);
+                img_reloadRing.GetComponent<ReloadRingAnim>().Play(currentWeapon.GetComponent<WeaponInfo>().tacticalReloadTime);
+                this.weaponTacticalReloadSound();
+            }
             img_bulletIcon.enabled = true;
             img_reloadRing.enabled = true;
             img_crossHair.enabled = false;
-            this.ReloadSound();
             Debug.Log("Reloading...");
         }
 
@@ -275,8 +291,9 @@ public class ShootingScript : MonoBehaviour
             skillReady = false;
             skillUsing = true;
             skillText.text = "Skill Active";
-            currentWeapon.GetComponent<animController>().SkillAnimation();
-            currentWeaponPOV.GetComponent<animController>().SkillAnimation();
+            //TODO: In future split animation by putdown/pickup for other skill durations
+            currentWeapon.GetComponent<animController>().SkillPutdownAnimation();
+            currentWeaponPOV.GetComponent<animController>().SkillPutdownAnimation();
             StartCoroutine(ThrowImpactGrenade(0.5f));
             Debug.Log("Skill Active...");
         }
@@ -293,7 +310,7 @@ public class ShootingScript : MonoBehaviour
             }
             // Get a ray from the camera pointing forwards
             ray = new Ray(playerCam.transform.position, playerCam.transform.forward);
-            if (Input.GetKey(attackKey))
+            if (Input.GetKey(attackKey) && fRatePassed)
             {
                 //Do nothing if reloading or using a skill or there's no weapon equipped
                 if (weaponEquipped && !reloading && !skillUsing )
@@ -301,27 +318,29 @@ public class ShootingScript : MonoBehaviour
                     //Start shooting if mag has bullets
                     if (bulletEnough)
                     {
-                        if (fRatePassed)
                             Shoot();
                     }
                     else
                     {
-                        if (!currentNoAmmo)
+                        if (!currentNoAmmo) //Empty reload
                         {
                             reloading = true;
+                            emptyReloading = true;
                             //ammoText.text = "Reloading";
-                            currentWeapon.GetComponent<animController>().ReloadAnimation();
-                            currentWeaponPOV.GetComponent<animController>().ReloadAnimation();
-                            img_reloadRing.GetComponent<ReloadRingAnim>().Play();
+                            //currentWeapon.GetComponent<animController>().ReloadAnimation();
+                            //currentWeaponPOV.GetComponent<animController>().ReloadAnimation();
+                            img_reloadRing.GetComponent<ReloadRingAnim>().Play(currentWeapon.GetComponent<WeaponInfo>().emptyReloadTime);
+                            this.weaponEmptyReloadSound();
                             img_crossHair.enabled = false;
                             img_bulletIcon.enabled = true;
-                            img_reloadRing.enabled = true;
-                            this.ReloadSound();
+                            img_reloadRing.enabled = true; //WIP: rework reload ring to fit different reload times
                             Debug.Log("Reloading...");
                         }
                         else
                         {
-                            //TODO: no ammo sound/display
+                            //TODO: dry ammo sound/display
+                            fRatePassed = false;
+                            this.weaponDryShootingSound();
                         }
                     }
                 }
@@ -329,13 +348,12 @@ public class ShootingScript : MonoBehaviour
             //Reload logic //TODO: Add Tactical Reload variants
             if (reloading)
             {
-                if (reloadingTime < currentWeapon.GetComponent<WeaponInfo>().tacticalReloadTime)
+                if (reloadingTime < currentWeapon.GetComponent<WeaponInfo>().ammoFillTime)
                 {
                     reloadingTime += Time.fixedDeltaTime;
                 }
                 else
                 {
-                    reloadingTime = 0f;
                     if(currentWeapon.GetComponent<WeaponInfo>().backupAmmo > currentWeapon.GetComponent<WeaponInfo>().magSize - currentWeapon.GetComponent<WeaponInfo>().currentMagAmmo)
                     {
                         currentWeapon.GetComponent<WeaponInfo>().backupAmmo -= currentWeapon.GetComponent<WeaponInfo>().magSize - currentWeapon.GetComponent<WeaponInfo>().currentMagAmmo;
@@ -347,15 +365,28 @@ public class ShootingScript : MonoBehaviour
                         currentWeapon.GetComponent<WeaponInfo>().backupAmmo = 0;
                         currentNoAmmo = true; //TODO: set false with all ammo refill methods
                     }
-                    
-                    reloading = false;
                     ammoCurrentMagText.text = currentWeapon.GetComponent<WeaponInfo>().currentMagAmmo.ToString();
                     ammoBackupText.text = currentWeapon.GetComponent<WeaponInfo>().backupAmmo.ToString();
-                    img_bulletIcon.enabled = false;
-                    img_reloadRing.enabled = false;
-                    img_crossHair.enabled = true;
-                    img_reloadRing.GetComponent<ReloadRingAnim>().Complete();
-                    Debug.Log("Reloaded");
+                    if (emptyReloading)
+                        currentWeapon.GetComponent<WeaponInfo>().requireActionPull = true;
+                    if(emptyReloading &&  (reloadingTime < currentWeapon.GetComponent<WeaponInfo>().emptyReloadTime) ||
+                       tacticalReloading && (reloadingTime < currentWeapon.GetComponent<WeaponInfo>().tacticalReloadTime))
+                    {
+                        reloadingTime += Time.fixedDeltaTime;
+                    }
+                    else
+                    {
+                        reloadingTime = 0f;
+                        reloading = false;
+                        emptyReloading = false;
+                        tacticalReloading = false;
+                        img_bulletIcon.enabled = false;
+                        img_reloadRing.enabled = false;
+                        img_crossHair.enabled = true;
+                        img_reloadRing.GetComponent<ReloadRingAnim>().Complete();
+                        currentWeapon.GetComponent<WeaponInfo>().requireActionPull = false;
+                        Debug.Log("Reloaded");
+                    }
                 }
             }
             //Skill duration logic
@@ -408,8 +439,10 @@ public class ShootingScript : MonoBehaviour
 
     void Shoot()
     {
-        currentWeapon.GetComponent<animController>().ShootAnimation();
-        currentWeaponPOV.GetComponent<animController>().ShootAnimation();
+        //currentWeapon.GetComponent<animController>().ShootAnimation();
+        //currentWeaponPOV.GetComponent<animController>().ShootAnimation();
+        currentWeapon.GetComponent<animController>().animator.SetBool("isShooting", true);
+        currentWeaponPOV.GetComponent<animController>().animator.SetBool("isShooting", true);
         Vector3 targetPoint;
         fRatePassed = false;
         currentWeapon.GetComponent<WeaponInfo>().currentMagAmmo--;
@@ -495,8 +528,8 @@ public class ShootingScript : MonoBehaviour
                 target.GetComponent<RailTargetBehavior>().Hit(raycastHit.point, playerCam.transform.forward);
             }
         }
-        this.Recoil();
-        this.ShootingSound();
+        this.weaponRecoil();
+        this.weaponShootingSound();
     }
 
     public void hitByProjectile(GameObject target)
@@ -556,17 +589,33 @@ public class ShootingScript : MonoBehaviour
         levelEnded = true;
         sceneManager.GetComponent<LevelSceneManager>().Perfect();
     }
-    public void Recoil()
+    public void weaponRecoil()
     {
         playerCam.GetComponent<CameraController>().Recoil();
     }
-    public void ShootingSound()
+    public void weaponShootingSound()
     {
         currentWeapon.GetComponent<SoundScript>().ShootSound();
     }
-    public void ReloadSound()
+    public void weaponDryShootingSound()
     {
-       currentWeapon.GetComponent<SoundScript>().ReloadSound();
+        currentWeapon.GetComponent<SoundScript>().dryShootSound();
+    }
+    public void weaponTacticalReloadSound()
+    {
+       currentWeapon.GetComponent<SoundScript>().tacticalReloadSound();
+    }
+    public void weaponEmptyReloadSound()
+    {
+        currentWeapon.GetComponent<SoundScript>().emptyReloadSound();
+    }
+    public void weaponPickupSound()
+    {
+        currentWeapon.GetComponent<SoundScript>().emptyReloadSound();
+    }
+    public void weaponPutdownSound()
+    {
+        currentWeapon.GetComponent<SoundScript>().emptyReloadSound();
     }
     public void UpdateWeaponInfo()
     {
