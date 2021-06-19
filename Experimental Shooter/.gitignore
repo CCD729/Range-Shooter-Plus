@@ -58,3 +58,6 @@ sysinfo.txt
 # Crashlytics generated file
 crashlytics-build.properties
 
+# Sound editing cache file
+*.sfk
+*.sfk.meta
