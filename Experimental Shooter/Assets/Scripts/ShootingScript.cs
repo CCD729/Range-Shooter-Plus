@@ -122,6 +122,10 @@ public class ShootingScript : MonoBehaviour
     public GameObject primaryBullet;
     public GameObject secondaryBullet;
 
+    [Header("WIP Content")]
+    public float weaponPutDownTime = 0.3f;
+    public float weaponPickupTime = 0.5f;
+
     //TODO: weapon details should come with weapon, consider making enums and dictionary or general weapon class
     /*public float firingRate = 10f;
     public bool autoTrigger;
@@ -233,16 +237,93 @@ public class ShootingScript : MonoBehaviour
         {
             EscPressed = false;
         }
-        if (EscPressed && levelPaused == false && !levelEnded)
+        if (EscPressed && !levelPaused && !levelEnded)
         {
             EscPressed = false;
             this.Pause();
         }
-        else if (EscPressed && levelPaused == true && !levelEnded)
+        else if (EscPressed && levelPaused && !levelEnded)
         {
             EscPressed = false;
             this.Resume();
         }
+
+        if (weaponEquipped)
+        {
+            if (!reloading)
+                ammoCurrentMagText.text = currentWeapon.GetComponent<WeaponInfo>().currentMagAmmo.ToString();
+            bulletEnough = currentWeapon.GetComponent<WeaponInfo>().currentMagAmmo > 0;
+        }
+
+        //Shooting logic
+        if (!levelPaused && !levelEnded)
+        {
+            // Get a ray from the camera pointing forwards
+            ray = new Ray(playerCam.transform.position, playerCam.transform.forward);
+            if (weaponEquipped)
+            {
+                if (!currentWeapon.GetComponent<WeaponInfo>().melee)
+                {
+                    if (reloading)
+                    {
+                        currentWeapon.GetComponent<animController>().animator.SetBool("isReloading", false);
+                        currentWeaponPOV.GetComponent<animController>().animator.SetBool("isReloading", false);
+                    }
+                    else if (fRatePassed && !skillUsing)
+                    {
+                        if( (Input.GetKey(attackKey) && currentWeapon.GetComponent<WeaponInfo>().fireMode == FireSelect.auto) ||
+                            (Input.GetKeyDown(attackKey) && currentWeapon.GetComponent<WeaponInfo>().fireMode != FireSelect.auto))
+                        {
+                            if (!bulletEnough)
+                            {
+                                if (!currentNoAmmo) //Empty reload
+                                {
+                                    reloading = true;
+                                    emptyReloading = true;
+                                    //ammoText.text = "Reloading";
+                                    //currentWeapon.GetComponent<animController>().ReloadAnimation();
+                                    //currentWeaponPOV.GetComponent<animController>().ReloadAnimation();
+                                    currentWeapon.GetComponent<animController>().animator.SetBool("isReloading", true);
+                                    currentWeaponPOV.GetComponent<animController>().animator.SetBool("isReloading", true);
+                                    img_reloadRing.GetComponent<ReloadRingAnim>().Play(currentWeapon.GetComponent<WeaponInfo>().emptyReloadTime);
+                                    this.weaponEmptyReloadSound();
+                                    img_crossHair.enabled = false;
+                                    img_bulletIcon.enabled = true;
+                                    img_reloadRing.enabled = true; //WIP: rework reload ring to fit different reload times
+                                    Debug.Log("Reloading...");
+                                }
+                                else //No backup ammo
+                                {
+                                    //TODO: dry ammo sound/display
+                                    fRatePassed = false;
+                                    this.weaponDryShootingSound();
+                                }
+                            }
+                            else
+                            {
+                                //Shoot depend on fireselect
+                                if (currentWeapon.GetComponent<WeaponInfo>().fireMode == FireSelect.burst) { }
+                                    //TODO: Coroutine for different number of Shoot() and recalculate fRatepassed with burstRateInt (TBD)
+                                else
+                                    Shoot();
+                            }
+                        }
+                        else
+                        {
+                            currentWeapon.GetComponent<animController>().animator.SetBool("isShooting", false);
+                            currentWeaponPOV.GetComponent<animController>().animator.SetBool("isShooting", false);
+                            currentWeapon.GetComponent<animController>().animator.SetBool("isShootingLastRound", false);
+                            currentWeaponPOV.GetComponent<animController>().animator.SetBool("isShootingLastRound", false);
+                        }
+                    }
+                }
+                else
+                {
+                    //TODO: Melee weapon logic
+                }
+            }
+        }
+
         //Manual reload
         if (Input.GetKeyDown(reloadKey) && weaponEquipped && !currentNoAmmo && !reloading && !skillUsing && !levelPaused && !levelEnded && currentWeapon.GetComponent<WeaponInfo>().currentMagAmmo < currentWeapon.GetComponent<WeaponInfo>().magSize)
         {
@@ -253,7 +334,8 @@ public class ShootingScript : MonoBehaviour
                 emptyReloading = true;
                 //currentWeapon.GetComponent<animController>().ReloadAnimation();
                 //currentWeaponPOV.GetComponent<animController>().ReloadAnimation();
-                currentWeapon.GetComponent<animController>().animator.SetBool("isEmptyReloading", true);
+                currentWeapon.GetComponent<animController>().animator.SetBool("isReloading", true);
+                currentWeaponPOV.GetComponent<animController>().animator.SetBool("isReloading", true);
                 img_reloadRing.GetComponent<ReloadRingAnim>().Play(currentWeapon.GetComponent<WeaponInfo>().emptyReloadTime);
                 this.weaponEmptyReloadSound();
             }
@@ -262,7 +344,8 @@ public class ShootingScript : MonoBehaviour
                 tacticalReloading = true;
                 //currentWeapon.GetComponent<animController>().ReloadAnimation();
                 //currentWeaponPOV.GetComponent<animController>().ReloadAnimation();
-                currentWeapon.GetComponent<animController>().animator.SetBool("isTacticalReloading", true);
+                currentWeapon.GetComponent<animController>().animator.SetBool("isReloading", true);
+                currentWeaponPOV.GetComponent<animController>().animator.SetBool("isReloading", true);
                 img_reloadRing.GetComponent<ReloadRingAnim>().Play(currentWeapon.GetComponent<WeaponInfo>().tacticalReloadTime);
                 this.weaponTacticalReloadSound();
             }
@@ -292,9 +375,11 @@ public class ShootingScript : MonoBehaviour
             skillUsing = true;
             skillText.text = "Skill Active";
             //TODO: In future split animation by putdown/pickup for other skill durations
-            currentWeapon.GetComponent<animController>().SkillPutdownAnimation();
-            currentWeaponPOV.GetComponent<animController>().SkillPutdownAnimation();
-            StartCoroutine(ThrowImpactGrenade(0.5f));
+            //currentWeapon.GetComponent<animController>().SkillPutdownAnimation();
+            //currentWeaponPOV.GetComponent<animController>().SkillPutdownAnimation();
+            currentWeapon.GetComponent<animController>().animator.SetBool("isPuttingdown", true);
+            currentWeaponPOV.GetComponent<animController>().animator.SetBool("isPuttingdown", true);
+            StartCoroutine(ThrowImpactGrenade(skillTime));
             Debug.Log("Skill Active...");
         }
     }
@@ -302,49 +387,6 @@ public class ShootingScript : MonoBehaviour
     {
         if (!levelPaused && !levelEnded)
         {
-            if (weaponEquipped)
-            {
-                if (!reloading)
-                    ammoCurrentMagText.text = currentWeapon.GetComponent<WeaponInfo>().currentMagAmmo.ToString();
-                bulletEnough = currentWeapon.GetComponent<WeaponInfo>().currentMagAmmo > 0;
-            }
-            // Get a ray from the camera pointing forwards
-            ray = new Ray(playerCam.transform.position, playerCam.transform.forward);
-            if (Input.GetKey(attackKey) && fRatePassed)
-            {
-                //Do nothing if reloading or using a skill or there's no weapon equipped
-                if (weaponEquipped && !reloading && !skillUsing )
-                {
-                    //Start shooting if mag has bullets
-                    if (bulletEnough)
-                    {
-                            Shoot();
-                    }
-                    else
-                    {
-                        if (!currentNoAmmo) //Empty reload
-                        {
-                            reloading = true;
-                            emptyReloading = true;
-                            //ammoText.text = "Reloading";
-                            //currentWeapon.GetComponent<animController>().ReloadAnimation();
-                            //currentWeaponPOV.GetComponent<animController>().ReloadAnimation();
-                            img_reloadRing.GetComponent<ReloadRingAnim>().Play(currentWeapon.GetComponent<WeaponInfo>().emptyReloadTime);
-                            this.weaponEmptyReloadSound();
-                            img_crossHair.enabled = false;
-                            img_bulletIcon.enabled = true;
-                            img_reloadRing.enabled = true; //WIP: rework reload ring to fit different reload times
-                            Debug.Log("Reloading...");
-                        }
-                        else
-                        {
-                            //TODO: dry ammo sound/display
-                            fRatePassed = false;
-                            this.weaponDryShootingSound();
-                        }
-                    }
-                }
-            }
             //Reload logic //TODO: Add Tactical Reload variants
             if (reloading)
             {
@@ -393,7 +435,7 @@ public class ShootingScript : MonoBehaviour
             if (skillUsing)
             {
 
-                if (skillUsingTime < skillTime)
+                if (skillUsingTime < skillTime+weaponPutDownTime+weaponPickupTime)
                 {
                     skillUsingTime += Time.fixedDeltaTime;
                 }
@@ -439,10 +481,18 @@ public class ShootingScript : MonoBehaviour
 
     void Shoot()
     {
-        //currentWeapon.GetComponent<animController>().ShootAnimation();
-        //currentWeaponPOV.GetComponent<animController>().ShootAnimation();
-        currentWeapon.GetComponent<animController>().animator.SetBool("isShooting", true);
-        currentWeaponPOV.GetComponent<animController>().animator.SetBool("isShooting", true);
+        if (currentWeapon.GetComponent<WeaponInfo>().currentMagAmmo == 1)
+        {
+            currentWeapon.GetComponent<animController>().animator.SetBool("isShootingLastRound", true);
+            currentWeaponPOV.GetComponent<animController>().animator.SetBool("isShootingLastRound", true);
+        }
+        else
+        {
+            currentWeapon.GetComponent<animController>().animator.SetBool("isShooting", true);
+            currentWeaponPOV.GetComponent<animController>().animator.SetBool("isShooting", true);
+            currentWeapon.GetComponent<animController>().ShootAnimation(); // NEED FIX on unexpected animation holding problem: This should not be here
+            currentWeaponPOV.GetComponent<animController>().ShootAnimation();
+        }
         Vector3 targetPoint;
         fRatePassed = false;
         currentWeapon.GetComponent<WeaponInfo>().currentMagAmmo--;
@@ -629,14 +679,21 @@ public class ShootingScript : MonoBehaviour
     }
     IEnumerator ThrowImpactGrenade(float time)
     {
-        yield return new WaitForSeconds(time);
+        yield return new WaitForSeconds(weaponPutDownTime);
+        currentWeapon.GetComponent<animController>().animator.SetBool("isPuttingdown", false);
+        currentWeaponPOV.GetComponent<animController>().animator.SetBool("isPuttingdown", false);
         var impactGrenadeObject = Instantiate(skillObjs[0], projectileFirePoint.transform.position, Quaternion.Euler(playerCam.transform.forward));
         impactGrenadeObject.transform.LookAt(playerCam.transform.forward * 1000);
-        //Modify the throwing angle so the grenade is a bit higher than horizontal
+        // TODO: Modify the throwing angle so the grenade is a bit higher than horizontal
         Vector3 currentRotation = impactGrenadeObject.transform.eulerAngles;
         Vector3 modifiedRotation = currentRotation + new Vector3(0f, 0f, 0f);
         impactGrenadeObject.transform.localRotation = Quaternion.Euler(modifiedRotation);
-
+        yield return new WaitForSeconds(time);
+        currentWeapon.GetComponent<animController>().animator.SetBool("isPickingup", true);
+        currentWeaponPOV.GetComponent<animController>().animator.SetBool("isPickingup", true);
+        yield return new WaitForSeconds(weaponPickupTime);
+        currentWeapon.GetComponent<animController>().animator.SetBool("isPickingup", false);
+        currentWeaponPOV.GetComponent<animController>().animator.SetBool("isPickingup", false);
     }
     IEnumerator HitOtherBulletEffects(float time, Vector3 location, Quaternion facingDir)
     {

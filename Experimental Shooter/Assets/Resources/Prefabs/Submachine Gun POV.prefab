@@ -540,6 +540,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9c572e9749c441744b1859dbb70e8b98, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  animator: {fileID: 0}
 --- !u!114 &5895693834837695523
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -561,16 +562,19 @@ MonoBehaviour:
   attackDelay: 0
   attackBackSwing: 0
   firingRate: 20
+  burstRate: 20
   magSize: 30
   currentMagAmmo: 30
   backupAmmo: 120
   maxAmmo: 240
   tacticalReloadTime: 2
   emptyReloadTime: 2.5
+  ammoFillTime: 1.5
+  requireActionPull: 1
   maxHorizontalRecoil: 1
   minHorizontalRecoil: 0.1
   verticalRecoil: 0.75
-  defaultFireMode: 0
+  fireMode: 0
   FireModes: 0000000002000000
   bulletObj: {fileID: 8388713027766119384, guid: 2646ff4814621c64d9452ebec4911ab1,
     type: 3}

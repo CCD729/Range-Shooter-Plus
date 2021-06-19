@@ -26,6 +26,7 @@ public class WeaponInfo : MonoBehaviour
     public float damage;
     public WeaponType weaponType;
 
+    [Tooltip("Return true if the weapon is a melee weapon")]
     public bool melee = false;
     //melee properties
     public float meleeRange = 1f;
@@ -34,6 +35,7 @@ public class WeaponInfo : MonoBehaviour
 
     //firearm properties
     public float firingRate = 10f;
+    public float burstRate = 10f;
     public int magSize = 30;
     public int currentMagAmmo = 30;
     public int backupAmmo = 120;
@@ -45,7 +47,7 @@ public class WeaponInfo : MonoBehaviour
     public float maxHorizontalRecoil = 0.5f;
     public float minHorizontalRecoil = 0f;
     public float verticalRecoil = 0.5f;
-    public FireSelect defaultFireMode = FireSelect.auto;
+    public FireSelect fireMode = FireSelect.auto;
     public FireSelect[] FireModes;
     public GameObject bulletObj;
 }

@@ -12,7 +12,6 @@ GameObject:
   - component: {fileID: 5839435743709431365}
   - component: {fileID: 4965271472339078967}
   - component: {fileID: 5552451852510549312}
-  - component: {fileID: 2933066030656746837}
   m_Layer: 9
   m_Name: Ammo
   m_TagString: Weapon
@@ -299,20 +298,6 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1278607576600313572}
   m_Mesh: {fileID: 0}
---- !u!64 &2933066030656746837
-MeshCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1278607576600313572}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
-  m_Enabled: 1
-  serializedVersion: 4
-  m_Convex: 0
-  m_CookingOptions: 30
-  m_Mesh: {fileID: 0}
 --- !u!1 &3601313704570965512
 GameObject:
   m_ObjectHideFlags: 0
@@ -325,7 +310,6 @@ GameObject:
   - component: {fileID: 3993381465452317987}
   - component: {fileID: 4497845696596852153}
   - component: {fileID: 8435357429741908087}
-  - component: {fileID: 3731471623211215646}
   m_Layer: 9
   m_Name: Muzzle-Barrel Color Piece
   m_TagString: Untagged
@@ -1096,20 +1080,6 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3601313704570965512}
   m_Mesh: {fileID: 0}
---- !u!64 &3731471623211215646
-MeshCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3601313704570965512}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
-  m_Enabled: 1
-  serializedVersion: 4
-  m_Convex: 0
-  m_CookingOptions: 30
-  m_Mesh: {fileID: 0}
 --- !u!1 &4059244455567273574
 GameObject:
   m_ObjectHideFlags: 0
@@ -1154,7 +1124,6 @@ GameObject:
   - component: {fileID: 3849658252486364348}
   - component: {fileID: 3810800183149167556}
   - component: {fileID: 3097286479639969899}
-  - component: {fileID: 268022038378647695}
   m_Layer: 9
   m_Name: Grip
   m_TagString: Weapon
@@ -1633,20 +1602,6 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4548413881725982654}
   m_Mesh: {fileID: 0}
---- !u!64 &268022038378647695
-MeshCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4548413881725982654}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
-  m_Enabled: 1
-  serializedVersion: 4
-  m_Convex: 0
-  m_CookingOptions: 30
-  m_Mesh: {fileID: 0}
 --- !u!1 &4695905856569047529
 GameObject:
   m_ObjectHideFlags: 0
@@ -1659,7 +1614,6 @@ GameObject:
   - component: {fileID: 4057635230468345199}
   - component: {fileID: 880726118579172824}
   - component: {fileID: 6212496066335805853}
-  - component: {fileID: 1854235586191771819}
   m_Layer: 9
   m_Name: Action_Slide_Sight_Barrel
   m_TagString: Weapon
@@ -2215,20 +2169,6 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4695905856569047529}
   m_Mesh: {fileID: 0}
---- !u!64 &1854235586191771819
-MeshCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4695905856569047529}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
-  m_Enabled: 1
-  serializedVersion: 4
-  m_Convex: 0
-  m_CookingOptions: 30
-  m_Mesh: {fileID: 0}
 --- !u!1 &5057657965988350588
 GameObject:
   m_ObjectHideFlags: 0
@@ -2241,7 +2181,6 @@ GameObject:
   - component: {fileID: 6461347967063546397}
   - component: {fileID: 911404179095229512}
   - component: {fileID: 2765922582592250380}
-  - component: {fileID: 1191403177001387501}
   m_Layer: 9
   m_Name: Ejector_Inside
   m_TagString: Weapon
@@ -2528,20 +2467,6 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5057657965988350588}
   m_Mesh: {fileID: 0}
---- !u!64 &1191403177001387501
-MeshCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5057657965988350588}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
-  m_Enabled: 1
-  serializedVersion: 4
-  m_Convex: 0
-  m_CookingOptions: 30
-  m_Mesh: {fileID: 0}
 --- !u!1 &5413952831248657243
 GameObject:
   m_ObjectHideFlags: 0
@@ -2554,7 +2479,6 @@ GameObject:
   - component: {fileID: 1340615729291850460}
   - component: {fileID: 9090545150200655953}
   - component: {fileID: 4077403457520530955}
-  - component: {fileID: 5563687068786577574}
   m_Layer: 9
   m_Name: Ejector
   m_TagString: Weapon
@@ -2841,20 +2765,6 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5413952831248657243}
   m_Mesh: {fileID: 0}
---- !u!64 &5563687068786577574
-MeshCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5413952831248657243}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
-  m_Enabled: 1
-  serializedVersion: 4
-  m_Convex: 0
-  m_CookingOptions: 30
-  m_Mesh: {fileID: 0}
 --- !u!1 &5819576237381752885
 GameObject:
   m_ObjectHideFlags: 0
@@ -2867,7 +2777,6 @@ GameObject:
   - component: {fileID: 3064512968795341594}
   - component: {fileID: 1101626342633052866}
   - component: {fileID: 8898564035700950974}
-  - component: {fileID: 5086683148195567685}
   m_Layer: 9
   m_Name: Front Dot
   m_TagString: Weapon
@@ -4634,20 +4543,6 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5819576237381752885}
   m_Mesh: {fileID: 0}
---- !u!64 &5086683148195567685
-MeshCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5819576237381752885}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
-  m_Enabled: 1
-  serializedVersion: 4
-  m_Convex: 0
-  m_CookingOptions: 30
-  m_Mesh: {fileID: 0}
 --- !u!1 &6503989099472929456
 GameObject:
   m_ObjectHideFlags: 0
@@ -4690,7 +4585,6 @@ GameObject:
   - component: {fileID: 6262588983691315744}
   - component: {fileID: 393639024231974235}
   - component: {fileID: 9087898831628977471}
-  - component: {fileID: 6614379090888951362}
   m_Layer: 9
   m_Name: Mag
   m_TagString: Weapon
@@ -5457,20 +5351,6 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6652705325462081868}
   m_Mesh: {fileID: 0}
---- !u!64 &6614379090888951362
-MeshCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6652705325462081868}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
-  m_Enabled: 1
-  serializedVersion: 4
-  m_Convex: 0
-  m_CookingOptions: 30
-  m_Mesh: {fileID: 0}
 --- !u!1 &7654595748858898239
 GameObject:
   m_ObjectHideFlags: 0
@@ -5573,6 +5453,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9c572e9749c441744b1859dbb70e8b98, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  animator: {fileID: 7654595749813809891}
 --- !u!114 &7654595749813809888
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5593,17 +5474,20 @@ MonoBehaviour:
   meleeRange: 0
   attackDelay: 0
   attackBackSwing: 0
-  firingRate: 10
+  firingRate: 8
+  burstRate: 8
   magSize: 19
   currentMagAmmo: 19
   backupAmmo: 76
   maxAmmo: 152
   tacticalReloadTime: 1.8
   emptyReloadTime: 2.3
+  ammoFillTime: 1.5
+  requireActionPull: 1
   maxHorizontalRecoil: 1
   minHorizontalRecoil: 0.1
   verticalRecoil: 0.5
-  defaultFireMode: 2
+  fireMode: 2
   FireModes: 02000000
   bulletObj: {fileID: 8388713027766119384, guid: 2646ff4814621c64d9452ebec4911ab1,
     type: 3}
@@ -5651,7 +5535,6 @@ GameObject:
   - component: {fileID: 241748981893626831}
   - component: {fileID: 6888391594843464431}
   - component: {fileID: 1263909009579677169}
-  - component: {fileID: 2607844148215974684}
   m_Layer: 9
   m_Name: Front
   m_TagString: Weapon
@@ -5939,20 +5822,6 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7906511875245778362}
   m_Mesh: {fileID: 0}
---- !u!64 &2607844148215974684
-MeshCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7906511875245778362}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
-  m_Enabled: 1
-  serializedVersion: 4
-  m_Convex: 0
-  m_CookingOptions: 30
-  m_Mesh: {fileID: 0}
 --- !u!1 &8197045054418565761
 GameObject:
   m_ObjectHideFlags: 0
@@ -5965,7 +5834,6 @@ GameObject:
   - component: {fileID: 2173262337651827298}
   - component: {fileID: 695021765920688109}
   - component: {fileID: 5006774323607778183}
-  - component: {fileID: 4972519770127365696}
   m_Layer: 9
   m_Name: Back Bracket
   m_TagString: Weapon
@@ -6771,20 +6639,6 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8197045054418565761}
   m_Mesh: {fileID: 0}
---- !u!64 &4972519770127365696
-MeshCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8197045054418565761}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
-  m_Enabled: 1
-  serializedVersion: 4
-  m_Convex: 0
-  m_CookingOptions: 30
-  m_Mesh: {fileID: 0}
 --- !u!1 &8291790244047643580
 GameObject:
   m_ObjectHideFlags: 0
@@ -6797,7 +6651,6 @@ GameObject:
   - component: {fileID: 5532637839660672362}
   - component: {fileID: 3994836095550584315}
   - component: {fileID: 1729718535810279175}
-  - component: {fileID: 4265083475312027874}
   m_Layer: 9
   m_Name: Muzzle
   m_TagString: Weapon
@@ -8822,20 +8675,6 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8291790244047643580}
   m_Mesh: {fileID: 0}
---- !u!64 &4265083475312027874
-MeshCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8291790244047643580}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
-  m_Enabled: 1
-  serializedVersion: 4
-  m_Convex: 0
-  m_CookingOptions: 30
-  m_Mesh: {fileID: 0}
 --- !u!1 &9095656014596342522
 GameObject:
   m_ObjectHideFlags: 0
@@ -8848,7 +8687,6 @@ GameObject:
   - component: {fileID: 4228116605295309531}
   - component: {fileID: 9113783124705641953}
   - component: {fileID: 6644812477340939401}
-  - component: {fileID: 2695216569159509232}
   m_Layer: 9
   m_Name: Back
   m_TagString: Weapon
@@ -9497,18 +9335,4 @@ MeshFilter:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 9095656014596342522}
-  m_Mesh: {fileID: 0}
---- !u!64 &2695216569159509232
-MeshCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 9095656014596342522}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
-  m_Enabled: 1
-  serializedVersion: 4
-  m_Convex: 0
-  m_CookingOptions: 30
   m_Mesh: {fileID: 0}

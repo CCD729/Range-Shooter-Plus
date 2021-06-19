@@ -498,6 +498,7 @@ GameObject:
   - component: {fileID: 5717994297881566459}
   - component: {fileID: 7289736487184937589}
   - component: {fileID: 8986525890044088710}
+  - component: {fileID: -7999708904219970800}
   - component: {fileID: 519550878756078924}
   - component: {fileID: 5398895975866774131}
   - component: {fileID: 4452225860373732548}
@@ -534,7 +535,7 @@ AudioSource:
   m_Enabled: 1
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 0}
-  m_audioClip: {fileID: 8300000, guid: 9793ecf9896f0ff4092a3bca11299f4a, type: 3}
+  m_audioClip: {fileID: 0}
   m_PlayOnAwake: 0
   m_Volume: 0.5
   m_Pitch: 1
@@ -630,7 +631,103 @@ AudioSource:
   m_Enabled: 1
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 0}
-  m_audioClip: {fileID: 8300000, guid: 520adefdb1b83eb4994dea2e34c10ad0, type: 3}
+  m_audioClip: {fileID: 0}
+  m_PlayOnAwake: 0
+  m_Volume: 0.5
+  m_Pitch: 1
+  Loop: 0
+  Mute: 0
+  Spatialize: 0
+  SpatializePostEffects: 0
+  Priority: 128
+  DopplerLevel: 1
+  MinDistance: 1
+  MaxDistance: 500
+  Pan2D: 0
+  rolloffMode: 0
+  BypassEffects: 0
+  BypassListenerEffects: 0
+  BypassReverbZones: 0
+  rolloffCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 1
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  panLevelCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  spreadCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  reverbZoneMixCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+--- !u!82 &-7999708904219970800
+AudioSource:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3341779748343287155}
+  m_Enabled: 1
+  serializedVersion: 4
+  OutputAudioMixerGroup: {fileID: 0}
+  m_audioClip: {fileID: 0}
   m_PlayOnAwake: 0
   m_Volume: 0.5
   m_Pitch: 1
@@ -747,6 +844,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9c572e9749c441744b1859dbb70e8b98, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  animator: {fileID: 0}
 --- !u!114 &4452225860373732548
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -759,10 +857,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9f07573d534484b4682aa9690af4de7d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  reloadSound: {fileID: 8986525890044088710}
-  shootSound: {fileID: 7289736487184937589}
-  reloadclip: {fileID: 8300000, guid: 520adefdb1b83eb4994dea2e34c10ad0, type: 3}
-  shootclip: {fileID: 8300000, guid: 9793ecf9896f0ff4092a3bca11299f4a, type: 3}
+  weaponManipulationSound: {fileID: 7289736487184937589}
+  gunShootSound: {fileID: 8986525890044088710}
+  etcSound: {fileID: -7999708904219970800}
+  emptyReloadClip: {fileID: 0}
+  tacticalReloadClip: {fileID: 0}
+  shootClip: {fileID: 0}
+  pickupClip: {fileID: 0}
+  putdownClip: {fileID: 0}
+  dryShootClip: {fileID: 0}
 --- !u!114 &7816983494180369988
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -784,16 +887,19 @@ MonoBehaviour:
   attackDelay: 0
   attackBackSwing: 0
   firingRate: 20
+  burstRate: 20
   magSize: 30
   currentMagAmmo: 30
   backupAmmo: 120
   maxAmmo: 240
   tacticalReloadTime: 2
   emptyReloadTime: 2.5
+  ammoFillTime: 1.5
+  requireActionPull: 1
   maxHorizontalRecoil: 1
   minHorizontalRecoil: 0.1
   verticalRecoil: 0.75
-  defaultFireMode: 0
+  fireMode: 0
   FireModes: 0000000002000000
   bulletObj: {fileID: 8388713027766119384, guid: 2646ff4814621c64d9452ebec4911ab1,
     type: 3}
