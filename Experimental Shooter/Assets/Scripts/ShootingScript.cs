@@ -216,7 +216,7 @@ public class ShootingScript : MonoBehaviour
 
         if (skill == Skill.impactGrenade)
         {
-            skillTime = 1f;
+            skillTime = 0.5f;
             skillCoolDown = 5f;
         }
         if(weaponEquipped)
@@ -254,6 +254,8 @@ public class ShootingScript : MonoBehaviour
                 ammoCurrentMagText.text = currentWeapon.GetComponent<WeaponInfo>().currentMagAmmo.ToString();
             bulletEnough = currentWeapon.GetComponent<WeaponInfo>().currentMagAmmo > 0;
         }
+
+        //Switching weapon logic
 
         //Shooting logic
         if (!levelPaused && !levelEnded)
