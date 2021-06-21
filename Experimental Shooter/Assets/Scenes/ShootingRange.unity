@@ -6605,8 +6605,10 @@ MonoBehaviour:
   mode_Timed: 0
   mode_Scored: 0
   timeLimit: -1
+  noWeapon: 1
   weaponEquipped: 0
   weaponFull: 0
+  weaponHandling: 0
   currentNoAmmo: 0
   currentWeaponSlot: 0
   currentWeapon: {fileID: 0}
@@ -12598,8 +12600,10 @@ MonoBehaviour:
   mode_Timed: 0
   mode_Scored: 0
   timeLimit: 45
+  noWeapon: 1
   weaponEquipped: 0
   weaponFull: 0
+  weaponHandling: 0
   currentNoAmmo: 0
   currentWeaponSlot: 0
   currentWeapon: {fileID: 0}

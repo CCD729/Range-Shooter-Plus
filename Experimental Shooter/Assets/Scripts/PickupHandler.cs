@@ -53,7 +53,7 @@ public class PickupHandler : MonoBehaviour
                         instanceWeaponPOV.transform.localScale = Vector3.one;
                         if (shootingScript.weaponEquipped)
                         {
-                            if (!shootingScript.weaponFull)
+                            if (!shootingScript.weaponFull)    //TODO: Animation on Pickup Switch? Check
                             {
                                 shootingScript.weaponFull = true;
                                 shootingScript.currentWeaponSlot = 1;
@@ -71,7 +71,7 @@ public class PickupHandler : MonoBehaviour
                             }
                             else
                             {
-                                //TODO: Switch weapon and drop equipped one out
+                                //TODO: Animation on Pickup Switch? Check
                                 //Delete old
                                 Destroy(shootingScript.currentWeapon);
                                 Destroy(shootingScript.currentWeaponPOV);
@@ -109,16 +109,35 @@ public class PickupHandler : MonoBehaviour
                         }
                         else
                         {
-                            shootingScript.weaponEquipped = true;
-                            shootingScript.primaryWeapon = instanceWeapon.gameObject;
-                            shootingScript.primaryWeaponPOV = instanceWeaponPOV.gameObject;
-                            shootingScript.primaryBullet = weaponInfo.bulletObj;
-                            shootingScript.currentWeapon = shootingScript.primaryWeapon;
-                            shootingScript.currentWeaponPOV = shootingScript.primaryWeaponPOV;
-                            shootingScript.currentBullet = shootingScript.primaryBullet;
-                            shootingScript.primaryWeaponBackDisplay = pickupObj;
-                            shootingScript.primaryWeaponBackDisplay.SetActive(false);
-                        }
+                            if (shootingScript.noWeapon)
+                            {
+                                shootingScript.weaponEquipped = true;
+                                shootingScript.noWeapon = false;
+                                shootingScript.primaryWeapon = instanceWeapon.gameObject;
+                                shootingScript.primaryWeaponPOV = instanceWeaponPOV.gameObject;
+                                shootingScript.primaryBullet = weaponInfo.bulletObj;
+                                shootingScript.currentWeapon = shootingScript.primaryWeapon;
+                                shootingScript.currentWeaponPOV = shootingScript.primaryWeaponPOV;
+                                shootingScript.currentBullet = shootingScript.primaryBullet;
+                                shootingScript.primaryWeaponBackDisplay = pickupObj;
+                                shootingScript.primaryWeaponBackDisplay.SetActive(false);
+                                shootingScript.currentWeapon.GetComponent<animController>().PickupPullActionAnimation();
+                            }
+                            else // Primary weapon is there but switched to unequipped
+                            {
+                                shootingScript.weaponEquipped = true;
+                                shootingScript.weaponFull = true;
+                                shootingScript.secondaryWeapon = instanceWeapon.gameObject;
+                                shootingScript.secondaryWeaponPOV = instanceWeaponPOV.gameObject;
+                                shootingScript.secondaryBullet = weaponInfo.bulletObj;
+                                shootingScript.currentWeapon = shootingScript.secondaryWeapon;
+                                shootingScript.currentWeaponPOV = shootingScript.secondaryWeaponPOV;
+                                shootingScript.currentBullet = shootingScript.primaryBullet;
+                                shootingScript.secondaryWeaponBackDisplay = pickupObj;
+                                shootingScript.secondaryWeaponBackDisplay.SetActive(false);
+                                shootingScript.currentWeapon.GetComponent<animController>().PickupPullActionAnimation();
+                            }
+                        }//CAUTION: Firepoint should be in UpdateWeaponInfo() ?
                         shootingScript.firePoint = instanceWeapon.transform.GetChild(0).Find("FirePoint");
                         shootingScript.UpdateWeaponInfo();
                         levelSceneManager.UpdateWeaponInfo();

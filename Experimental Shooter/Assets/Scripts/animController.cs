@@ -11,13 +11,29 @@ public class animController : MonoBehaviour
         animator = GetComponent<Animator>();
     }
 
-    public void ReloadAnimation()
+   /* public void ReloadAnimation()
     {
         animator.Play("Reload", -1, 0f);
-    }
-    public void SkillPutdownAnimation()
+    }*/
+    public void PutdownAnimation()
     {
-        animator.Play("SkillPutdown", -1, 0f);
+        animator.Play("Putdown", -1, 0f);
+    }
+    public void PutdownEmptyMagAnimation()
+    {
+        animator.Play("PutdownEmptyMag", -1, 0f);
+    }
+    public void PickupAnimation()
+    {
+        animator.Play("Pickup", -1, 0f);
+    }
+    public void PickupEmptyMagAnimation()
+    {
+        animator.Play("PickupEmptyMag", -1, 0f);
+    }
+    public void PickupPullActionAnimation()
+    {
+        animator.Play("PickupPullAction", -1, 0f);
     }
     public void ShootAnimation()
     {

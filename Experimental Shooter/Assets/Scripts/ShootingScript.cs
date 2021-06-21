@@ -75,10 +75,14 @@ public class ShootingScript : MonoBehaviour
     public Weapon secondaryWeapon;
     [Tooltip("Current secondary weapon instance for 1st person camera")]
     public Weapon secondaryWeaponPOV;*/
+    [Tooltip("If there's no weapon in inventory")]
+    public bool noWeapon =true;
     [Tooltip("If there's no weapon equipped")]
     public bool weaponEquipped = false;
     [Tooltip("If both weapon slots equipped")]
     public bool weaponFull = false;
+    [Tooltip("If handling weapon (like switching) to freeze weapon firing and other functions")]
+    public bool weaponHandling = false;
     [Tooltip("If run out of ammunation")]
     public bool currentNoAmmo = false;
     [Tooltip("Weapon slot active")] // CAUTION: Cannot switch slot if empty handed or switch to unequipped/fist
