@@ -83,6 +83,8 @@ public class ShootingScript : MonoBehaviour
     public bool weaponFull = false;
     [Tooltip("If handling weapon (like switching) to freeze weapon firing and other functions")]
     public bool weaponHandling = false;
+    [Tooltip("If picking up weapon when all weapon manipulation should be locked")]
+    public bool pickupHandling = false;
     [Tooltip("If run out of ammunation")]
     public bool currentNoAmmo = false;
     [Tooltip("Weapon slot active")] // CAUTION: Cannot switch slot if empty handed or switch to unequipped/fist
@@ -129,6 +131,11 @@ public class ShootingScript : MonoBehaviour
     [Header("WIP Content")]
     public float weaponPutDownTime = 0.3f;
     public float weaponPickupTime = 0.5f;
+    public float weaponPickupActionTime = 0.8f;
+    public float pickupHandlingTime = 0f;
+    public float weaponHandlingTime = 0f;
+    public bool halfSwitched = false;
+
 
     //TODO: weapon details should come with weapon, consider making enums and dictionary or general weapon class
     /*public float firingRate = 10f;
@@ -180,6 +187,12 @@ public class ShootingScript : MonoBehaviour
     [SerializeField] private KeyCode reloadKey = KeyCode.R;
     [SerializeField] private KeyCode attackKey = KeyCode.Mouse0;
     [SerializeField] private KeyCode aimKey = KeyCode.Mouse1;
+    [SerializeField] private KeyCode switchKey1 = KeyCode.Alpha1;
+    [SerializeField] private KeyCode switchKey2 = KeyCode.Alpha2;
+    [SerializeField] private bool scrollUpGapped = false;
+    [SerializeField] private bool scrollDownGapped = false;
+    [SerializeField] private float scrollBlocker = 0f;
+    [SerializeField] private float scrollBlockTime = 0.1f;
 
     ///PRIVATE VARIABLES
     //Ray
@@ -259,8 +272,6 @@ public class ShootingScript : MonoBehaviour
             bulletEnough = currentWeapon.GetComponent<WeaponInfo>().currentMagAmmo > 0;
         }
 
-        //Switching weapon logic
-
         //Shooting logic
         if (!levelPaused && !levelEnded)
         {
@@ -275,7 +286,7 @@ public class ShootingScript : MonoBehaviour
                         currentWeapon.GetComponent<animController>().animator.SetBool("isReloading", false);
                         currentWeaponPOV.GetComponent<animController>().animator.SetBool("isReloading", false);
                     }
-                    else if (fRatePassed && !skillUsing)
+                    else if (fRatePassed && !skillUsing && !pickupHandling && !weaponHandling)
                     {
                         if( (Input.GetKey(attackKey) && currentWeapon.GetComponent<WeaponInfo>().fireMode == FireSelect.auto) ||
                             (Input.GetKeyDown(attackKey) && currentWeapon.GetComponent<WeaponInfo>().fireMode != FireSelect.auto))
@@ -331,7 +342,7 @@ public class ShootingScript : MonoBehaviour
         }
 
         //Manual reload
-        if (Input.GetKeyDown(reloadKey) && weaponEquipped && !currentNoAmmo && !reloading && !skillUsing && !levelPaused && !levelEnded && currentWeapon.GetComponent<WeaponInfo>().currentMagAmmo < currentWeapon.GetComponent<WeaponInfo>().magSize)
+        if (Input.GetKeyDown(reloadKey) && weaponEquipped && !currentNoAmmo && !reloading && !skillUsing && !levelPaused && !levelEnded && !pickupHandling && !weaponHandling && currentWeapon.GetComponent<WeaponInfo>().currentMagAmmo < currentWeapon.GetComponent<WeaponInfo>().magSize)
         {
             reloading = true;
             //ammoText.text = "Reloading";
@@ -388,11 +399,68 @@ public class ShootingScript : MonoBehaviour
             StartCoroutine(ThrowImpactGrenade(skillTime));
             Debug.Log("Skill Active...");
         }
+
+        //Tool: Scroll detect/gapper (future plans to adapt into new input system)
+        if (scrollBlocker == 0f && Input.mouseScrollDelta.y != 0)
+        {
+            if (Input.mouseScrollDelta.y > 0)
+                scrollUpGapped = true;
+            else
+                scrollDownGapped = true;
+        }
+
+        //Switch weapon (detect part) (part2 in FixedUpdate with time counter)
+        if ( (Input.GetKeyDown(switchKey1) || Input.GetKeyDown(switchKey2) || scrollUpGapped || scrollDownGapped) && !skillUsing && !levelPaused && !levelEnded)
+        {
+            if(scrollDownGapped || scrollUpGapped)
+            {
+                scrollDownGapped = false;
+                scrollUpGapped = false;
+                scrollBlocker = 0.1f;
+            }
+            //Reload not complete then interrupt 
+
+            //Switch happening in first half then reverse
+
+            //Different putdown variants if emptymag
+
+            //different pickup variants if emptymag or require pullaction on ammofill
+
+            Debug.Log("Switching Weapon...");
+        }
     }
     void FixedUpdate()
     {
         if (!levelPaused && !levelEnded)
         {
+            if (scrollBlocker >= 0f)
+                scrollBlocker -= Time.fixedDeltaTime;
+            else
+                scrollBlocker = 0f;
+
+            if (pickupHandling)
+            {
+                if (pickupHandlingTime >= 0f)
+                    pickupHandlingTime -= Time.fixedDeltaTime;
+                else
+                {
+                    pickupHandling = false;
+                    pickupHandlingTime = 0f;
+                    if (weaponEquipped && currentWeapon.GetComponent<WeaponInfo>().requireActionPull)
+                        currentWeapon.GetComponent<WeaponInfo>().requireActionPull = false;
+                }
+            }
+
+            if (weaponHandling)
+            {
+                if (weaponHandlingTime >= 0f)
+                    weaponHandlingTime -= Time.fixedDeltaTime;
+                else
+                {
+                    weaponHandling = false;
+                    weaponHandlingTime = 0f;
+                }
+            }
             //Reload logic //TODO: Add Tactical Reload variants
             if (reloading)
             {
@@ -681,6 +749,7 @@ public class ShootingScript : MonoBehaviour
         ammoBackupText.text = currentWeaponInfo.backupAmmo.ToString();
         //Set firing interval according to input firing rate
         fRateInt = 1f / currentWeaponInfo.firingRate;
+        firePoint = currentWeapon.transform.GetChild(0).Find("FirePoint");
         playerCam.GetComponent<CameraController>().UpdateWeaponInfo(currentWeaponInfo.maxHorizontalRecoil, currentWeaponInfo.minHorizontalRecoil, currentWeaponInfo.verticalRecoil);
     }
     IEnumerator ThrowImpactGrenade(float time)
