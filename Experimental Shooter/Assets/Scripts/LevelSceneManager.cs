@@ -181,6 +181,9 @@ public class LevelSceneManager : MonoBehaviour
     }
     public void UpdateWeaponInfo()
     {
-        currentWeapon = gameRules.currentWeapon;
+        if(gameRules.currentWeapon != null)
+            currentWeapon = gameRules.currentWeapon;
+        else
+            currentWeapon = null;
     }
 }

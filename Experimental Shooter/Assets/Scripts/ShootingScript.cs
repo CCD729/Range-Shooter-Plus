@@ -134,7 +134,9 @@ public class ShootingScript : MonoBehaviour
     public float weaponPickupActionTime = 0.8f;
     public float pickupHandlingTime = 0f;
     public float weaponHandlingTime = 0f;
+    public float switchCounter = 0f;
     public bool halfSwitched = false;
+    public bool switchTrigger = false;
 
 
     //TODO: weapon details should come with weapon, consider making enums and dictionary or general weapon class
@@ -162,6 +164,8 @@ public class ShootingScript : MonoBehaviour
     [SerializeField] private bool levelEnded = false;
     [SerializeField] private bool levelPaused = false;
     [SerializeField] private bool reloading = false;
+    [SerializeField] private bool switching = false;
+    
     [SerializeField] private bool tacticalReloading = false;
     [SerializeField] private bool emptyReloading = false;
     [SerializeField] private bool skillUsing = false;
@@ -410,30 +414,103 @@ public class ShootingScript : MonoBehaviour
         }
 
         //Switch weapon (detect part) (part2 in FixedUpdate with time counter)
-        if ( (Input.GetKeyDown(switchKey1) || Input.GetKeyDown(switchKey2) || scrollUpGapped || scrollDownGapped) && !skillUsing && !levelPaused && !levelEnded)
+        if ( (Input.GetKeyDown(switchKey1) || Input.GetKeyDown(switchKey2) || scrollUpGapped || scrollDownGapped || switchTrigger) && !skillUsing && !levelPaused && !levelEnded)
         {
-            if(scrollDownGapped || scrollUpGapped)
+            if (scrollDownGapped || scrollUpGapped)
             {
                 scrollDownGapped = false;
                 scrollUpGapped = false;
                 scrollBlocker = 0.1f;
             }
-            //Reload not complete then interrupt 
+            if (switchTrigger)
+            {
+                switchTrigger = false;
+            }
 
-            //Switch happening in first half then reverse
+            //If no weapon then do nothing
+            if (!noWeapon)
+            {
+                //Switch happening in first half then reverse
+                if (switching)
+                {
+                    switchCounter = 0f;
+                    switching = false;
+                    weaponHandlingTime = weaponPickupTime;
+                    if (currentWeapon.GetComponent<WeaponInfo>().currentMagAmmo == 0)
+                        currentWeapon.GetComponent<animController>().animator.CrossFadeInFixedTime("PickupEmptyMag", 0.15f);
+                    else
+                    {
+                        if (currentWeapon.GetComponent<WeaponInfo>().requireActionPull)
+                        {
+                            currentWeapon.GetComponent<animController>().animator.CrossFadeInFixedTime("PickupPullAction", 0.15f);
+                            weaponHandlingTime = weaponPickupActionTime;
+                        }
+                        else
+                            currentWeapon.GetComponent<animController>().animator.CrossFadeInFixedTime("Pickup", 0.15f);
+                    }
+                    Debug.Log("Switching reversed");
+                }
+                //if current is empty
+                else if (!weaponEquipped)
+                {
+                    switchCounter = 0.1f;
+                    switching = true;
+                    weaponHandlingTime = weaponPutDownTime + weaponPickupActionTime; //Temporary, to be reassigned in part 2 to avoid problem
+                    weaponHandling = true;
+                    Debug.Log("Switching Weapon from empty handed...");
+                }
+                //Reload not complete then interrupt 
+                else if (reloading)
+                {
+                    if (emptyReloading)
+                    {
+                        emptyReloading = false;
+                        currentWeapon.GetComponent<animController>().animator.CrossFadeInFixedTime("PutdownEmptyMag", 0.15f);
+                    }
+                    else if (tacticalReloading)
+                    {
+                        tacticalReloading = false;
+                        currentWeapon.GetComponent<animController>().animator.CrossFadeInFixedTime("Putdown", 0.15f);
+                    }
+                    reloadingTime = 0f;
+                    reloading = false;
+                    img_bulletIcon.enabled = false;
+                    img_reloadRing.enabled = false;
+                    img_crossHair.enabled = true;
+                    img_reloadRing.GetComponent<ReloadRingAnim>().Complete();
+                    Debug.Log("Reload interrupted for switching");
+                    switchCounter = weaponPutDownTime;
+                    switching = true;
+                    weaponHandlingTime = weaponPutDownTime + weaponPickupActionTime; //Temporary, to be reassigned in part 2 to avoid problem
+                    weaponHandling = true;
+                }
+                else
+                {
 
-            //Different putdown variants if emptymag
-
-            //different pickup variants if emptymag or require pullaction on ammofill
-
-            Debug.Log("Switching Weapon...");
+                    if (currentWeapon.GetComponent<WeaponInfo>().currentMagAmmo == 0)
+                    {
+                        currentWeapon.GetComponent<animController>().animator.CrossFadeInFixedTime("PutdownEmptyMag", 0.15f);
+                        //currentWeapon.GetComponent<animController>().animator.Play("PutdownEmptyMag");
+                    }
+                    else
+                    {
+                        currentWeapon.GetComponent<animController>().animator.CrossFadeInFixedTime("Putdown", 0.15f);
+                        //currentWeapon.GetComponent<animController>().animator.Play("Putdown");
+                    }
+                    switchCounter = weaponPutDownTime;
+                    switching = true;
+                    weaponHandlingTime = weaponPutDownTime + weaponPickupActionTime; //Temporary, to be reassigned in part 2 to avoid problem
+                    weaponHandling = true;
+                    Debug.Log("Switching Weapon...");
+                }
+            }
         }
     }
     void FixedUpdate()
     {
         if (!levelPaused && !levelEnded)
         {
-            if (scrollBlocker >= 0f)
+            if (scrollBlocker > 0f)
                 scrollBlocker -= Time.fixedDeltaTime;
             else
                 scrollBlocker = 0f;
@@ -446,8 +523,6 @@ public class ShootingScript : MonoBehaviour
                 {
                     pickupHandling = false;
                     pickupHandlingTime = 0f;
-                    if (weaponEquipped && currentWeapon.GetComponent<WeaponInfo>().requireActionPull)
-                        currentWeapon.GetComponent<WeaponInfo>().requireActionPull = false;
                 }
             }
 
@@ -459,9 +534,127 @@ public class ShootingScript : MonoBehaviour
                 {
                     weaponHandling = false;
                     weaponHandlingTime = 0f;
+                    if (weaponEquipped && currentWeapon.GetComponent<WeaponInfo>().requireActionPull)
+                        currentWeapon.GetComponent<WeaponInfo>().requireActionPull = false;
                 }
             }
-            //Reload logic //TODO: Add Tactical Reload variants
+
+            if (switchCounter > 0f)
+                switchCounter -= Time.fixedDeltaTime;
+            else
+                switchCounter = 0f;
+
+            //Switching logic (part 2)
+            if(switching && switchCounter == 0f)
+            {
+                switching = false;
+                weaponHandlingTime = weaponPickupTime;
+                weaponHandling = true;
+
+                //Weapon slot differences
+                if(currentWeaponSlot == 0)
+                {
+                    currentWeaponSlot = 1;
+                    if (!weaponFull)
+                    {
+                        //If switching to empty
+                        if (weaponEquipped)
+                        {
+                            primaryWeaponBackDisplay.SetActive(true);
+                            primaryWeapon.SetActive(false);
+                            primaryWeaponPOV.SetActive(false);
+                            currentWeapon = null;
+                            currentWeaponPOV = null;
+                            currentBullet = null;
+                            weaponHandlingTime = 0.1f;
+                            weaponEquipped = false;
+                        }
+                        else //if switching from empty
+                        {
+                            currentWeapon = secondaryWeapon;
+                            currentWeaponPOV = secondaryWeaponPOV;
+                            currentBullet = secondaryBullet;
+                            secondaryWeaponBackDisplay.SetActive(false);
+                            secondaryWeapon.SetActive(true);
+                            secondaryWeaponPOV.SetActive(true);
+                        }
+                    }
+                    else
+                    {
+                        primaryWeaponBackDisplay.SetActive(true);
+                        primaryWeapon.SetActive(false);
+                        primaryWeaponPOV.SetActive(false);
+                        currentWeapon = secondaryWeapon;
+                        currentWeaponPOV = secondaryWeaponPOV;
+                        currentBullet = secondaryBullet;
+                        secondaryWeaponBackDisplay.SetActive(false);
+                        secondaryWeapon.SetActive(true);
+                        secondaryWeaponPOV.SetActive(true);
+                    }
+                }
+                else if (currentWeaponSlot == 1)
+                {
+                    currentWeaponSlot = 0;
+                    if (!weaponFull)
+                    {
+                        //If switching to empty
+                        if (weaponEquipped)
+                        {
+                            secondaryWeaponBackDisplay.SetActive(true);
+                            secondaryWeapon.SetActive(false);
+                            secondaryWeaponPOV.SetActive(false);
+                            currentWeapon = null;
+                            currentWeaponPOV = null;
+                            currentBullet = null;
+                            weaponHandlingTime = 0.1f;
+                            weaponEquipped = false;
+                        }
+                        else //if switching from empty
+                        {
+                            currentWeapon = primaryWeapon;
+                            currentWeaponPOV = primaryWeaponPOV;
+                            currentBullet = primaryBullet;
+                            primaryWeaponBackDisplay.SetActive(false);
+                            primaryWeapon.SetActive(true);
+                            primaryWeaponPOV.SetActive(true);
+                            weaponEquipped = true;
+                        }
+                    }
+                    else
+                    {
+                        secondaryWeaponBackDisplay.SetActive(true);
+                        secondaryWeapon.SetActive(false);
+                        secondaryWeaponPOV.SetActive(false);
+                        currentWeapon = primaryWeapon;
+                        currentWeaponPOV = primaryWeaponPOV;
+                        currentBullet = primaryBullet;
+                        primaryWeaponBackDisplay.SetActive(false);
+                        primaryWeapon.SetActive(true);
+                        primaryWeaponPOV.SetActive(true);
+                    }
+                }
+
+                UpdateWeaponInfo();
+                //Animation
+                if(currentWeapon != null)
+                {
+                    if (currentWeapon.GetComponent<WeaponInfo>().currentMagAmmo == 0)
+                        currentWeapon.GetComponent<animController>().PickupEmptyMagAnimation();
+                    else
+                    {
+                        if (currentWeapon.GetComponent<WeaponInfo>().requireActionPull)
+                        {
+                            currentWeapon.GetComponent<animController>().PickupPullActionAnimation();
+                            weaponHandlingTime = weaponPickupActionTime;
+                        }
+                        else
+                            currentWeapon.GetComponent<animController>().PickupAnimation();
+                    }
+                }
+            }
+
+
+            //Reload logic //Added Tactical Reload variants
             if (reloading)
             {
                 if (reloadingTime < currentWeapon.GetComponent<WeaponInfo>().ammoFillTime)
@@ -743,14 +936,27 @@ public class ShootingScript : MonoBehaviour
     }
     public void UpdateWeaponInfo()
     {
-        WeaponInfo currentWeaponInfo = currentWeapon.GetComponent<WeaponInfo>();
-        weaponText.text = currentWeaponInfo.name;
-        ammoCurrentMagText.text = currentWeaponInfo.currentMagAmmo.ToString();
-        ammoBackupText.text = currentWeaponInfo.backupAmmo.ToString();
-        //Set firing interval according to input firing rate
-        fRateInt = 1f / currentWeaponInfo.firingRate;
-        firePoint = currentWeapon.transform.GetChild(0).Find("FirePoint");
-        playerCam.GetComponent<CameraController>().UpdateWeaponInfo(currentWeaponInfo.maxHorizontalRecoil, currentWeaponInfo.minHorizontalRecoil, currentWeaponInfo.verticalRecoil);
+        if(currentWeapon != null)
+        {
+            WeaponInfo currentWeaponInfo = currentWeapon.GetComponent<WeaponInfo>();
+            weaponText.text = currentWeaponInfo.name;
+            ammoCurrentMagText.text = currentWeaponInfo.currentMagAmmo.ToString();
+            ammoBackupText.text = currentWeaponInfo.backupAmmo.ToString();
+            //Set firing interval according to input firing rate
+            fRateInt = 1f / currentWeaponInfo.firingRate;
+            firePoint = currentWeapon.transform.GetChild(0).Find("FirePoint");
+            playerCam.GetComponent<CameraController>().UpdateWeaponInfo(currentWeaponInfo.maxHorizontalRecoil, currentWeaponInfo.minHorizontalRecoil, currentWeaponInfo.verticalRecoil);
+        }
+        else
+        {
+            weaponText.text = "Fists";
+            ammoCurrentMagText.text = "0";
+            ammoBackupText.text = "0";
+            fRateInt = 0f;
+            firePoint = null;
+            playerCam.GetComponent<CameraController>().UpdateWeaponInfo(0f,0f,0f);
+        }
+        sceneManager.GetComponent<LevelSceneManager>().UpdateWeaponInfo();
     }
     IEnumerator ThrowImpactGrenade(float time)
     {

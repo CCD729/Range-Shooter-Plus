@@ -76,7 +76,7 @@ public class PickupHandler : MonoBehaviour
                                     shootingScript.secondaryWeaponPOV = instanceWeaponPOV.gameObject;
                                     shootingScript.secondaryBullet = weaponInfo.bulletObj;
                                     shootingScript.secondaryWeaponBackDisplay = pickupObj;
-                                    //shootingScript.WeaponSwitch();
+                                    shootingScript.switchTrigger = true;
                                     /*shootingScript.currentWeaponSlot = 1;
                                     shootingScript.currentWeapon = shootingScript.secondaryWeapon;
                                     shootingScript.currentWeaponPOV = shootingScript.secondaryWeaponPOV;
@@ -85,8 +85,8 @@ public class PickupHandler : MonoBehaviour
                                     shootingScript.primaryWeaponBackDisplay.SetActive(true);
                                     shootingScript.primaryWeapon.SetActive(false);
                                     shootingScript.primaryWeaponPOV.SetActive(false);
-                                    shootingScript.primaryWeapon.SetActive(true);
-                                    shootingScript.primaryWeaponPOV.SetActive(true);*/
+                                    shootingScript.secondaryWeapon.SetActive(true);
+                                    shootingScript.secondaryWeaponPOV.SetActive(true);*/
                                 }
                                 else
                                 {
@@ -136,7 +136,7 @@ public class PickupHandler : MonoBehaviour
                             }//CAUTION: Firepoint should be in UpdateWeaponInfo() ?
                              //shootingScript.firePoint = instanceWeapon.transform.GetChild(0).Find("FirePoint");
                             shootingScript.UpdateWeaponInfo();
-                            levelSceneManager.UpdateWeaponInfo();
+                            //levelSceneManager.UpdateWeaponInfo();
                         }
                     }
                 }
@@ -197,7 +197,7 @@ public class PickupHandler : MonoBehaviour
             shootingScript.secondaryWeaponBackDisplay = pickupObj;
         }
         shootingScript.UpdateWeaponInfo();
-        levelSceneManager.UpdateWeaponInfo();
+        //levelSceneManager.UpdateWeaponInfo();
         shootingScript.weaponHandling = true;
         shootingScript.weaponHandlingTime = shootingScript.weaponPickupActionTime;
         shootingScript.currentWeapon.GetComponent<animController>().PickupPullActionAnimation();
