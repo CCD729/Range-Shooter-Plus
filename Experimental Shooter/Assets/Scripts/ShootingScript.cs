@@ -438,7 +438,7 @@ public class ShootingScript : MonoBehaviour
                     weaponHandlingTime = weaponPickupTime;
                     if (currentWeapon.GetComponent<WeaponInfo>().currentMagAmmo == 0)
                         currentWeapon.GetComponent<animController>().animator.CrossFadeInFixedTime("PickupEmptyMag", 0.15f);
-                    else
+                    else //crossfade seems not working with short period
                     {
                         if (currentWeapon.GetComponent<WeaponInfo>().requireActionPull)
                         {
