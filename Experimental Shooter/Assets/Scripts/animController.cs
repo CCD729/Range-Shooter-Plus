@@ -39,4 +39,12 @@ public class animController : MonoBehaviour
     {
         animator.Play("Shoot", -1, 0f);
     }
+    public void TacticalReloadAnimation()
+    {
+        animator.Play("TacticalReload", -1, 0f);
+    }
+    public void EmptyReloadAnimation()
+    {
+        animator.Play("EmptyReload", -1, 0f);
+    }
 }

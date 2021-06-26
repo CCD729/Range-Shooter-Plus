@@ -6609,6 +6609,7 @@ MonoBehaviour:
   weaponEquipped: 0
   weaponFull: 0
   weaponHandling: 0
+  pickupHandling: 0
   currentNoAmmo: 0
   currentWeaponSlot: 0
   currentWeapon: {fileID: 0}
@@ -6622,8 +6623,14 @@ MonoBehaviour:
   currentBullet: {fileID: 0}
   primaryBullet: {fileID: 0}
   secondaryBullet: {fileID: 0}
-  weaponPutDownTime: 0.3
-  weaponPickupTime: 0.5
+  weaponPutDownTime: 0.4
+  weaponPickupTime: 0.6
+  weaponPickupActionTime: 0.9
+  pickupHandlingTime: 0
+  weaponHandlingTime: 0
+  switchCounter: 0
+  halfSwitched: 0
+  switchTrigger: 0
   skillObjs:
   - {fileID: 3148491177129973620, guid: 087171c79cef3cf4a8fde2ee00df8aca, type: 3}
   primarySkillObj: {fileID: 0}
@@ -6635,6 +6642,7 @@ MonoBehaviour:
   levelEnded: 0
   levelPaused: 0
   reloading: 0
+  switching: 0
   tacticalReloading: 0
   emptyReloading: 0
   skillUsing: 0
@@ -6654,6 +6662,12 @@ MonoBehaviour:
   reloadKey: 114
   attackKey: 323
   aimKey: 324
+  switchKey1: 49
+  switchKey2: 50
+  scrollUpGapped: 0
+  scrollDownGapped: 0
+  scrollBlocker: 0
+  scrollBlockTime: 0.1
 --- !u!4 &1037682095
 Transform:
   m_ObjectHideFlags: 0
@@ -12604,6 +12618,7 @@ MonoBehaviour:
   weaponEquipped: 0
   weaponFull: 0
   weaponHandling: 0
+  pickupHandling: 0
   currentNoAmmo: 0
   currentWeaponSlot: 0
   currentWeapon: {fileID: 0}
@@ -12619,6 +12634,12 @@ MonoBehaviour:
   secondaryBullet: {fileID: 0}
   weaponPutDownTime: 0.3
   weaponPickupTime: 0.5
+  weaponPickupActionTime: 0.8
+  pickupHandlingTime: 0
+  weaponHandlingTime: 0
+  switchCounter: 0
+  halfSwitched: 0
+  switchTrigger: 0
   skillObjs: []
   primarySkillObj: {fileID: 0}
   secondarySkillObj: {fileID: 0}
@@ -12629,6 +12650,7 @@ MonoBehaviour:
   levelEnded: 0
   levelPaused: 0
   reloading: 0
+  switching: 0
   tacticalReloading: 0
   emptyReloading: 0
   skillUsing: 0
@@ -12648,6 +12670,12 @@ MonoBehaviour:
   reloadKey: 114
   attackKey: 323
   aimKey: 324
+  switchKey1: 49
+  switchKey2: 50
+  scrollUpGapped: 0
+  scrollDownGapped: 0
+  scrollBlocker: 0
+  scrollBlockTime: 0.1
 --- !u!43 &1831619451
 Mesh:
   m_ObjectHideFlags: 0

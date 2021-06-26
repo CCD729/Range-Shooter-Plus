@@ -76,7 +76,11 @@ public class PickupHandler : MonoBehaviour
                                     shootingScript.secondaryWeaponPOV = instanceWeaponPOV.gameObject;
                                     shootingScript.secondaryBullet = weaponInfo.bulletObj;
                                     shootingScript.secondaryWeaponBackDisplay = pickupObj;
+                                    shootingScript.secondaryWeaponBackDisplay.SetActive(true);
+                                    shootingScript.secondaryWeapon.SetActive(false);
+                                    shootingScript.secondaryWeaponPOV.SetActive(false);
                                     shootingScript.switchTrigger = true;
+                                    //StartCoroutine(PickupNotFullAnimation(shootingScript.weaponPutDownTime));
                                     /*shootingScript.currentWeaponSlot = 1;
                                     shootingScript.currentWeapon = shootingScript.secondaryWeapon;
                                     shootingScript.currentWeaponPOV = shootingScript.secondaryWeaponPOV;
@@ -203,7 +207,29 @@ public class PickupHandler : MonoBehaviour
         shootingScript.currentWeapon.GetComponent<animController>().PickupPullActionAnimation();
         shootingScript.currentWeaponPOV.GetComponent<animController>().PickupPullActionAnimation();
     }
+    /*IEnumerator PickupNotFullAnimation(float time)
+    {
+        yield return new WaitForSeconds(time);
+        shootingScript.currentWeaponSlot = 1;
+        shootingScript.currentWeapon = shootingScript.secondaryWeapon;
+        shootingScript.currentWeaponPOV = shootingScript.secondaryWeaponPOV;
+        shootingScript.currentBullet = shootingScript.secondaryBullet;
+        shootingScript.secondaryWeaponBackDisplay.SetActive(false);
+        shootingScript.primaryWeaponBackDisplay.SetActive(true);
+        shootingScript.primaryWeapon.SetActive(false);
+        shootingScript.primaryWeaponPOV.SetActive(false);
+        shootingScript.secondaryWeapon.SetActive(true);
+        shootingScript.secondaryWeaponPOV.SetActive(true);
+        shootingScript.UpdateWeaponInfo();
+
+        shootingScript.weaponHandling = true;
+        shootingScript.weaponHandlingTime = shootingScript.weaponPickupActionTime;
+        shootingScript.currentWeapon.GetComponent<animController>().PickupPullActionAnimation();
+        shootingScript.currentWeaponPOV.GetComponent<animController>().PickupPullActionAnimation();
+    }*/
 }
+
+
 
 public static class Tools
 {

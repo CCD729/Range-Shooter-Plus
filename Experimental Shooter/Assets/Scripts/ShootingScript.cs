@@ -129,8 +129,8 @@ public class ShootingScript : MonoBehaviour
     public GameObject secondaryBullet;
 
     [Header("WIP Content")]
-    public float weaponPutDownTime = 0.3f;
-    public float weaponPickupTime = 0.5f;
+    public float weaponPutDownTime = 0.4f; //Both added 0.1s for transition
+    public float weaponPickupTime = 0.6f; //Both added 0.1s for transition
     public float weaponPickupActionTime = 0.8f;
     public float pickupHandlingTime = 0f;
     public float weaponHandlingTime = 0f;
@@ -274,7 +274,14 @@ public class ShootingScript : MonoBehaviour
             if (!reloading)
                 ammoCurrentMagText.text = currentWeapon.GetComponent<WeaponInfo>().currentMagAmmo.ToString();
             bulletEnough = currentWeapon.GetComponent<WeaponInfo>().currentMagAmmo > 0;
+            //reset shooting booleans for animators
+            currentWeapon.GetComponent<animController>().animator.SetBool("isShooting", false);
+            currentWeaponPOV.GetComponent<animController>().animator.SetBool("isShooting", false);
+            currentWeapon.GetComponent<animController>().animator.SetBool("isShootingLastRound", false);
+            currentWeaponPOV.GetComponent<animController>().animator.SetBool("isShootingLastRound", false);
         }
+
+
 
         //Shooting logic
         if (!levelPaused && !levelEnded)
@@ -297,15 +304,20 @@ public class ShootingScript : MonoBehaviour
                         {
                             if (!bulletEnough)
                             {
-                                if (!currentNoAmmo) //Empty reload
+                                if (!currentNoAmmo) //Empty reload //CAUTION: CURRENTNOAMMO WRONG TRIGGERED
                                 {
                                     reloading = true;
                                     emptyReloading = true;
                                     //ammoText.text = "Reloading";
-                                    //currentWeapon.GetComponent<animController>().ReloadAnimation();
-                                    //currentWeaponPOV.GetComponent<animController>().ReloadAnimation();
                                     currentWeapon.GetComponent<animController>().animator.SetBool("isReloading", true);
-                                    currentWeaponPOV.GetComponent<animController>().animator.SetBool("isReloading", true);
+                                    currentWeaponPOV.GetComponent<animController>().animator.SetBool("isReloading", true); // This is not working by itself while shooting somehow
+                                    //Manual fix for shooting animations
+                                    if (currentWeapon.GetComponent<animController>().animator.GetCurrentAnimatorStateInfo(0).IsName("ShootLastRound"))
+                                    {
+                                        currentWeapon.GetComponent<animController>().animator.Play("ShootLastRound", -1, 1f);
+                                        currentWeaponPOV.GetComponent<animController>().animator.Play("ShootLastRound", -1, 1f);
+                                        StartCoroutine(EmptyReloadDelayer());
+                                    }
                                     img_reloadRing.GetComponent<ReloadRingAnim>().Play(currentWeapon.GetComponent<WeaponInfo>().emptyReloadTime);
                                     this.weaponEmptyReloadSound();
                                     img_crossHair.enabled = false;
@@ -329,13 +341,13 @@ public class ShootingScript : MonoBehaviour
                                     Shoot();
                             }
                         }
-                        else
+                       /* else
                         {
                             currentWeapon.GetComponent<animController>().animator.SetBool("isShooting", false);
                             currentWeaponPOV.GetComponent<animController>().animator.SetBool("isShooting", false);
                             currentWeapon.GetComponent<animController>().animator.SetBool("isShootingLastRound", false);
                             currentWeaponPOV.GetComponent<animController>().animator.SetBool("isShootingLastRound", false);
-                        }
+                        }*/
                     }
                 }
                 else
@@ -353,20 +365,35 @@ public class ShootingScript : MonoBehaviour
             if(currentWeapon.GetComponent<WeaponInfo>().currentMagAmmo == 0)
             {
                 emptyReloading = true;
-                //currentWeapon.GetComponent<animController>().ReloadAnimation();
-                //currentWeaponPOV.GetComponent<animController>().ReloadAnimation();
                 currentWeapon.GetComponent<animController>().animator.SetBool("isReloading", true);
                 currentWeaponPOV.GetComponent<animController>().animator.SetBool("isReloading", true);
+                //Manual fix for shooting animations
+                if (currentWeapon.GetComponent<animController>().animator.GetCurrentAnimatorStateInfo(0).IsName("ShootLastRound"))
+                {
+                    currentWeapon.GetComponent<animController>().animator.Play("ShootLastRound", -1, 1f);
+                    currentWeaponPOV.GetComponent<animController>().animator.Play("ShootLastRound", -1, 1f);
+                    StartCoroutine(EmptyReloadDelayer());
+                }
                 img_reloadRing.GetComponent<ReloadRingAnim>().Play(currentWeapon.GetComponent<WeaponInfo>().emptyReloadTime);
                 this.weaponEmptyReloadSound();
             }
             else
             {
                 tacticalReloading = true;
-                //currentWeapon.GetComponent<animController>().ReloadAnimation();
-                //currentWeaponPOV.GetComponent<animController>().ReloadAnimation();
                 currentWeapon.GetComponent<animController>().animator.SetBool("isReloading", true);
                 currentWeaponPOV.GetComponent<animController>().animator.SetBool("isReloading", true);
+                if (currentWeapon.GetComponent<animController>().animator.GetCurrentAnimatorStateInfo(0).IsName("Shoot"))
+                {
+                    currentWeapon.GetComponent<animController>().animator.Play("Shoot", -1, 1f);
+                    currentWeaponPOV.GetComponent<animController>().animator.Play("Shoot", -1, 1f);
+                    StartCoroutine(TacticalReloadDelayer());
+                }
+                else if (currentWeapon.GetComponent<animController>().animator.GetCurrentAnimatorStateInfo(0).IsName("ShootLastRound"))
+                {
+                    currentWeapon.GetComponent<animController>().animator.Play("ShootLastRound", -1, 1f);
+                    currentWeaponPOV.GetComponent<animController>().animator.Play("ShootLastRound", -1, 1f);
+                    StartCoroutine(EmptyReloadDelayer());
+                }
                 img_reloadRing.GetComponent<ReloadRingAnim>().Play(currentWeapon.GetComponent<WeaponInfo>().tacticalReloadTime);
                 this.weaponTacticalReloadSound();
             }
@@ -437,16 +464,23 @@ public class ShootingScript : MonoBehaviour
                     switching = false;
                     weaponHandlingTime = weaponPickupTime;
                     if (currentWeapon.GetComponent<WeaponInfo>().currentMagAmmo == 0)
-                        currentWeapon.GetComponent<animController>().animator.CrossFadeInFixedTime("PickupEmptyMag", 0.15f);
-                    else //crossfade seems not working with short period
+                    {
+                        currentWeapon.GetComponent<animController>().animator.CrossFadeInFixedTime("PickupEmptyMag", 0.1f);
+                        currentWeaponPOV.GetComponent<animController>().animator.CrossFadeInFixedTime("PickupEmptyMag", 0.1f);
+                    }
+                    else //crossfade seems not working with short period (FIXED)
                     {
                         if (currentWeapon.GetComponent<WeaponInfo>().requireActionPull)
                         {
-                            currentWeapon.GetComponent<animController>().animator.CrossFadeInFixedTime("PickupPullAction", 0.15f);
+                            currentWeapon.GetComponent<animController>().animator.CrossFadeInFixedTime("PickupPullAction", 0.1f);
+                            currentWeaponPOV.GetComponent<animController>().animator.CrossFadeInFixedTime("PickupPullAction", 0.1f);
                             weaponHandlingTime = weaponPickupActionTime;
                         }
                         else
-                            currentWeapon.GetComponent<animController>().animator.CrossFadeInFixedTime("Pickup", 0.15f);
+                        {
+                            currentWeapon.GetComponent<animController>().animator.CrossFadeInFixedTime("Pickup", 0.1f);
+                            currentWeaponPOV.GetComponent<animController>().animator.CrossFadeInFixedTime("Pickup", 0.1f);
+                        }
                     }
                     Debug.Log("Switching reversed");
                 }
@@ -466,11 +500,13 @@ public class ShootingScript : MonoBehaviour
                     {
                         emptyReloading = false;
                         currentWeapon.GetComponent<animController>().animator.CrossFadeInFixedTime("PutdownEmptyMag", 0.15f);
+                        currentWeaponPOV.GetComponent<animController>().animator.CrossFadeInFixedTime("PutdownEmptyMag", 0.15f);
                     }
                     else if (tacticalReloading)
                     {
                         tacticalReloading = false;
                         currentWeapon.GetComponent<animController>().animator.CrossFadeInFixedTime("Putdown", 0.15f);
+                        currentWeaponPOV.GetComponent<animController>().animator.CrossFadeInFixedTime("Putdown", 0.15f);
                     }
                     reloadingTime = 0f;
                     reloading = false;
@@ -490,11 +526,13 @@ public class ShootingScript : MonoBehaviour
                     if (currentWeapon.GetComponent<WeaponInfo>().currentMagAmmo == 0)
                     {
                         currentWeapon.GetComponent<animController>().animator.CrossFadeInFixedTime("PutdownEmptyMag", 0.15f);
+                        currentWeaponPOV.GetComponent<animController>().animator.CrossFadeInFixedTime("PutdownEmptyMag", 0.15f);
                         //currentWeapon.GetComponent<animController>().animator.Play("PutdownEmptyMag");
                     }
                     else
                     {
                         currentWeapon.GetComponent<animController>().animator.CrossFadeInFixedTime("Putdown", 0.15f);
+                        currentWeaponPOV.GetComponent<animController>().animator.CrossFadeInFixedTime("Putdown", 0.15f);
                         //currentWeapon.GetComponent<animController>().animator.Play("Putdown");
                     }
                     switchCounter = weaponPutDownTime;
@@ -639,16 +677,23 @@ public class ShootingScript : MonoBehaviour
                 if(currentWeapon != null)
                 {
                     if (currentWeapon.GetComponent<WeaponInfo>().currentMagAmmo == 0)
+                    {
                         currentWeapon.GetComponent<animController>().PickupEmptyMagAnimation();
+                        currentWeaponPOV.GetComponent<animController>().PickupEmptyMagAnimation();
+                    }
                     else
                     {
                         if (currentWeapon.GetComponent<WeaponInfo>().requireActionPull)
                         {
                             currentWeapon.GetComponent<animController>().PickupPullActionAnimation();
+                            currentWeaponPOV.GetComponent<animController>().PickupPullActionAnimation();
                             weaponHandlingTime = weaponPickupActionTime;
                         }
                         else
+                        {
                             currentWeapon.GetComponent<animController>().PickupAnimation();
+                            currentWeaponPOV.GetComponent<animController>().PickupAnimation();
+                        }
                     }
                 }
             }
@@ -986,5 +1031,18 @@ public class ShootingScript : MonoBehaviour
     {
         yield return new WaitForSeconds(time);
         Instantiate(hitTargetParticle, location, facingDir);
+    }
+    //Manual fix shooting animation transition stuck
+    IEnumerator EmptyReloadDelayer()
+    {
+        yield return new WaitForFixedUpdate();
+        currentWeapon.GetComponent<animController>().EmptyReloadAnimation();
+        currentWeaponPOV.GetComponent<animController>().EmptyReloadAnimation();
+    }
+    IEnumerator TacticalReloadDelayer()
+    {
+        yield return new WaitForFixedUpdate();
+        currentWeapon.GetComponent<animController>().TacticalReloadAnimation();
+        currentWeaponPOV.GetComponent<animController>().TacticalReloadAnimation();
     }
 }
