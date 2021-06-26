@@ -39,6 +39,10 @@ public class animController : MonoBehaviour
     {
         animator.Play("Shoot", -1, 0f);
     }
+    public void ShootLastRoundAnimation()
+    {
+        animator.Play("ShootLastRound", -1, 0f);
+    }
     public void TacticalReloadAnimation()
     {
         animator.Play("TacticalReload", -1, 0f);

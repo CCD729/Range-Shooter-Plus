@@ -48,9 +48,9 @@ public class ProjectileMovement : MonoBehaviour
         if (projectileType == ProjectileType.impactGrenade)
         {
             Is_Explosive = true;
-            explosionRadius = 3f;
+            explosionRadius = 5f;
             explosionForce = 5f;
-            explosionDamage = 10f;
+            explosionDamage = 40f;
             explosionUpwardModifier = 1f;
             explosionVisualTime = 1.5f;
         }

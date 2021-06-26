@@ -45,7 +45,7 @@ public class PlayerController : MonoBehaviour
         }
         speedVertical -= gravity * Time.deltaTime;
         moveDirection.y = speedVertical;
-        currentSpeed = sprinting ? speed * 2 : speed;
+        currentSpeed = sprinting ? speed * 1.5f : speed;
         controller.Move(moveDirection * Time.deltaTime * currentSpeed);
         controller.Move(moveDirection * Time.deltaTime * currentSpeed);
         //if (Input.GetKeyDown("escape"))

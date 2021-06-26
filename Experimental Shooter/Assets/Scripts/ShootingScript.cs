@@ -26,6 +26,10 @@ public class ShootingScript : MonoBehaviour
     [Tooltip("Current Active SceneManager")]
     public GameObject sceneManager;
 
+    [Header("Player")]
+    [Tooltip("Current Active Player")]
+    public GameObject player;
+
     [Header("Camera")]
     [Tooltip("Current player's camera")]
     public GameObject playerCam;
@@ -165,7 +169,8 @@ public class ShootingScript : MonoBehaviour
     [SerializeField] private bool levelPaused = false;
     [SerializeField] private bool reloading = false;
     [SerializeField] private bool switching = false;
-    
+    [SerializeField] private bool shooting = false;
+    [SerializeField] private bool shootingLastRound = false;
     [SerializeField] private bool tacticalReloading = false;
     [SerializeField] private bool emptyReloading = false;
     [SerializeField] private bool skillUsing = false;
@@ -312,7 +317,8 @@ public class ShootingScript : MonoBehaviour
                                     currentWeapon.GetComponent<animController>().animator.SetBool("isReloading", true);
                                     currentWeaponPOV.GetComponent<animController>().animator.SetBool("isReloading", true); // This is not working by itself while shooting somehow
                                     //Manual fix for shooting animations
-                                    if (currentWeapon.GetComponent<animController>().animator.GetCurrentAnimatorStateInfo(0).IsName("ShootLastRound"))
+                                    //if (currentWeapon.GetComponent<animController>().animator.GetCurrentAnimatorStateInfo(0).IsName("ShootLastRound"))
+                                    if (shootingLastRound)
                                     {
                                         currentWeapon.GetComponent<animController>().animator.Play("ShootLastRound", -1, 1f);
                                         currentWeaponPOV.GetComponent<animController>().animator.Play("ShootLastRound", -1, 1f);
@@ -368,7 +374,8 @@ public class ShootingScript : MonoBehaviour
                 currentWeapon.GetComponent<animController>().animator.SetBool("isReloading", true);
                 currentWeaponPOV.GetComponent<animController>().animator.SetBool("isReloading", true);
                 //Manual fix for shooting animations
-                if (currentWeapon.GetComponent<animController>().animator.GetCurrentAnimatorStateInfo(0).IsName("ShootLastRound"))
+                //if (currentWeapon.GetComponent<animController>().animator.GetCurrentAnimatorStateInfo(0).IsName("ShootLastRound"))
+                if (shootingLastRound)
                 {
                     currentWeapon.GetComponent<animController>().animator.Play("ShootLastRound", -1, 1f);
                     currentWeaponPOV.GetComponent<animController>().animator.Play("ShootLastRound", -1, 1f);
@@ -382,13 +389,15 @@ public class ShootingScript : MonoBehaviour
                 tacticalReloading = true;
                 currentWeapon.GetComponent<animController>().animator.SetBool("isReloading", true);
                 currentWeaponPOV.GetComponent<animController>().animator.SetBool("isReloading", true);
-                if (currentWeapon.GetComponent<animController>().animator.GetCurrentAnimatorStateInfo(0).IsName("Shoot"))
+                //if (currentWeapon.GetComponent<animController>().animator.GetCurrentAnimatorStateInfo(0).IsName("Shoot"))
+                if(shooting)
                 {
                     currentWeapon.GetComponent<animController>().animator.Play("Shoot", -1, 1f);
                     currentWeaponPOV.GetComponent<animController>().animator.Play("Shoot", -1, 1f);
                     StartCoroutine(TacticalReloadDelayer());
                 }
-                else if (currentWeapon.GetComponent<animController>().animator.GetCurrentAnimatorStateInfo(0).IsName("ShootLastRound"))
+                //else if (currentWeapon.GetComponent<animController>().animator.GetCurrentAnimatorStateInfo(0).IsName("ShootLastRound"))
+                else if (shootingLastRound)
                 {
                     currentWeapon.GetComponent<animController>().animator.Play("ShootLastRound", -1, 1f);
                     currentWeaponPOV.GetComponent<animController>().animator.Play("ShootLastRound", -1, 1f);
@@ -747,7 +756,7 @@ public class ShootingScript : MonoBehaviour
             if (skillUsing)
             {
 
-                if (skillUsingTime < skillTime+weaponPutDownTime+weaponPickupTime)
+                if (skillUsingTime < skillTime+weaponPutDownTime+weaponPickupTime+0.1f)
                 {
                     skillUsingTime += Time.fixedDeltaTime;
                 }
@@ -797,6 +806,10 @@ public class ShootingScript : MonoBehaviour
         {
             currentWeapon.GetComponent<animController>().animator.SetBool("isShootingLastRound", true);
             currentWeaponPOV.GetComponent<animController>().animator.SetBool("isShootingLastRound", true);
+            currentWeapon.GetComponent<animController>().ShootLastRoundAnimation(); // NEED FIX on unexpected animation holding problem: This should not be here
+            currentWeaponPOV.GetComponent<animController>().ShootLastRoundAnimation();
+            shootingLastRound = true;
+            StartCoroutine(ReloadShootingLastRoundAnimation());
         }
         else
         {
@@ -804,6 +817,8 @@ public class ShootingScript : MonoBehaviour
             currentWeaponPOV.GetComponent<animController>().animator.SetBool("isShooting", true);
             currentWeapon.GetComponent<animController>().ShootAnimation(); // NEED FIX on unexpected animation holding problem: This should not be here
             currentWeaponPOV.GetComponent<animController>().ShootAnimation();
+            shooting = true;
+            StartCoroutine(ReloadShootingAnimation());
         }
         Vector3 targetPoint;
         fRatePassed = false;
@@ -1010,9 +1025,10 @@ public class ShootingScript : MonoBehaviour
         currentWeaponPOV.GetComponent<animController>().animator.SetBool("isPuttingdown", false);
         var impactGrenadeObject = Instantiate(skillObjs[0], projectileFirePoint.transform.position, Quaternion.Euler(playerCam.transform.forward));
         impactGrenadeObject.transform.LookAt(playerCam.transform.forward * 1000);
+        impactGrenadeObject.GetComponent<Rigidbody>().velocity = player.GetComponent<CharacterController>().velocity;
         // TODO: Modify the throwing angle so the grenade is a bit higher than horizontal
         Vector3 currentRotation = impactGrenadeObject.transform.eulerAngles;
-        Vector3 modifiedRotation = currentRotation + new Vector3(0f, 0f, 0f);
+        Vector3 modifiedRotation = currentRotation + new Vector3(-2f, 0f, 0f);
         impactGrenadeObject.transform.localRotation = Quaternion.Euler(modifiedRotation);
         yield return new WaitForSeconds(time);
         currentWeapon.GetComponent<animController>().animator.SetBool("isPickingup", true);
@@ -1045,4 +1061,15 @@ public class ShootingScript : MonoBehaviour
         currentWeapon.GetComponent<animController>().TacticalReloadAnimation();
         currentWeaponPOV.GetComponent<animController>().TacticalReloadAnimation();
     }
+    IEnumerator ReloadShootingAnimation()
+    {
+        yield return new WaitForSeconds(0.13f);
+        shooting = false;
+    }
+    IEnumerator ReloadShootingLastRoundAnimation()
+    {
+        yield return new WaitForSeconds(0.17f);
+        shootingLastRound = false;
+    }
 }
+

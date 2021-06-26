@@ -3819,8 +3819,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b94b0b329532d734d9373b25df30f2b7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  speed: 5
-  jumpSpeed: 2
+  speed: 4
+  jumpSpeed: 3
   gravity: 8
   controller: {fileID: 549686704}
 --- !u!4 &551398682 stripped
@@ -6583,6 +6583,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   sceneManager: {fileID: 993408377}
+  player: {fileID: 549686702}
   playerCam: {fileID: 639765599}
   weaponCam: {fileID: 975027247}
   weaponContainer: {fileID: 5739572218747998864}
@@ -6643,6 +6644,8 @@ MonoBehaviour:
   levelPaused: 0
   reloading: 0
   switching: 0
+  shooting: 0
+  shootingLastRound: 0
   tacticalReloading: 0
   emptyReloading: 0
   skillUsing: 0
@@ -12592,6 +12595,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   sceneManager: {fileID: 0}
+  player: {fileID: 0}
   playerCam: {fileID: 0}
   weaponCam: {fileID: 0}
   weaponContainer: {fileID: 0}
@@ -12651,6 +12655,8 @@ MonoBehaviour:
   levelPaused: 0
   reloading: 0
   switching: 0
+  shooting: 0
+  shootingLastRound: 0
   tacticalReloading: 0
   emptyReloading: 0
   skillUsing: 0
