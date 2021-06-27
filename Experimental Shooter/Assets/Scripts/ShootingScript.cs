@@ -143,7 +143,7 @@ public class ShootingScript : MonoBehaviour
     public bool switchTrigger = false;
 
     public GameObject regularDamageDisplayObj;
-    public GameObject canvas;
+    public GameObject canvasHUD;
     public GameObject criticalDamageDisplayObj;
 
 
@@ -857,7 +857,10 @@ public class ShootingScript : MonoBehaviour
             //TODO: Recoil, HittingSound, and HittingSparkles
             var clone = Instantiate(bullet, firePoint.position, Quaternion.Euler(modifiedV));
             */
+
+            //Looks like the target is hit
             targetPoint = raycastHit.point;
+            var target = raycastHit.collider.gameObject;
 
             var bulletObject = Instantiate(currentBullet, firePoint.position, firePoint.rotation);
             bulletObject.transform.LookAt(targetPoint);
@@ -881,11 +884,11 @@ public class ShootingScript : MonoBehaviour
                 //TODO: CriticalHit Variants and reorganization
                 //if(!CriticalHit)
                 var damageDisplay = Instantiate(regularDamageDisplayObj, targetPoint, Quaternion.Euler(0f, 0f, 0f));
-                damageDisplay.transform.SetParent(canvas.transform);
+                damageDisplay.transform.SetParent(canvasHUD.transform);
+                damageDisplay.GetComponent<DamageDisplay>().hitTarget = target;
                 damageDisplay.GetComponent<DamageDisplay>().damageDisplayText.text = currentWeapon.GetComponent<WeaponInfo>().damage.ToString();
             }
-            //Looks like the target is hit
-            var target = raycastHit.collider.gameObject;
+
 
             if (target.CompareTag("Target"))
             {
@@ -1016,6 +1019,14 @@ public class ShootingScript : MonoBehaviour
             ammoBackupText.text = currentWeaponInfo.backupAmmo.ToString();
             //Set firing interval according to input firing rate
             fRateInt = 1f / currentWeaponInfo.firingRate;
+            if (currentWeaponInfo.backupAmmo > 0)
+            {
+                currentNoAmmo = false;
+            }
+            else if(currentWeaponInfo.backupAmmo == 0)
+            {
+                currentNoAmmo = true;
+            }
             firePoint = currentWeapon.transform.GetChild(0).Find("FirePoint");
             playerCam.GetComponent<CameraController>().UpdateWeaponInfo(currentWeaponInfo.maxHorizontalRecoil, currentWeaponInfo.minHorizontalRecoil, currentWeaponInfo.verticalRecoil);
         }
