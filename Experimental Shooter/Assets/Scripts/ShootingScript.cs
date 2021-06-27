@@ -142,6 +142,10 @@ public class ShootingScript : MonoBehaviour
     public bool halfSwitched = false;
     public bool switchTrigger = false;
 
+    public GameObject regularDamageDisplayObj;
+    public GameObject canvas;
+    public GameObject criticalDamageDisplayObj;
+
 
     //TODO: weapon details should come with weapon, consider making enums and dictionary or general weapon class
     /*public float firingRate = 10f;
@@ -456,7 +460,7 @@ public class ShootingScript : MonoBehaviour
             {
                 scrollDownGapped = false;
                 scrollUpGapped = false;
-                scrollBlocker = 0.1f;
+                scrollBlocker = scrollBlockTime;
             }
             if (switchTrigger)
             {
@@ -872,9 +876,17 @@ public class ShootingScript : MonoBehaviour
                 StartCoroutine(HitTargetBulletEffects(0.1f, raycastHit.point, Quaternion.FromToRotation(Vector3.up, raycastHit.normal)));
                 var cloneAu = Instantiate(HittingAudioObject, raycastHit.point, Quaternion.FromToRotation(Vector3.up, raycastHit.normal));
                 cloneAu.GetComponent<HittingAudioManager>().Play(true);
+
+                //TODO: target.getComponent<DamageScript>().TakeDamage(currentWeapon);
+                //TODO: CriticalHit Variants and reorganization
+                //if(!CriticalHit)
+                var damageDisplay = Instantiate(regularDamageDisplayObj, targetPoint, Quaternion.Euler(0f, 0f, 0f));
+                damageDisplay.transform.SetParent(canvas.transform);
+                damageDisplay.GetComponent<DamageDisplay>().damageDisplayText.text = currentWeapon.GetComponent<WeaponInfo>().damage.ToString();
             }
             //Looks like the target is hit
             var target = raycastHit.collider.gameObject;
+
             if (target.CompareTag("Target"))
             {
                 if (mode_Scored && !target.GetComponent<TargetBehavior>().hit)
