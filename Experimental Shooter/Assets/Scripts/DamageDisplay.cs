@@ -44,7 +44,7 @@ public class DamageDisplay : MonoBehaviour
             transform.position = modifiedPosition;
             lerpPercentage = 1 - (timeCounter - moveTime - fadeTimeInt) / fadeTime;
             damageDisplayText.color = new Color(damageDisplayText.color.r, damageDisplayText.color.g, damageDisplayText.color.b, lerpPercentage);
-            Debug.Log(damageDisplayText.color);
+            //Debug.Log(damageDisplayText.color);
         }
         else
         {

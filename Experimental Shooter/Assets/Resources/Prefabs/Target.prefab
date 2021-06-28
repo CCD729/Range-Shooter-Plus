@@ -14,9 +14,9 @@ GameObject:
   - component: {fileID: 3005073453509179898}
   - component: {fileID: 3005073453509179897}
   - component: {fileID: 6147320997916412697}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: Target
-  m_TagString: Target
+  m_TagString: Targets
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -115,6 +115,10 @@ MonoBehaviour:
   hit: 0
   hitMaterial: {fileID: 2100000, guid: 093b8460bff837e41bf64ba390b5489f, type: 2}
   recoverable: 0
+  damageVariant: 0
+  physicsReaction: 1
+  changeMaterial: 1
+  hitPoints: 100
 --- !u!64 &6147320997916412697
 MeshCollider:
   m_ObjectHideFlags: 0

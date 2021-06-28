@@ -429,13 +429,12 @@ public class ShootingScript : MonoBehaviour
             Debug.Log("Skill Ready");
         }
 
-        //Skill Use
+        //Skill Use (TODO: skill animation while weapon handling and empty handed)
         if (Input.GetKeyDown(skillKey) && weaponEquipped && !reloading && !skillUsing && skillReady && !levelPaused && !levelEnded)
         {
             skillReady = false;
             skillUsing = true;
             skillText.text = "Skill Active";
-            //TODO: In future split animation by putdown/pickup for other skill durations
             //currentWeapon.GetComponent<animController>().SkillPutdownAnimation();
             //currentWeaponPOV.GetComponent<animController>().SkillPutdownAnimation();
             currentWeapon.GetComponent<animController>().animator.SetBool("isPuttingdown", true);
@@ -866,9 +865,9 @@ public class ShootingScript : MonoBehaviour
             bulletObject.transform.LookAt(targetPoint);
             bulletObject.GetComponent<BulletMovement>().hit = true;
             bulletObject.GetComponent<BulletMovement>().hitPoint = raycastHit.point;
-
+            Debug.Log(target.tag);
             //Create bullet hit effects
-            if (!raycastHit.collider.gameObject.CompareTag("Target") && !raycastHit.collider.gameObject.CompareTag("MovingTarget") && !raycastHit.collider.gameObject.CompareTag("RailTarget"))
+            if (!target.CompareTag("Targets") /*&& !raycastHit.collider.gameObject.CompareTag("MovingTarget") && !raycastHit.collider.gameObject.CompareTag("RailTarget")*/)
             {
                 StartCoroutine(HitOtherBulletEffects(0.1f, raycastHit.point, Quaternion.FromToRotation(Vector3.up, raycastHit.normal)));
                 var cloneAu = Instantiate(HittingAudioObject, raycastHit.point, Quaternion.FromToRotation(Vector3.up, raycastHit.normal));
@@ -876,20 +875,50 @@ public class ShootingScript : MonoBehaviour
             }
             else
             {
+                Debug.Log("SHIT");
                 StartCoroutine(HitTargetBulletEffects(0.1f, raycastHit.point, Quaternion.FromToRotation(Vector3.up, raycastHit.normal)));
                 var cloneAu = Instantiate(HittingAudioObject, raycastHit.point, Quaternion.FromToRotation(Vector3.up, raycastHit.normal));
                 cloneAu.GetComponent<HittingAudioManager>().Play(true);
+                GameObject damageDisplay;
 
-                //TODO: target.getComponent<DamageScript>().TakeDamage(currentWeapon);
-                //TODO: CriticalHit Variants and reorganization
-                //if(!CriticalHit)
-                var damageDisplay = Instantiate(regularDamageDisplayObj, targetPoint, Quaternion.Euler(0f, 0f, 0f));
-                damageDisplay.transform.SetParent(canvasHUD.transform);
-                damageDisplay.GetComponent<DamageDisplay>().hitTarget = target;
-                damageDisplay.GetComponent<DamageDisplay>().damageDisplayText.text = currentWeapon.GetComponent<WeaponInfo>().damage.ToString();
+                if (LayerMask.LayerToName(target.layer) == "HitablesDamageCriticalVariant")
+                {
+                    target.transform.parent.GetComponent<TargetBehavior>().DamageBehavior(true);
+                    damageDisplay = Instantiate(criticalDamageDisplayObj, targetPoint, Quaternion.Euler(0f, 0f, 0f));
+                    damageDisplay.transform.SetParent(canvasHUD.transform);
+                    damageDisplay.GetComponent<DamageDisplay>().hitTarget = target;
+                    damageDisplay.GetComponent<DamageDisplay>().damageDisplayText.text = (currentWeapon.GetComponent<WeaponInfo>().damage*2).ToString();
+                    if (target.transform.parent.GetComponent<TargetBehavior>().physicsReaction)
+                        target.transform.parent.GetComponent<TargetBehavior>().Hit(raycastHit.point, playerCam.transform.forward);
+                }
+                else if (LayerMask.LayerToName(target.layer) == "HitablesDamageVariant")
+                {
+                    target.transform.parent.GetComponent<TargetBehavior>().DamageBehavior(false);
+                    damageDisplay = Instantiate(regularDamageDisplayObj, targetPoint, Quaternion.Euler(0f, 0f, 0f));
+                    damageDisplay.transform.SetParent(canvasHUD.transform);
+                    damageDisplay.GetComponent<DamageDisplay>().hitTarget = target;
+                    damageDisplay.GetComponent<DamageDisplay>().damageDisplayText.text = currentWeapon.GetComponent<WeaponInfo>().damage.ToString();
+                    if (target.transform.parent.GetComponent<TargetBehavior>().physicsReaction)
+                        target.transform.parent.GetComponent<TargetBehavior>().Hit(raycastHit.point, playerCam.transform.forward);
+                }
+                else
+                {
+                    //target.getComponent<DamageScript>().TakeDamage(currentWeapon);
+                    //TODO: CriticalHit Variants and reorganization
+                    //if(!CriticalHit)
+                    target.GetComponent<TargetBehavior>().DamageBehavior(false);
+                    damageDisplay = Instantiate(regularDamageDisplayObj, targetPoint, Quaternion.Euler(0f, 0f, 0f));
+                    damageDisplay.transform.SetParent(canvasHUD.transform);
+                    damageDisplay.GetComponent<DamageDisplay>().hitTarget = target;
+                    damageDisplay.GetComponent<DamageDisplay>().damageDisplayText.text = currentWeapon.GetComponent<WeaponInfo>().damage.ToString();
+                    if (target.GetComponent<TargetBehavior>().physicsReaction)
+                        target.GetComponent<TargetBehavior>().Hit(raycastHit.point, playerCam.transform.forward);
+                }
+                //Scoring code here
+
             }
 
-
+            //TODO: Integrate scoring to above function
             if (target.CompareTag("Target"))
             {
                 if (mode_Scored && !target.GetComponent<TargetBehavior>().hit)

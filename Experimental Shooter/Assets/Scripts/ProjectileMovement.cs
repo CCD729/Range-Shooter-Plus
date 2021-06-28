@@ -49,7 +49,7 @@ public class ProjectileMovement : MonoBehaviour
         {
             Is_Explosive = true;
             explosionRadius = 5f;
-            explosionForce = 5f;
+            explosionForce = 6f;
             explosionDamage = 40f;
             explosionUpwardModifier = 1f;
             explosionVisualTime = 1.5f;
