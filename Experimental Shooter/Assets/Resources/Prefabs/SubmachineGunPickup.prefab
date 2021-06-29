@@ -10144,9 +10144,10 @@ GameObject:
   m_Component:
   - component: {fileID: 2597467542226889556}
   - component: {fileID: 7978074281780614709}
-  - component: {fileID: 5206864545002584566}
   - component: {fileID: 1682905450670182049}
   - component: {fileID: 4281972770332835336}
+  - component: {fileID: 5206864545002584566}
+  - component: {fileID: 7406578871972360558}
   m_Layer: 13
   m_Name: SubmachineGunPickup
   m_TagString: Pickups
@@ -10208,19 +10209,6 @@ MonoBehaviour:
   FireModes: 0000000002000000
   bulletObj: {fileID: 8388713027766119384, guid: 2646ff4814621c64d9452ebec4911ab1,
     type: 3}
---- !u!65 &5206864545002584566
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7706484958673966522}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
-  m_Enabled: 1
-  serializedVersion: 2
-  m_Size: {x: 0.34765923, y: 1.0975674, z: 2.1086657}
-  m_Center: {x: -0.00030761957, y: -0.33994597, z: 1.0526024}
 --- !u!54 &1682905450670182049
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -10252,6 +10240,32 @@ MonoBehaviour:
   player: {fileID: 0}
   pickUpRange: 3
   pickupHandler: {fileID: 0}
+--- !u!65 &5206864545002584566
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7706484958673966522}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 0.3124668, y: 0.30935386, z: 2.1086657}
+  m_Center: {x: 0.00061849505, y: -0.0025648028, z: 1.0526024}
+--- !u!65 &7406578871972360558
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7706484958673966522}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 0.3124668, y: 0.7257712, z: 0.24592781}
+  m_Center: {x: 0.0006184876, y: -0.52013135, z: 0.45203614}
 --- !u!1 &8027908344557616280
 GameObject:
   m_ObjectHideFlags: 0
