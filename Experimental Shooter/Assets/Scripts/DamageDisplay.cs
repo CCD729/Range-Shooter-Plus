@@ -8,13 +8,14 @@ public class DamageDisplay : MonoBehaviour
     public Text damageDisplayText;
     public GameObject hitTarget;
     public Camera playerCam;
-    Vector3 initPosition, modifiedPosition, diffPosition;
+    Vector3 initPosition, modifiedPosition, diffPosition, finalPositionWorldSpace;
     public float hitYPosition = 0f;
     public float moveTime = 1.5f;
     public float fadeTimeInt = 0.5f;
     public float fadeTime = 0.5f;
     public float timeCounter = 0f;
     public float lerpPercentage = 0f;
+    private Vector2 canvasPt;
 
     void Start()
     {
@@ -37,20 +38,23 @@ public class DamageDisplay : MonoBehaviour
         timeCounter += Time.deltaTime;
         if (timeCounter <= moveTime)
         {
-            transform.position = Vector3.Lerp(initPosition, modifiedPosition, timeCounter / moveTime);
+            finalPositionWorldSpace = Vector3.Lerp(initPosition, modifiedPosition, timeCounter / moveTime);
         }
         else if (timeCounter >= (moveTime + fadeTimeInt) && (timeCounter <= moveTime + fadeTimeInt + fadeTime) )
         {
-            transform.position = modifiedPosition;
+            finalPositionWorldSpace = modifiedPosition;
             lerpPercentage = 1 - (timeCounter - moveTime - fadeTimeInt) / fadeTime;
             damageDisplayText.color = new Color(damageDisplayText.color.r, damageDisplayText.color.g, damageDisplayText.color.b, lerpPercentage);
             //Debug.Log(damageDisplayText.color);
         }
         else
         {
-            transform.position = modifiedPosition;
+            finalPositionWorldSpace = modifiedPosition;
         }
-        if(timeCounter > moveTime + fadeTimeInt + fadeTime)
+        //RectTransformUtility.ScreenPointToLocalPointInRectangle(gameObject.GetComponent<RectTransform>(), finalPositionWorldSpace, playerCam, out canvasPt);
+        //gameObject.GetComponent<RectTransform>().anchoredPosition = canvasPt;
+        transform.position = finalPositionWorldSpace;
+        if (timeCounter > moveTime + fadeTimeInt + fadeTime)
         {
             Destroy(gameObject);
         }

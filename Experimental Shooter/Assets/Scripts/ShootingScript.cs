@@ -139,11 +139,18 @@ public class ShootingScript : MonoBehaviour
     public float pickupHandlingTime = 0f;
     public float weaponHandlingTime = 0f;
     public float switchCounter = 0f;
+    public float pickupDistance = 4f;
     public bool halfSwitched = false;
     public bool switchTrigger = false;
+    public bool pickupLookingat = false;
+    public string pickupName = "";
+    public GameObject pickupObj;
+    public PickupHandler pickupHandler;
+    public GUIStyle stylePickupBoxGUI = new GUIStyle();
 
     public GameObject regularDamageDisplayObj;
     public GameObject canvasHUD;
+    public GameObject canvas1stCamera;
     public GameObject criticalDamageDisplayObj;
 
 
@@ -194,6 +201,7 @@ public class ShootingScript : MonoBehaviour
 
     [Header("Raycasting LayerMask")]
     public LayerMask layerMask;
+    public LayerMask layerMaskPickup;
 
     [Header("Key Bindings")]
     [SerializeField] private KeyCode skillKey = KeyCode.G;
@@ -202,6 +210,7 @@ public class ShootingScript : MonoBehaviour
     [SerializeField] private KeyCode aimKey = KeyCode.Mouse1;
     [SerializeField] private KeyCode switchKey1 = KeyCode.Alpha1;
     [SerializeField] private KeyCode switchKey2 = KeyCode.Alpha2;
+    [SerializeField] private KeyCode pickupKey = KeyCode.E;
     [SerializeField] private bool scrollUpGapped = false;
     [SerializeField] private bool scrollDownGapped = false;
     [SerializeField] private float scrollBlocker = 0f;
@@ -211,6 +220,7 @@ public class ShootingScript : MonoBehaviour
     //Ray
     private Ray ray;
     private RaycastHit raycastHit;
+    private RaycastHit raycastHitPickup;
     /*//Current bullets left in mag
     private int currentMag = 0;*/
     //Reload counter
@@ -251,6 +261,8 @@ public class ShootingScript : MonoBehaviour
         }
         if(weaponEquipped)
             UpdateWeaponInfo();
+
+        stylePickupBoxGUI.alignment = TextAnchor.MiddleCenter;
     }
 
     void Update()
@@ -297,6 +309,37 @@ public class ShootingScript : MonoBehaviour
         {
             // Get a ray from the camera pointing forwards
             ray = new Ray(playerCam.transform.position, playerCam.transform.forward);
+
+            //Pickup detection using shooting ray
+            bool pickUpHit = Physics.Raycast(ray, out raycastHitPickup, pickupDistance, layerMaskPickup);
+            if (pickUpHit)
+            {
+                if(LayerMask.LayerToName(raycastHitPickup.collider.gameObject.layer) == "Pickups")
+                {
+                    pickupLookingat = true;
+                    pickupObj = raycastHitPickup.collider.gameObject;
+                    if (pickupName == "")
+                    {
+                        //currently temp support for weapons only
+                        pickupName = raycastHitPickup.collider.gameObject.GetComponent<WeaponInfo>().name;
+                    }
+                }
+                else
+                {
+                    pickupLookingat = false;
+                    pickupObj = null;
+                    if (pickupName != "")
+                    {
+                        pickupName = "";
+                    }
+                }
+            }
+
+            if(pickupLookingat && Input.GetKeyDown(pickupKey))
+            {
+                pickupHandler.Pickup(pickupObj.GetComponent<WeaponInfo>(), pickupObj);
+            }
+
             if (weaponEquipped)
             {
                 if (!currentWeapon.GetComponent<WeaponInfo>().melee)
@@ -400,13 +443,19 @@ public class ShootingScript : MonoBehaviour
                     currentWeaponPOV.GetComponent<animController>().animator.Play("Shoot", -1, 1f);
                     StartCoroutine(TacticalReloadDelayer());
                 }
-                //else if (currentWeapon.GetComponent<animController>().animator.GetCurrentAnimatorStateInfo(0).IsName("ShootLastRound"))
+                else
+                {
+                    //This is a safety measure to solve unknown cause animation problems
+                    currentWeapon.GetComponent<animController>().TacticalReloadAnimation();
+                    currentWeaponPOV.GetComponent<animController>().TacticalReloadAnimation();
+                }
+                /*//else if (currentWeapon.GetComponent<animController>().animator.GetCurrentAnimatorStateInfo(0).IsName("ShootLastRound"))
                 else if (shootingLastRound)
                 {
                     currentWeapon.GetComponent<animController>().animator.Play("ShootLastRound", -1, 1f);
                     currentWeaponPOV.GetComponent<animController>().animator.Play("ShootLastRound", -1, 1f);
                     StartCoroutine(EmptyReloadDelayer());
-                }
+                }*/
                 img_reloadRing.GetComponent<ReloadRingAnim>().Play(currentWeapon.GetComponent<WeaponInfo>().tacticalReloadTime);
                 this.weaponTacticalReloadSound();
             }
@@ -812,6 +861,7 @@ public class ShootingScript : MonoBehaviour
             currentWeapon.GetComponent<animController>().ShootLastRoundAnimation(); // NEED FIX on unexpected animation holding problem: This should not be here
             currentWeaponPOV.GetComponent<animController>().ShootLastRoundAnimation();
             shootingLastRound = true;
+            StopCoroutine(ReloadShootingLastRoundAnimation());
             StartCoroutine(ReloadShootingLastRoundAnimation());
         }
         else
@@ -821,6 +871,7 @@ public class ShootingScript : MonoBehaviour
             currentWeapon.GetComponent<animController>().ShootAnimation(); // NEED FIX on unexpected animation holding problem: This should not be here
             currentWeaponPOV.GetComponent<animController>().ShootAnimation();
             shooting = true;
+            StopCoroutine(ReloadShootingAnimation());
             StartCoroutine(ReloadShootingAnimation());
         }
         Vector3 targetPoint;
@@ -865,7 +916,7 @@ public class ShootingScript : MonoBehaviour
             bulletObject.transform.LookAt(targetPoint);
             bulletObject.GetComponent<BulletMovement>().hit = true;
             bulletObject.GetComponent<BulletMovement>().hitPoint = raycastHit.point;
-            Debug.Log(target.tag);
+            //Debug.Log(target.tag);
             //Create bullet hit effects
             if (!target.CompareTag("Targets") /*&& !raycastHit.collider.gameObject.CompareTag("MovingTarget") && !raycastHit.collider.gameObject.CompareTag("RailTarget")*/)
             {
@@ -875,7 +926,6 @@ public class ShootingScript : MonoBehaviour
             }
             else
             {
-                Debug.Log("SHIT");
                 StartCoroutine(HitTargetBulletEffects(0.1f, raycastHit.point, Quaternion.FromToRotation(Vector3.up, raycastHit.normal)));
                 var cloneAu = Instantiate(HittingAudioObject, raycastHit.point, Quaternion.FromToRotation(Vector3.up, raycastHit.normal));
                 cloneAu.GetComponent<HittingAudioManager>().Play(true);
@@ -885,7 +935,9 @@ public class ShootingScript : MonoBehaviour
                 {
                     target.transform.parent.GetComponent<TargetBehavior>().DamageBehavior(true);
                     damageDisplay = Instantiate(criticalDamageDisplayObj, targetPoint, Quaternion.Euler(0f, 0f, 0f));
+                    //damageDisplay.transform.SetParent(canvas1stCamera.transform);
                     damageDisplay.transform.SetParent(canvasHUD.transform);
+                    damageDisplay.GetComponent<DamageDisplay>().playerCam = playerCam.GetComponent<Camera>();
                     damageDisplay.GetComponent<DamageDisplay>().hitTarget = target;
                     damageDisplay.GetComponent<DamageDisplay>().damageDisplayText.text = (currentWeapon.GetComponent<WeaponInfo>().damage*2).ToString();
                     if (target.transform.parent.GetComponent<TargetBehavior>().physicsReaction)
@@ -895,7 +947,9 @@ public class ShootingScript : MonoBehaviour
                 {
                     target.transform.parent.GetComponent<TargetBehavior>().DamageBehavior(false);
                     damageDisplay = Instantiate(regularDamageDisplayObj, targetPoint, Quaternion.Euler(0f, 0f, 0f));
+                    //damageDisplay.transform.SetParent(canvas1stCamera.transform);
                     damageDisplay.transform.SetParent(canvasHUD.transform);
+                    damageDisplay.GetComponent<DamageDisplay>().playerCam = playerCam.GetComponent<Camera>();
                     damageDisplay.GetComponent<DamageDisplay>().hitTarget = target;
                     damageDisplay.GetComponent<DamageDisplay>().damageDisplayText.text = currentWeapon.GetComponent<WeaponInfo>().damage.ToString();
                     if (target.transform.parent.GetComponent<TargetBehavior>().physicsReaction)
@@ -908,6 +962,7 @@ public class ShootingScript : MonoBehaviour
                     //if(!CriticalHit)
                     target.GetComponent<TargetBehavior>().DamageBehavior(false);
                     damageDisplay = Instantiate(regularDamageDisplayObj, targetPoint, Quaternion.Euler(0f, 0f, 0f));
+                    //damageDisplay.transform.SetParent(canvas1stCamera.transform);
                     damageDisplay.transform.SetParent(canvasHUD.transform);
                     damageDisplay.GetComponent<DamageDisplay>().hitTarget = target;
                     damageDisplay.GetComponent<DamageDisplay>().damageDisplayText.text = currentWeapon.GetComponent<WeaponInfo>().damage.ToString();
@@ -1122,6 +1177,14 @@ public class ShootingScript : MonoBehaviour
     {
         yield return new WaitForSecondsRealtime(0.17f);
         shootingLastRound = false;
+    }
+    //Temporary GUI for pickup
+    private void OnGUI()
+    {
+        if (pickupLookingat)
+        {
+            GUI.Box(new Rect(0, -30f, Screen.width/4, Screen.height/6), "[E] Pick up " + pickupName, stylePickupBoxGUI);
+        }
     }
 }
 
