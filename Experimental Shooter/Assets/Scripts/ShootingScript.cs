@@ -1115,12 +1115,12 @@ public class ShootingScript : MonoBehaviour
     }
     IEnumerator ReloadShootingAnimation()
     {
-        yield return new WaitForSeconds(0.13f);
+        yield return new WaitForSecondsRealtime(0.13f);
         shooting = false;
     }
     IEnumerator ReloadShootingLastRoundAnimation()
     {
-        yield return new WaitForSeconds(0.17f);
+        yield return new WaitForSecondsRealtime(0.17f);
         shootingLastRound = false;
     }
 }
