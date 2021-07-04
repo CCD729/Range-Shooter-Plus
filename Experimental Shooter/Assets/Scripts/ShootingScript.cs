@@ -808,7 +808,7 @@ public class ShootingScript : MonoBehaviour
             if (skillUsing)
             {
 
-                if (skillUsingTime < skillTime+weaponPutDownTime+weaponPickupTime+0.1f)
+                if (skillUsingTime < skillTime+weaponPutDownTime+weaponPickupTime+0.3f)
                 {
                     skillUsingTime += Time.fixedDeltaTime;
                 }
@@ -933,7 +933,7 @@ public class ShootingScript : MonoBehaviour
 
                 if (LayerMask.LayerToName(target.layer) == "HitablesDamageCriticalVariant")
                 {
-                    target.transform.parent.GetComponent<TargetBehavior>().DamageBehavior(true);
+                    target.transform.parent.GetComponent<TargetBehavior>().DamageBehavior(true, currentWeapon.GetComponent<WeaponInfo>().damage);
                     damageDisplay = Instantiate(criticalDamageDisplayObj, targetPoint, Quaternion.Euler(0f, 0f, 0f));
                     //damageDisplay.transform.SetParent(canvas1stCamera.transform);
                     damageDisplay.transform.SetParent(canvasHUD.transform);
@@ -945,7 +945,7 @@ public class ShootingScript : MonoBehaviour
                 }
                 else if (LayerMask.LayerToName(target.layer) == "HitablesDamageVariant")
                 {
-                    target.transform.parent.GetComponent<TargetBehavior>().DamageBehavior(false);
+                    target.transform.parent.GetComponent<TargetBehavior>().DamageBehavior(false, currentWeapon.GetComponent<WeaponInfo>().damage);
                     damageDisplay = Instantiate(regularDamageDisplayObj, targetPoint, Quaternion.Euler(0f, 0f, 0f));
                     //damageDisplay.transform.SetParent(canvas1stCamera.transform);
                     damageDisplay.transform.SetParent(canvasHUD.transform);
@@ -960,7 +960,7 @@ public class ShootingScript : MonoBehaviour
                     //target.getComponent<DamageScript>().TakeDamage(currentWeapon);
                     //TODO: CriticalHit Variants and reorganization
                     //if(!CriticalHit)
-                    target.GetComponent<TargetBehavior>().DamageBehavior(false);
+                    target.GetComponent<TargetBehavior>().DamageBehavior(false, currentWeapon.GetComponent<WeaponInfo>().damage);
                     damageDisplay = Instantiate(regularDamageDisplayObj, targetPoint, Quaternion.Euler(0f, 0f, 0f));
                     //damageDisplay.transform.SetParent(canvas1stCamera.transform);
                     damageDisplay.transform.SetParent(canvasHUD.transform);
@@ -1132,7 +1132,7 @@ public class ShootingScript : MonoBehaviour
         currentWeaponPOV.GetComponent<animController>().animator.SetBool("isPuttingdown", false);
         var impactGrenadeObject = Instantiate(skillObjs[0], projectileFirePoint.transform.position, Quaternion.Euler(playerCam.transform.forward));
         impactGrenadeObject.transform.LookAt(playerCam.transform.forward * 1000);
-        impactGrenadeObject.GetComponent<Rigidbody>().velocity = player.GetComponent<CharacterController>().velocity;
+        impactGrenadeObject.GetComponent<Rigidbody>().velocity = new Vector3 (player.GetComponent<CharacterController>().velocity.x, player.GetComponent<CharacterController>().velocity.y/2, player.GetComponent<CharacterController>().velocity.z);
         // TODO: Modify the throwing angle so the grenade is a bit higher than horizontal
         Vector3 currentRotation = impactGrenadeObject.transform.eulerAngles;
         Vector3 modifiedRotation = currentRotation + new Vector3(-2f, 0f, 0f);

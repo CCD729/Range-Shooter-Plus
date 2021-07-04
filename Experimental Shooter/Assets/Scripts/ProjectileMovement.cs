@@ -27,11 +27,15 @@ public class ProjectileMovement : MonoBehaviour
     [SerializeField]
     private float explosionForce = 1f;
     [SerializeField]
-    private float explosionDamage = 1f;
+    private int explosionDamage = 1;
     [SerializeField]
     private float explosionUpwardModifier = 1f;
     [SerializeField]
     private float explosionVisualTime = 1f;
+    [SerializeField]
+    private float maxExplosionDamageRange = 2f;
+    [SerializeField]
+    private int minExplosionDamage = 10;
 
     public Vector3 spawnPoint;
     private Rigidbody rb;
@@ -48,11 +52,13 @@ public class ProjectileMovement : MonoBehaviour
         if (projectileType == ProjectileType.impactGrenade)
         {
             Is_Explosive = true;
-            explosionRadius = 5f;
+            explosionRadius = 6f;
             explosionForce = 6f;
-            explosionDamage = 40f;
+            explosionDamage = 50;
             explosionUpwardModifier = 1f;
             explosionVisualTime = 1.5f;
+            maxExplosionDamageRange = 3f;
+            minExplosionDamage = 10;
         }
 
         //Let the Projectile fly
@@ -93,7 +99,7 @@ public class ProjectileMovement : MonoBehaviour
         {
             if (projectileType == ProjectileType.impactGrenade)
             {
-                ExplosionPhysics(transform.position, explosionRadius, explosionForce, explosionDamage);
+                ExplosionPhysicsDamage(transform.position, explosionRadius, explosionForce, explosionDamage);
                 ExplosionVisual(transform.position, explosionRadius, explosionVisualTime);
             }
             this.Destroy();
@@ -104,15 +110,41 @@ public class ProjectileMovement : MonoBehaviour
         //TODO: SFX and PARTICLES
         Destroy(gameObject);
     }
-    void ExplosionPhysics(Vector3 center, float radius, float force, float damage)
+    void ExplosionPhysicsDamage(Vector3 center, float radius, float force, int damage)
     {
         Collider[] hitColliders = Physics.OverlapSphere(center, radius);
+        List<GameObject> finishedObj = new List<GameObject>();
+        int calculatedDamage = 0;
         foreach (var hitCollider in hitColliders)
         {
             //TODO: calculate damage
             //hitCollider.SendMessage("AddDamage");
-            if(hitCollider.gameObject.GetComponent<Rigidbody>() != null)
-            hitCollider.gameObject.GetComponent<Rigidbody>().AddExplosionForce(force, center, radius, explosionUpwardModifier, ForceMode.Impulse);
+            if(hitCollider.gameObject.CompareTag("Targets") && LayerMask.LayerToName(hitCollider.gameObject.layer) != "HitablesDamageVariant" && LayerMask.LayerToName(hitCollider.gameObject.layer) != "HitablesDamageCriticalVariant")
+            {
+                bool repeatedTarget = false;
+                foreach (GameObject finishedObject in finishedObj)
+                {
+                    if (GameObject.ReferenceEquals(finishedObject, hitCollider.gameObject))
+                        repeatedTarget = true;
+                }
+                if (!repeatedTarget)
+                {
+                    //TODO: DAMAGE CALCULATION
+                    calculatedDamage = Vector3.Distance(hitCollider.transform.position, center) <= maxExplosionDamageRange ? damage : (int)(minExplosionDamage + (explosionDamage - minExplosionDamage) * (radius - Mathf.Min(Vector3.Distance(hitCollider.transform.position, center), radius)) / (Mathf.Max(Vector3.Distance(hitCollider.transform.position, center), radius) - maxExplosionDamageRange));
+                    hitCollider.gameObject.GetComponent<TargetBehavior>().DamageBehavior(false, calculatedDamage);
+                    var damageDisplay = Instantiate(EventSystem.GetComponent<ShootingScript>().regularDamageDisplayObj, hitCollider.transform.position, Quaternion.Euler(0f, 0f, 0f));
+                    //damageDisplay.transform.SetParent(canvas1stCamera.transform);
+                    damageDisplay.transform.SetParent(EventSystem.GetComponent<ShootingScript>().canvasHUD.transform);
+                    damageDisplay.GetComponent<DamageDisplay>().hitTarget = hitCollider.gameObject;
+                    damageDisplay.GetComponent<DamageDisplay>().damageDisplayText.text = calculatedDamage.ToString();
+                    if (hitCollider.gameObject.GetComponent<TargetBehavior>().physicsReaction)
+                        hitCollider.gameObject.GetComponent<TargetBehavior>().HitByProjectile();
+                    finishedObj.Add(hitCollider.gameObject);
+                }
+            }
+            //Require further change to adapt non-target situation or composed colliders
+            if (hitCollider.gameObject.GetComponent<Rigidbody>() != null)
+                hitCollider.gameObject.GetComponent<Rigidbody>().AddExplosionForce(force, center, radius, explosionUpwardModifier, ForceMode.Impulse);
             if (hitCollider.gameObject.CompareTag("Target") || hitCollider.gameObject.CompareTag("MovingTarget") || hitCollider.gameObject.CompareTag("RailTarget"))
             {
                 EventSystem.GetComponent<ShootingScript>().hitByProjectile(hitCollider.gameObject);

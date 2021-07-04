@@ -3680,7 +3680,9 @@ GameObject:
   m_Component:
   - component: {fileID: 2794850282873352740}
   - component: {fileID: 3754357730292192462}
-  m_Layer: 0
+  - component: {fileID: 6339004896106998723}
+  - component: {fileID: 5727949311115562069}
+  m_Layer: 16
   m_Name: StaticTarget
   m_TagString: Targets
   m_Icon: {fileID: 0}
@@ -3725,3 +3727,29 @@ MonoBehaviour:
   physicsReaction: 0
   changeMaterial: 0
   hitPoints: 100
+--- !u!65 &6339004896106998723
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6657995473282012008}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 2, y: 2.5198498, z: 0.20000076}
+  m_Center: {x: 0, y: 3.0106668, z: 0}
+--- !u!65 &5727949311115562069
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6657995473282012008}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 0.755507, y: 0.73235893, z: 0.20000076}
+  m_Center: {x: -0.0020225048, y: 4.6338205, z: 0}

@@ -23,7 +23,7 @@ public class WeaponInfo : MonoBehaviour
     //Weapon properties
     new public string name;
     public int weaponID;
-    public float damage;
+    public int damage;
     public WeaponType weaponType;
 
     [Tooltip("Return true if the weapon is a melee weapon")]

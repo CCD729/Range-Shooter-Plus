@@ -9,7 +9,7 @@ public class DamageDisplay : MonoBehaviour
     public GameObject hitTarget;
     public Camera playerCam;
     Vector3 initPosition, modifiedPosition, diffPosition, finalPositionWorldSpace;
-    public float hitYPosition = 0f;
+    public Vector3 firstHitPosition = Vector3.zero;
     public float moveTime = 1.5f;
     public float fadeTimeInt = 0.5f;
     public float fadeTime = 0.5f;
@@ -21,7 +21,7 @@ public class DamageDisplay : MonoBehaviour
     {
         damageDisplayText = gameObject.GetComponent<Text>();
         playerCam = GameObject.Find("Player1stCam").GetComponent<Camera>();
-        hitYPosition = transform.position.y;
+        firstHitPosition = transform.position;
         initPosition = playerCam.WorldToScreenPoint(transform.position);
         transform.position = initPosition;
         //Considering making modified position dynamic...
@@ -33,7 +33,8 @@ public class DamageDisplay : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        initPosition = playerCam.WorldToScreenPoint(new Vector3(hitTarget.transform.position.x, hitYPosition, hitTarget.transform.position.z));
+        //initPosition = playerCam.WorldToScreenPoint(new Vector3(hitTarget.transform.position.x, hitYPosition, hitTarget.transform.position.z));
+        initPosition = playerCam.WorldToScreenPoint(firstHitPosition);
         modifiedPosition = initPosition + diffPosition;
         timeCounter += Time.deltaTime;
         if (timeCounter <= moveTime)

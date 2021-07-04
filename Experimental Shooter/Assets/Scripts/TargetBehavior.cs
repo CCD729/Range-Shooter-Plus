@@ -89,7 +89,7 @@ public class TargetBehavior : MonoBehaviour
         hit = false;
         recovering = false;
     }
-    public void DamageBehavior(bool isCritical)
+    public void DamageBehavior(bool isCritical, int damage)
     {
         //If the damage should trigger something... like hitPoint lost
     }
