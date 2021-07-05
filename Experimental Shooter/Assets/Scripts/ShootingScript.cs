@@ -7,7 +7,7 @@ public class ShootingScript : MonoBehaviour
 {
     //public GameObject dummyObj = new GameObject("dummyObj");
     //create enum for future additions
-    enum Skill
+    enum Equipment
     {
         impactGrenade
     }
@@ -169,17 +169,20 @@ public class ShootingScript : MonoBehaviour
 
     [Header("Equipment/Skill")]
     //TODO: Create dictionary containing equipments so this becomes "skillObj"s and the current obj are passed in dynamically
-    public GameObject[] skillObjs;
+    public GameObject[] equipmentObjs;
     [Tooltip("Current primary skill/equipment gameObject (WIP)")]
-    public GameObject primarySkillObj;
+    public GameObject primaryEquipmentObj;
     [Tooltip("Current secondary skill/equipment gameObject (WIP)")]
-    public GameObject secondarySkillObj;
+    public GameObject secondaryEquipmentObj;
 
     //Skill/Equipment (when there are more skills would put data in dictionary for better management)
-    [SerializeField] private Skill skill;
+    [SerializeField] private Equipment equipment;
     [SerializeField] private float skillCoolDown = 5f;
     [SerializeField] private bool skillReady = true;
     [SerializeField] private float skillTime = 1f; //Skill Interval
+    public bool equipmentEquippedPrimary = false;
+    public bool equipmentEquippedSecondary = false;
+
     private float skillCDCounter = 0f;
 
     [Header("Bool Conditions")]
@@ -263,13 +266,14 @@ public class ShootingScript : MonoBehaviour
         Time.timeScale = 1;
         //player = this.transform.parent.gameObject;
 
-        if (skill == Skill.impactGrenade)
+        if (equipment == Equipment.impactGrenade)
         {
             skillTime = 0.5f;
             skillCoolDown = 5f;
         }
         if(weaponEquipped)
             UpdateWeaponInfo();
+        UpdateEquipmentInfo();
 
         stylePickupBoxGUI.alignment = TextAnchor.MiddleLeft;
     }
@@ -332,8 +336,10 @@ public class ShootingScript : MonoBehaviour
 
                     if (pickupName == "")
                     {
-                        //currently temp support for weapons only
-                        pickupName = raycastHitPickup.collider.gameObject.GetComponent<WeaponInfo>().name;
+                        if (raycastHitPickup.collider.gameObject.CompareTag("Weapon"))
+                            pickupName = raycastHitPickup.collider.gameObject.GetComponent<WeaponInfo>().name;
+                        if (raycastHitPickup.collider.gameObject.CompareTag("Equipment"))
+                            pickupName = raycastHitPickup.collider.gameObject.GetComponent<EquipmentInfo>().name;
                     }
                 }
                 else if (raycastHitPickup.collider.gameObject.CompareTag("Interactables"))
@@ -369,7 +375,11 @@ public class ShootingScript : MonoBehaviour
 
             if(pickupLookingat && Input.GetKeyDown(pickupKey))
             {
-                pickupHandler.Pickup(pickupObj.GetComponent<WeaponInfo>(), pickupObj);
+                if (raycastHitPickup.collider.gameObject.CompareTag("Weapon"))
+                    pickupHandler.PickupWeapon(pickupObj.GetComponent<WeaponInfo>(), pickupObj);
+                if (raycastHitPickup.collider.gameObject.CompareTag("Equipment"))
+                    pickupHandler.PickupEquipment(pickupObj.GetComponent<EquipmentInfo>(), pickupObj);
+
             }
 
             if (interactablesLookingat && Input.GetKeyDown(interactionKey) && !interactionCoolDown)
@@ -534,18 +544,21 @@ public class ShootingScript : MonoBehaviour
             Debug.Log("Skill Ready");
         }
 
-        //Skill Use (TODO: skill animation while weapon handling and empty handed)
-        if (Input.GetKeyDown(skillKey) && weaponEquipped && !reloading && !skillUsing && skillReady && !levelPaused && !levelEnded)
+        //Equipment1 Use (TODO: equipment variants for secondary equipment)
+        if (Input.GetKeyDown(skillKey) && equipmentEquippedPrimary && !reloading && !skillUsing && skillReady && !levelPaused && !levelEnded)
         {
             skillReady = false;
             skillUsing = true;
-            skillText.text = "Skill Active";
+            skillText.text = "Equipment1 Active";
             //currentWeapon.GetComponent<animController>().SkillPutdownAnimation();
             //currentWeaponPOV.GetComponent<animController>().SkillPutdownAnimation();
-            currentWeapon.GetComponent<animController>().animator.SetBool("isPuttingdown", true);
-            currentWeaponPOV.GetComponent<animController>().animator.SetBool("isPuttingdown", true);
+            if (weaponEquipped)
+            {
+                currentWeapon.GetComponent<animController>().animator.SetBool("isPuttingdown", true);
+                currentWeaponPOV.GetComponent<animController>().animator.SetBool("isPuttingdown", true);
+            }
             StartCoroutine(ThrowImpactGrenade(skillTime));
-            Debug.Log("Skill Active...");
+            Debug.Log("Equipment1 Active");
         }
 
         //Tool: Scroll detect/gapper (future plans to adapt into new input system)
@@ -1181,12 +1194,36 @@ public class ShootingScript : MonoBehaviour
         }
         sceneManager.GetComponent<LevelSceneManager>().UpdateWeaponInfo();
     }
-    IEnumerator ThrowImpactGrenade(float time)
+    public void UpdateEquipmentInfo()
+    {
+        if (equipmentEquippedPrimary)
+        {
+            //enable equipment primary HUD
+        }
+        else
+        {
+           primaryEquipmentObj = null;
+            //disable equipment primary HUD
+        }
+        if (equipmentEquippedSecondary)
+        {
+            //enable equipment secondary HUD
+        }
+        else
+        {
+            secondaryEquipmentObj = null;
+            //disable equipment secondary HUD
+        }
+    }
+        IEnumerator ThrowImpactGrenade(float time)
     {
         yield return new WaitForSeconds(weaponPutDownTime);
-        currentWeapon.GetComponent<animController>().animator.SetBool("isPuttingdown", false);
-        currentWeaponPOV.GetComponent<animController>().animator.SetBool("isPuttingdown", false);
-        var impactGrenadeObject = Instantiate(skillObjs[0], projectileFirePoint.transform.position, Quaternion.Euler(playerCam.transform.forward));
+        if (weaponEquipped)
+        {
+            currentWeapon.GetComponent<animController>().animator.SetBool("isPuttingdown", false);
+            currentWeaponPOV.GetComponent<animController>().animator.SetBool("isPuttingdown", false);
+        }
+        var impactGrenadeObject = Instantiate(equipmentObjs[0], projectileFirePoint.transform.position, Quaternion.Euler(playerCam.transform.forward));
         impactGrenadeObject.transform.LookAt(playerCam.transform.forward * 1000);
         impactGrenadeObject.GetComponent<Rigidbody>().velocity = new Vector3 (player.GetComponent<CharacterController>().velocity.x, player.GetComponent<CharacterController>().velocity.y/2, player.GetComponent<CharacterController>().velocity.z);
         // Modify the throwing angle so the grenade is a bit higher than horizontal
@@ -1199,11 +1236,17 @@ public class ShootingScript : MonoBehaviour
             trialScript.grenadeInitialPosition = projectileFirePoint.transform.position;
         }
         yield return new WaitForSeconds(time);
-        currentWeapon.GetComponent<animController>().animator.SetBool("isPickingup", true);
-        currentWeaponPOV.GetComponent<animController>().animator.SetBool("isPickingup", true);
+        if (weaponEquipped)
+        {
+            currentWeapon.GetComponent<animController>().animator.SetBool("isPickingup", true);
+            currentWeaponPOV.GetComponent<animController>().animator.SetBool("isPickingup", true);
+        }
         yield return new WaitForSeconds(weaponPickupTime);
-        currentWeapon.GetComponent<animController>().animator.SetBool("isPickingup", false);
-        currentWeaponPOV.GetComponent<animController>().animator.SetBool("isPickingup", false);
+        if (weaponEquipped)
+        {
+            currentWeapon.GetComponent<animController>().animator.SetBool("isPickingup", false);
+            currentWeaponPOV.GetComponent<animController>().animator.SetBool("isPickingup", false);
+        }
     }
     IEnumerator HitOtherBulletEffects(float time, Vector3 location, Quaternion facingDir)
     {

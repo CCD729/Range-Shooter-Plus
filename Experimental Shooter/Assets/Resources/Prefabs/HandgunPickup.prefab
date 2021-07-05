@@ -8138,7 +8138,7 @@ GameObject:
   - component: {fileID: 3770119598251109066}
   m_Layer: 13
   m_Name: HandgunPickup
-  m_TagString: Pickups
+  m_TagString: Weapon
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0

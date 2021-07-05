@@ -395,10 +395,14 @@ MonoBehaviour:
   trialButton: 1
   resourceButton: 0
   oneTimeButton: 0
+  teleportButton: 0
+  TeleportPosition: {x: 0, y: 0, z: 0}
   coolDown: 1
   typeIdentifier: 0
   GUIDisplayText:
   - '[E] Begin Grenade Trial'
+  - '[E] Begin Reaction Trial'
+  - '[E] Begin Timed Trial'
 --- !u!1 &8100920433105717126
 GameObject:
   m_ObjectHideFlags: 0

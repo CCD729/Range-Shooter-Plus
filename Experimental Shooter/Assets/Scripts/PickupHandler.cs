@@ -16,7 +16,7 @@ public class PickupHandler : MonoBehaviour
     private bool matchfound = false;
     private bool matchfoundPOV = false;
 
-    public void Pickup(WeaponInfo weaponInfo, GameObject pickupObj)
+    public void PickupWeapon(WeaponInfo weaponInfo, GameObject pickupObj)
     {
         if (!shootingScript.pickupHandling)
         {
@@ -152,11 +152,23 @@ public class PickupHandler : MonoBehaviour
         }
     }
 
-    /// <summary>
-    /// Drops a item at hand (physics only)
-    /// </summary>
-    /// <param name="dropObj"></param>
-    public void DropPhysics(GameObject dropObj)
+    public void PickupEquipment(EquipmentInfo equipmentInfo, GameObject pickupObj)
+    {
+        // Currently temp support for one pickup only (No secondary equipment or pickup/drop yet)
+        if (!shootingScript.equipmentEquippedPrimary /* && pickupObj is Primary*/)
+        {
+            shootingScript.equipmentEquippedPrimary = true;
+
+        }//WIP
+
+    }
+
+
+        /// <summary>
+        /// Drops a item at hand (physics only)
+        /// </summary>
+        /// <param name="dropObj"></param>
+        public void DropPhysics(GameObject dropObj)
     {
         dropObj.GetComponent<Rigidbody>().isKinematic = false;
         dropObj.GetComponent<BoxCollider>().isTrigger = false;

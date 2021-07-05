@@ -10150,7 +10150,7 @@ GameObject:
   - component: {fileID: 7406578871972360558}
   m_Layer: 13
   m_Name: SubmachineGunPickup
-  m_TagString: Pickups
+  m_TagString: Weapon
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
