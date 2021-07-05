@@ -10,6 +10,7 @@ TagManager:
   - RailTarget
   - Pickups
   - Targets
+  - Interactables
   layers:
   - Default
   - TransparentFX
@@ -28,7 +29,7 @@ TagManager:
   - HitablesDamageVariant
   - HitablesDamageCriticalVariant
   - HitablesComposed
-  - 
+  - Interactables
   - 
   - 
   - 

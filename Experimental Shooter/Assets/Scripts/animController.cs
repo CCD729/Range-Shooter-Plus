@@ -51,4 +51,8 @@ public class animController : MonoBehaviour
     {
         animator.Play("EmptyReload", -1, 0f);
     }
+    public void ButtonPressAnimation()
+    {
+        animator.Play("ButtonPress", -1, 0f);
+    }
 }

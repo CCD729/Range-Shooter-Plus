@@ -14,7 +14,7 @@ public class ShootingScript : MonoBehaviour
     enum Firearm
     {
         subMachineGun,
-        pistol
+        Handgun
     }
     enum Melee
     {
@@ -25,6 +25,10 @@ public class ShootingScript : MonoBehaviour
     [Header("Scene Manager")]
     [Tooltip("Current Active SceneManager")]
     public GameObject sceneManager;
+
+    [Header("Trial Manager")]
+    [Tooltip("Script that handles Trail rules")]
+    public TrialScript trialScript;
 
     [Header("Player")]
     [Tooltip("Current Active Player")]
@@ -143,8 +147,10 @@ public class ShootingScript : MonoBehaviour
     public bool halfSwitched = false;
     public bool switchTrigger = false;
     public bool pickupLookingat = false;
+    public bool interactablesLookingat = false;
     public string pickupName = "";
     public GameObject pickupObj;
+    public GameObject interactableObj;
     public PickupHandler pickupHandler;
     public GUIStyle stylePickupBoxGUI = new GUIStyle();
 
@@ -185,6 +191,7 @@ public class ShootingScript : MonoBehaviour
     [SerializeField] private bool tacticalReloading = false;
     [SerializeField] private bool emptyReloading = false;
     [SerializeField] private bool skillUsing = false;
+    [SerializeField] private bool interactionCoolDown = false;
 
     [Header("References")]
     public Transform firePoint;
@@ -211,6 +218,7 @@ public class ShootingScript : MonoBehaviour
     [SerializeField] private KeyCode switchKey1 = KeyCode.Alpha1;
     [SerializeField] private KeyCode switchKey2 = KeyCode.Alpha2;
     [SerializeField] private KeyCode pickupKey = KeyCode.E;
+    [SerializeField] private KeyCode interactionKey = KeyCode.E;
     [SerializeField] private bool scrollUpGapped = false;
     [SerializeField] private bool scrollDownGapped = false;
     [SerializeField] private float scrollBlocker = 0f;
@@ -262,7 +270,7 @@ public class ShootingScript : MonoBehaviour
         if(weaponEquipped)
             UpdateWeaponInfo();
 
-        stylePickupBoxGUI.alignment = TextAnchor.MiddleCenter;
+        stylePickupBoxGUI.alignment = TextAnchor.MiddleLeft;
     }
 
     void Update()
@@ -317,27 +325,67 @@ public class ShootingScript : MonoBehaviour
                 if(LayerMask.LayerToName(raycastHitPickup.collider.gameObject.layer) == "Pickups")
                 {
                     pickupLookingat = true;
+                    interactablesLookingat = false;
+                    interactableObj = null;
                     pickupObj = raycastHitPickup.collider.gameObject;
+
                     if (pickupName == "")
                     {
                         //currently temp support for weapons only
                         pickupName = raycastHitPickup.collider.gameObject.GetComponent<WeaponInfo>().name;
                     }
                 }
+                else if (raycastHitPickup.collider.gameObject.CompareTag("Interactables"))
+                {
+                    interactablesLookingat = true;
+                    pickupLookingat = false;
+                    pickupObj = null;
+                    interactableObj = raycastHitPickup.collider.gameObject;
+                }
                 else
                 {
                     pickupLookingat = false;
+                    interactablesLookingat = false;
                     pickupObj = null;
+                    interactableObj = null;
                     if (pickupName != "")
                     {
                         pickupName = "";
                     }
                 }
             }
+            else
+            {
+                pickupLookingat = false;
+                interactablesLookingat = false;
+                pickupObj = null;
+                interactableObj = null;
+                if (pickupName != "")
+                {
+                    pickupName = "";
+                }
+            }
 
             if(pickupLookingat && Input.GetKeyDown(pickupKey))
             {
                 pickupHandler.Pickup(pickupObj.GetComponent<WeaponInfo>(), pickupObj);
+            }
+
+            if (interactablesLookingat && Input.GetKeyDown(interactionKey) && !interactionCoolDown)
+            {
+                interactionCoolDown = true;
+                if (interactableObj.GetComponent<ButtonInfo>().trialButton)
+                {
+                    trialScript.BeginTrial(interactableObj.GetComponent<ButtonInfo>().typeIdentifier);
+                    StartCoroutine(InteractionCoolDown(interactableObj.GetComponent<ButtonInfo>().coolDown));
+                    interactableObj.GetComponent<animController>().ButtonPressAnimation();
+                }
+                if (interactableObj.GetComponent<ButtonInfo>().resourceButton)
+                {
+                    //TODO: get resource accordingly
+                    StartCoroutine(InteractionCoolDown(interactableObj.GetComponent<ButtonInfo>().coolDown));
+                    //interactableObj.GetComponent<animController>().ButtonPressAnimation();
+                }
             }
 
             if (weaponEquipped)
@@ -1178,12 +1226,21 @@ public class ShootingScript : MonoBehaviour
         yield return new WaitForSecondsRealtime(0.17f);
         shootingLastRound = false;
     }
+    IEnumerator InteractionCoolDown(float time)
+    {
+        yield return new WaitForSecondsRealtime(time);
+        interactionCoolDown = false;
+    }
     //Temporary GUI for pickup
     private void OnGUI()
     {
         if (pickupLookingat)
         {
-            GUI.Box(new Rect(0, -30f, Screen.width/4, Screen.height/6), "[E] Pick up " + pickupName, stylePickupBoxGUI);
+            GUI.Box(new Rect(Screen.width / 2 +10f, Screen.height / 2 - 50f, Screen.width/4, Screen.height/6), "[E] Pick up " + pickupName, stylePickupBoxGUI);
+        }
+        if (interactablesLookingat)
+        {
+            GUI.Box(new Rect(Screen.width / 2 + 10f, Screen.height / 2 - 50f, Screen.width / 4, Screen.height / 6), interactableObj.GetComponent<ButtonInfo>().GUIDisplayText[interactableObj.GetComponent<ButtonInfo>().typeIdentifier], stylePickupBoxGUI);
         }
     }
 }
