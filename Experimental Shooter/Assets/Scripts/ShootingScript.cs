@@ -144,6 +144,7 @@ public class ShootingScript : MonoBehaviour
     public float weaponHandlingTime = 0f;
     public float switchCounter = 0f;
     public float pickupDistance = 4f;
+    public int currentTrial = -1;
     public bool halfSwitched = false;
     public bool switchTrigger = false;
     public bool pickupLookingat = false;
@@ -380,11 +381,18 @@ public class ShootingScript : MonoBehaviour
                     StartCoroutine(InteractionCoolDown(interactableObj.GetComponent<ButtonInfo>().coolDown));
                     interactableObj.GetComponent<animController>().ButtonPressAnimation();
                 }
-                if (interactableObj.GetComponent<ButtonInfo>().resourceButton)
+                else if (interactableObj.GetComponent<ButtonInfo>().resourceButton)
                 {
                     //TODO: get resource accordingly
                     StartCoroutine(InteractionCoolDown(interactableObj.GetComponent<ButtonInfo>().coolDown));
                     //interactableObj.GetComponent<animController>().ButtonPressAnimation();
+                }
+                else if (interactableObj.GetComponent<ButtonInfo>().teleportButton)
+                {
+                    player.transform.position = interactableObj.GetComponent<ButtonInfo>().TeleportPosition;
+                    player.transform.rotation = Quaternion.Euler(Vector3.zero);
+                    StartCoroutine(InteractionCoolDown(interactableObj.GetComponent<ButtonInfo>().coolDown));
+                    interactableObj.GetComponent<animController>().ButtonPressAnimation();
                 }
             }
 
@@ -1181,10 +1189,15 @@ public class ShootingScript : MonoBehaviour
         var impactGrenadeObject = Instantiate(skillObjs[0], projectileFirePoint.transform.position, Quaternion.Euler(playerCam.transform.forward));
         impactGrenadeObject.transform.LookAt(playerCam.transform.forward * 1000);
         impactGrenadeObject.GetComponent<Rigidbody>().velocity = new Vector3 (player.GetComponent<CharacterController>().velocity.x, player.GetComponent<CharacterController>().velocity.y/2, player.GetComponent<CharacterController>().velocity.z);
-        // TODO: Modify the throwing angle so the grenade is a bit higher than horizontal
+        // Modify the throwing angle so the grenade is a bit higher than horizontal
         Vector3 currentRotation = impactGrenadeObject.transform.eulerAngles;
         Vector3 modifiedRotation = currentRotation + new Vector3(-2f, 0f, 0f);
         impactGrenadeObject.transform.localRotation = Quaternion.Euler(modifiedRotation);
+        if(currentTrial == 0)
+        {
+            trialScript.grenadeObj = impactGrenadeObject;
+            trialScript.grenadeInitialPosition = projectileFirePoint.transform.position;
+        }
         yield return new WaitForSeconds(time);
         currentWeapon.GetComponent<animController>().animator.SetBool("isPickingup", true);
         currentWeaponPOV.GetComponent<animController>().animator.SetBool("isPickingup", true);
@@ -1238,6 +1251,8 @@ public class ShootingScript : MonoBehaviour
         {
             GUI.Box(new Rect(Screen.width / 2 +10f, Screen.height / 2 - 50f, Screen.width/4, Screen.height/6), "[E] Pick up " + pickupName, stylePickupBoxGUI);
         }
+
+        //TODO: Add temp block for GUIText and add "Trial Active" condition
         if (interactablesLookingat)
         {
             GUI.Box(new Rect(Screen.width / 2 + 10f, Screen.height / 2 - 50f, Screen.width / 4, Screen.height / 6), interactableObj.GetComponent<ButtonInfo>().GUIDisplayText[interactableObj.GetComponent<ButtonInfo>().typeIdentifier], stylePickupBoxGUI);

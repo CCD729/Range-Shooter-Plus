@@ -7,6 +7,8 @@ public class ButtonInfo : MonoBehaviour
     public bool trialButton = false;
     public bool resourceButton = false;
     public bool oneTimeButton = false;
+    public bool teleportButton = false;
+    public Vector3 TeleportPosition = Vector3.zero;
     public float coolDown = 1f; 
     public int typeIdentifier;
     public string[] GUIDisplayText;
