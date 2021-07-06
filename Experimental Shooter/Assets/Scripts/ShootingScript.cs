@@ -7,17 +7,20 @@ public class ShootingScript : MonoBehaviour
 {
     //public GameObject dummyObj = new GameObject("dummyObj");
     //create enum for future additions
-    enum Equipment
+    public enum Equipment
     {
+        None,
         impactGrenade
     }
-    enum Firearm
+    public enum Firearm
     {
+        None,
         subMachineGun,
         Handgun
     }
-    enum Melee
+    public enum Melee
     {
+        None,
         combatKnife
     }
 
@@ -170,20 +173,24 @@ public class ShootingScript : MonoBehaviour
     [Header("Equipment/Skill")]
     //TODO: Create dictionary containing equipments so this becomes "skillObj"s and the current obj are passed in dynamically
     public GameObject[] equipmentObjs;
-    [Tooltip("Current primary skill/equipment gameObject (WIP)")]
+    /*[Tooltip("Current primary skill/equipment gameObject (WIP)")]
     public GameObject primaryEquipmentObj;
     [Tooltip("Current secondary skill/equipment gameObject (WIP)")]
-    public GameObject secondaryEquipmentObj;
-
+    public GameObject secondaryEquipmentObj;*/
     //Skill/Equipment (when there are more skills would put data in dictionary for better management)
-    [SerializeField] private Equipment equipment;
-    [SerializeField] private float skillCoolDown = 5f;
-    [SerializeField] private bool skillReady = true;
-    [SerializeField] private float skillTime = 1f; //Skill Interval
+    public Equipment equipmentPrimary;
+    public Equipment equipmentSecondary;
+    public float equipmentCoolDownPrimary = 0f;
+    public float equipmentCoolDownSecondary = 0f;
+    public float equipmentTimePrimary = 0f; 
+    public float equipmentTimeSecondary = 0f; 
     public bool equipmentEquippedPrimary = false;
     public bool equipmentEquippedSecondary = false;
+    [SerializeField] private bool equipmentPrimaryReady = true;
+    [SerializeField] private bool equipmentSecondaryReady = true;
 
-    private float skillCDCounter = 0f;
+    private float equipmentPrimaryCDCounter = 0f;
+    private float equipmentSecondaryCDCounter = 0f;
 
     [Header("Bool Conditions")]
     [SerializeField] private bool levelEnded = false;
@@ -194,7 +201,8 @@ public class ShootingScript : MonoBehaviour
     [SerializeField] private bool shootingLastRound = false;
     [SerializeField] private bool tacticalReloading = false;
     [SerializeField] private bool emptyReloading = false;
-    [SerializeField] private bool skillUsing = false;
+    [SerializeField] private bool equipmentPrimaryUsing = false;
+    [SerializeField] private bool equipmentSecondaryUsing = false;
     [SerializeField] private bool interactionCoolDown = false;
 
     [Header("References")]
@@ -207,6 +215,10 @@ public class ShootingScript : MonoBehaviour
     public Text weaponText;
     public Text timeText;
     public Text skillText;
+    public Image imageHUDEquipmentPrimary;
+    public GameObject imageHUDEquipmentPrimaryCooldownCover;
+    public Image imageHUDEquipmentSecondary;
+    public GameObject imageHUDEquipmentSecondaryCooldownCover;
     [Tooltip("If there's weaponset selected")]
     public bool hasWeaponSet;
 
@@ -215,7 +227,8 @@ public class ShootingScript : MonoBehaviour
     public LayerMask layerMaskPickup;
 
     [Header("Key Bindings")]
-    [SerializeField] private KeyCode skillKey = KeyCode.G;
+    [SerializeField] private KeyCode equipmentPrimaryKey = KeyCode.G;
+    [SerializeField] private KeyCode equipmentSecondaryKey = KeyCode.Q;
     [SerializeField] private KeyCode reloadKey = KeyCode.R;
     [SerializeField] private KeyCode attackKey = KeyCode.Mouse0;
     [SerializeField] private KeyCode aimKey = KeyCode.Mouse1;
@@ -237,8 +250,10 @@ public class ShootingScript : MonoBehaviour
     private int currentMag = 0;*/
     //Reload counter
     private float reloadingTime = 0f;
-    //Skill counter
-    private float skillUsingTime = 0f;
+    //equipment counter
+    private float equipmentPrimaryUsingTime = 0f;
+    //equipment counter
+    private float equipmentSecondaryUsingTime = 0f;
     //Check if bullets are enough to shoot
     private bool bulletEnough = true;
     //Firing rate interval
@@ -266,11 +281,6 @@ public class ShootingScript : MonoBehaviour
         Time.timeScale = 1;
         //player = this.transform.parent.gameObject;
 
-        if (equipment == Equipment.impactGrenade)
-        {
-            skillTime = 0.5f;
-            skillCoolDown = 5f;
-        }
         if(weaponEquipped)
             UpdateWeaponInfo();
         UpdateEquipmentInfo();
@@ -415,7 +425,7 @@ public class ShootingScript : MonoBehaviour
                         currentWeapon.GetComponent<animController>().animator.SetBool("isReloading", false);
                         currentWeaponPOV.GetComponent<animController>().animator.SetBool("isReloading", false);
                     }
-                    else if (fRatePassed && !skillUsing && !pickupHandling && !weaponHandling)
+                    else if (fRatePassed && !equipmentPrimaryUsing && !equipmentSecondaryUsing && !pickupHandling && !weaponHandling)
                     {
                         if( (Input.GetKey(attackKey) && currentWeapon.GetComponent<WeaponInfo>().fireMode == FireSelect.auto) ||
                             (Input.GetKeyDown(attackKey) && currentWeapon.GetComponent<WeaponInfo>().fireMode != FireSelect.auto))
@@ -477,7 +487,7 @@ public class ShootingScript : MonoBehaviour
         }
 
         //Manual reload
-        if (Input.GetKeyDown(reloadKey) && weaponEquipped && !currentNoAmmo && !reloading && !skillUsing && !levelPaused && !levelEnded && !pickupHandling && !weaponHandling && currentWeapon.GetComponent<WeaponInfo>().currentMagAmmo < currentWeapon.GetComponent<WeaponInfo>().magSize)
+        if (Input.GetKeyDown(reloadKey) && weaponEquipped && !currentNoAmmo && !reloading && !equipmentPrimaryUsing && !equipmentSecondaryUsing && !levelPaused && !levelEnded && !pickupHandling && !weaponHandling && currentWeapon.GetComponent<WeaponInfo>().currentMagAmmo < currentWeapon.GetComponent<WeaponInfo>().magSize)
         {
             reloading = true;
             //ammoText.text = "Reloading";
@@ -531,24 +541,28 @@ public class ShootingScript : MonoBehaviour
             Debug.Log("Reloading...");
         }
 
-        //Skill CoolDown Counter
-        if (!skillUsing && skillCDCounter > 0f)
+        //Equipment CoolDown Counter
+        if (!equipmentPrimaryReady && equipmentPrimaryCDCounter > 0f)
         {
-            skillCDCounter -= Time.deltaTime;
+            equipmentPrimaryCDCounter -= Time.deltaTime;
+            Vector3 temp = imageHUDEquipmentPrimaryCooldownCover.GetComponent<RectTransform>().localScale;
+            imageHUDEquipmentPrimaryCooldownCover.GetComponent<RectTransform>().localScale =
+                new Vector3(temp.x, Mathf.Lerp(0f, -1f, equipmentPrimaryCDCounter/equipmentCoolDownPrimary), temp.z);
         }
-        else if (!skillUsing && !skillReady)
+        else if (!equipmentPrimaryUsing && !equipmentPrimaryReady)
         {
-            skillCDCounter = -1f;
-            skillReady = true;
-            skillText.text = "Skill Ready";
-            Debug.Log("Skill Ready");
+            equipmentPrimaryCDCounter = 0f;
+            equipmentPrimaryReady = true;
+            imageHUDEquipmentPrimaryCooldownCover.GetComponent<RectTransform>().localScale = new Vector3(1f, 0f, 1f);
+            /*skillText.text = "Skill Ready";
+            Debug.Log("Skill Ready");*/
         }
 
         //Equipment1 Use (TODO: equipment variants for secondary equipment)
-        if (Input.GetKeyDown(skillKey) && equipmentEquippedPrimary && !reloading && !skillUsing && skillReady && !levelPaused && !levelEnded)
+        if (Input.GetKeyDown(equipmentPrimaryKey) && equipmentEquippedPrimary && !reloading && !equipmentPrimaryUsing && !equipmentSecondaryUsing && equipmentPrimaryReady && !levelPaused && !levelEnded)
         {
-            skillReady = false;
-            skillUsing = true;
+            equipmentPrimaryReady = false;
+            equipmentPrimaryUsing = true;
             skillText.text = "Equipment1 Active";
             //currentWeapon.GetComponent<animController>().SkillPutdownAnimation();
             //currentWeaponPOV.GetComponent<animController>().SkillPutdownAnimation();
@@ -557,7 +571,10 @@ public class ShootingScript : MonoBehaviour
                 currentWeapon.GetComponent<animController>().animator.SetBool("isPuttingdown", true);
                 currentWeaponPOV.GetComponent<animController>().animator.SetBool("isPuttingdown", true);
             }
-            StartCoroutine(ThrowImpactGrenade(skillTime));
+            Vector3 temp = imageHUDEquipmentPrimaryCooldownCover.GetComponent<RectTransform>().localScale;
+            imageHUDEquipmentPrimaryCooldownCover.GetComponent<RectTransform>().localScale = new Vector3(temp.x, -1f, temp.z);
+            if (equipmentPrimary == Equipment.impactGrenade)
+                StartCoroutine(ThrowImpactGrenade(equipmentTimePrimary));
             Debug.Log("Equipment1 Active");
         }
 
@@ -571,7 +588,7 @@ public class ShootingScript : MonoBehaviour
         }
 
         //Switch weapon (detect part) (part2 in FixedUpdate with time counter)
-        if ( (Input.GetKeyDown(switchKey1) || Input.GetKeyDown(switchKey2) || scrollUpGapped || scrollDownGapped || switchTrigger) && !skillUsing && !levelPaused && !levelEnded)
+        if ( (Input.GetKeyDown(switchKey1) || Input.GetKeyDown(switchKey2) || scrollUpGapped || scrollDownGapped || switchTrigger) && !equipmentPrimaryUsing && !equipmentSecondaryUsing && !levelPaused && !levelEnded)
         {
             if (scrollDownGapped || scrollUpGapped)
             {
@@ -873,21 +890,21 @@ public class ShootingScript : MonoBehaviour
                     }
                 }
             }
-            //Skill duration logic
-            if (skillUsing)
+            //equipment1 duration logic (for weapon handling)
+            if (equipmentPrimaryUsing)
             {
 
-                if (skillUsingTime < skillTime+weaponPutDownTime+weaponPickupTime+0.3f)
+                if (equipmentPrimaryUsingTime < equipmentTimePrimary+weaponPutDownTime+weaponPickupTime+0.3f)
                 {
-                    skillUsingTime += Time.fixedDeltaTime;
+                    equipmentPrimaryUsingTime += Time.fixedDeltaTime;
                 }
                 else
                 {
-                    skillUsingTime = 0f;
-                    skillUsing = false;
-                    skillCDCounter = skillCoolDown;
+                    equipmentPrimaryUsingTime = 0f;
+                    equipmentPrimaryUsing = false;
+                    /*skillCDCounter = equipmentCoolDownPrimary;
                     skillText.text = "Skill Cooling Down";
-                    Debug.Log("Skill Used. Cooling Down...");
+                    Debug.Log("Skill Used. Cooling Down...");*/
                 }
             }
             //Firing rate recover logic
@@ -1185,9 +1202,9 @@ public class ShootingScript : MonoBehaviour
         }
         else
         {
-            weaponText.text = "Fists";
-            ammoCurrentMagText.text = "0";
-            ammoBackupText.text = "0";
+            weaponText.text = "";
+            ammoCurrentMagText.text = "";
+            ammoBackupText.text = "";
             fRateInt = 0f;
             firePoint = null;
             playerCam.GetComponent<CameraController>().UpdateWeaponInfo(0f,0f,0f);
@@ -1198,23 +1215,32 @@ public class ShootingScript : MonoBehaviour
     {
         if (equipmentEquippedPrimary)
         {
-            //enable equipment primary HUD
+            //Choose and enable equipment primary HUD
+            if(equipmentPrimary == Equipment.impactGrenade)
+            {
+                imageHUDEquipmentPrimary.sprite = Resources.Load<Sprite>("Images/HUDIcon_ImpactGrenade");
+            }
+            imageHUDEquipmentPrimary.enabled = true;
         }
         else
         {
-           primaryEquipmentObj = null;
+            equipmentPrimary = Equipment.None;
             //disable equipment primary HUD
+            imageHUDEquipmentPrimary.enabled = false;
         }
         if (equipmentEquippedSecondary)
         {
             //enable equipment secondary HUD
+            imageHUDEquipmentPrimary.enabled = true;
         }
         else
         {
-            secondaryEquipmentObj = null;
+            equipmentSecondary = Equipment.None;
             //disable equipment secondary HUD
+            imageHUDEquipmentSecondary.enabled = false;
         }
     }
+    //Future possibly adapt to all projectile function
         IEnumerator ThrowImpactGrenade(float time)
     {
         yield return new WaitForSeconds(weaponPutDownTime);
@@ -1223,18 +1249,19 @@ public class ShootingScript : MonoBehaviour
             currentWeapon.GetComponent<animController>().animator.SetBool("isPuttingdown", false);
             currentWeaponPOV.GetComponent<animController>().animator.SetBool("isPuttingdown", false);
         }
-        var impactGrenadeObject = Instantiate(equipmentObjs[0], projectileFirePoint.transform.position, Quaternion.Euler(playerCam.transform.forward));
+        var impactGrenadeObject = Instantiate(equipmentObjs[(int)Equipment.impactGrenade], projectileFirePoint.transform.position, Quaternion.Euler(playerCam.transform.forward));
         impactGrenadeObject.transform.LookAt(playerCam.transform.forward * 1000);
         impactGrenadeObject.GetComponent<Rigidbody>().velocity = new Vector3 (player.GetComponent<CharacterController>().velocity.x, player.GetComponent<CharacterController>().velocity.y/2, player.GetComponent<CharacterController>().velocity.z);
         // Modify the throwing angle so the grenade is a bit higher than horizontal
         Vector3 currentRotation = impactGrenadeObject.transform.eulerAngles;
         Vector3 modifiedRotation = currentRotation + new Vector3(-2f, 0f, 0f);
         impactGrenadeObject.transform.localRotation = Quaternion.Euler(modifiedRotation);
-        if(currentTrial == 0)
+        if(currentTrial == 0) //WIP Trial
         {
             trialScript.grenadeObj = impactGrenadeObject;
             trialScript.grenadeInitialPosition = projectileFirePoint.transform.position;
         }
+        equipmentPrimaryCDCounter = equipmentCoolDownPrimary;
         yield return new WaitForSeconds(time);
         if (weaponEquipped)
         {

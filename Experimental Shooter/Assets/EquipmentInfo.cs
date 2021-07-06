@@ -4,11 +4,10 @@ using UnityEngine;
 
 public class EquipmentInfo : MonoBehaviour
 {
-    public enum EquipmentType
-    {
-        ImpactGrenade
-    }
     //Equipment properties (currently just identifier)
     new public string name;
-    public EquipmentType equipmentType;
+    public bool primary = false;
+    public ShootingScript.Equipment equipmentType;
+    public float equipmentCoolDown = 0f;
+    public float equipmentTime = 0f;
 }

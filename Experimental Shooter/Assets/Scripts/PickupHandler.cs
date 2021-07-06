@@ -155,12 +155,15 @@ public class PickupHandler : MonoBehaviour
     public void PickupEquipment(EquipmentInfo equipmentInfo, GameObject pickupObj)
     {
         // Currently temp support for one pickup only (No secondary equipment or pickup/drop yet)
-        if (!shootingScript.equipmentEquippedPrimary /* && pickupObj is Primary*/)
+        if (!shootingScript.equipmentEquippedPrimary && equipmentInfo.primary)
         {
             shootingScript.equipmentEquippedPrimary = true;
-
+            shootingScript.equipmentPrimary = equipmentInfo.equipmentType;
+            shootingScript.equipmentTimePrimary = equipmentInfo.equipmentTime;
+            shootingScript.equipmentCoolDownPrimary = equipmentInfo.equipmentCoolDown;
         }//WIP
-
+        Destroy(pickupObj);
+        shootingScript.UpdateEquipmentInfo();
     }
 
 
