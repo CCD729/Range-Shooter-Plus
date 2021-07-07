@@ -25,7 +25,7 @@ public class CameraController : MonoBehaviour
     void Start()
     {
         mouseSensitivity = PlayerPrefs.GetFloat("mouseSensitivity", 20f);
-        fieldOfView = PlayerPrefs.GetFloat("FOV", 100f);
+        fieldOfView = PlayerPrefs.GetFloat("FOV", 90f);
         gameObject.GetComponent<Camera>().fieldOfView = fieldOfView;
         sensSlider.value = mouseSensitivity;
         fovSlider.value = fieldOfView;
@@ -114,11 +114,11 @@ public class CameraController : MonoBehaviour
     }
     void UpdateMouseSensitivity()
     {
-        mouseSensitivity = PlayerPrefs.GetFloat("mouseSensitivity");
+        mouseSensitivity = PlayerPrefs.GetFloat("mouseSensitivity", 20f);
     }
     void UpdateCameraFOV()
     {
-        fieldOfView = PlayerPrefs.GetFloat("FOV");
+        fieldOfView = PlayerPrefs.GetFloat("FOV", 90f);
         gameObject.GetComponent<Camera>().fieldOfView = fieldOfView;
     }
 }

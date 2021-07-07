@@ -46,11 +46,22 @@ public class TrialScript : MonoBehaviour
         text_FreemoveTrialTime.SetActive(false);
         text_FreemoveTrialProgress.SetActive(false);*/
 
-        //For first time loading hiScores without PlayerPrefs
+        //For first time loading hiScores with/without PlayerPrefs
         for(int i = 0; i < 4; i++)
         {
             if (PlayerPrefs.GetFloat("Trial" + i.ToString() + "HiScore", 0f) == 0f)
                 trialHiScoreTMP[i].GetComponent<TMPro.TextMeshPro>().text = "N/A";
+            else 
+            {
+                if (i == 2)
+                {
+                    trialHiScoreTMP[i].GetComponent<TMPro.TextMeshPro>().text = PlayerPrefs.GetFloat("Trial" + i.ToString() + "HiScore", 0f).ToString("F0");
+                }
+                else
+                {
+                    trialHiScoreTMP[i].GetComponent<TMPro.TextMeshPro>().text = PlayerPrefs.GetFloat("Trial" + i.ToString() + "HiScore", 0f).ToString("F2") + " " + trialUnitMark[i];
+                }
+            }
         }
     }
 
@@ -62,7 +73,7 @@ public class TrialScript : MonoBehaviour
             //Within good area
             if (grenadeObj.transform.position.z < 34f && grenadeObj.transform.position.z > 6 && grenadeObj.transform.position.x > -10.5f)
             {
-                if(grenadeObj.transform.position.x < 10f)
+                if(grenadeObj.transform.position.x < 10.5f)
                 {
                     text_TrialDataRight.GetComponent<Text>().text = "0.00 m";
                 }
@@ -131,7 +142,7 @@ public class TrialScript : MonoBehaviour
     }
     public void GrenadeTrialDataRecord(float lastXValue)
     {
-        trialNewScore[0] = (lastXValue - 10f) / ShootingScript.distanceUnitRatio;
+        trialNewScore[0] = Mathf.Clamp((lastXValue - 10.5f), 0f, Mathf.Infinity) / ShootingScript.distanceUnitRatio;
         Debug.Log("Grenade trial recording score...");
         UpdateScore(0);
     }
@@ -187,10 +198,32 @@ public class TrialScript : MonoBehaviour
                 if (PlayerPrefs.GetFloat("Trial0HiScore", 0f) < trialNewScore[0])
                 {
                     PlayerPrefs.SetFloat("Trial0HiScore", trialNewScore[0]);
-                    trialHiScoreTMP[typeIdentifier].GetComponent<TMPro.TextMeshPro>().text = trialNewScore[typeIdentifier].ToString("F2") + " " + trialUnitMark[typeIdentifier];
+                    trialHiScoreTMP[0].GetComponent<TMPro.TextMeshPro>().text = trialNewScore[0].ToString("F2") + " " + trialUnitMark[0];
+                }
+                break;
+            case 1:
+                if (PlayerPrefs.GetFloat("Trial1HiScore", 0f) > trialNewScore[1])
+                {
+                    PlayerPrefs.SetFloat("Trial1HiScore", trialNewScore[1]);
+                    trialHiScoreTMP[1].GetComponent<TMPro.TextMeshPro>().text = trialNewScore[1].ToString("F2") + " " + trialUnitMark[1];
+                }
+                break;
+            case 2:
+                if (PlayerPrefs.GetFloat("Trial2HiScore", 0f) < trialNewScore[0])
+                {
+                    PlayerPrefs.SetFloat("Trial2HiScore", trialNewScore[2]);
+                    trialHiScoreTMP[2].GetComponent<TMPro.TextMeshPro>().text = trialNewScore[2].ToString("F0");
+                }
+                break;
+            case 3:
+                if (PlayerPrefs.GetFloat("Trial3HiScore", 0f) > trialNewScore[3])
+                {
+                    PlayerPrefs.SetFloat("Trial3HiScore", trialNewScore[3]);
+                    trialHiScoreTMP[3].GetComponent<TMPro.TextMeshPro>().text = trialNewScore[3].ToString("F2") + " " + trialUnitMark[3];
                 }
                 break;
             default:
+                Debug.Log("Error: Invalid typeIdentifier found for Trial HiScore in UpdateScore()");
                 break;
         }
     }
