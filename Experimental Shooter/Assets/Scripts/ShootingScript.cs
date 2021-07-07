@@ -153,6 +153,7 @@ public class ShootingScript : MonoBehaviour
     public bool pickupLookingat = false;
     public bool interactablesLookingat = false;
     public string pickupName = "";
+    public float distanceUnitRatio = 3.3333f;
     public GameObject pickupObj;
     public GameObject interactableObj;
     public PickupHandler pickupHandler;
@@ -1260,6 +1261,10 @@ public class ShootingScript : MonoBehaviour
         {
             trialScript.grenadeObj = impactGrenadeObject;
             trialScript.grenadeInitialPosition = projectileFirePoint.transform.position;
+        }
+        else
+        {
+            trialScript.grenadeBeforeGone = false;
         }
         equipmentPrimaryCDCounter = equipmentCoolDownPrimary;
         yield return new WaitForSeconds(time);

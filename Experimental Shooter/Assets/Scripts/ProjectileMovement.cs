@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class ProjectileMovement : MonoBehaviour
 {
@@ -66,10 +67,15 @@ public class ProjectileMovement : MonoBehaviour
         rb.AddForce(transform.forward * speed, ForceMode.Impulse); //(force, spawnPoint, ForceMode.Impulse);
     }
     void FixedUpdate()
-    {   
+    {
         //Destroy the bullet when time out
         if (destroySelfAfterTimeout && destroyTime <= Time.time)
+        {
+            if (!EventSystem.GetComponent<ShootingScript>().trialScript.grenadeBeforeGone)
+                EventSystem.GetComponent<ShootingScript>().trialScript.grenadeBeforeGone = true;
             this.Destroy();
+        }
+            
     }
     void OnCollisionEnter(Collision collision)
     {
@@ -101,6 +107,18 @@ public class ProjectileMovement : MonoBehaviour
             {
                 ExplosionPhysicsDamage(transform.position, explosionRadius, explosionForce, explosionDamage);
                 ExplosionVisual(transform.position, explosionRadius, explosionVisualTime);
+                if(EventSystem.GetComponent<ShootingScript>().currentTrial == 0)
+                {
+                    if(EventSystem.GetComponent<ShootingScript>().trialScript.grenadeBeforeGone)
+                    {
+                        EventSystem.GetComponent<ShootingScript>().currentTrial = -1;
+                        EventSystem.GetComponent<ShootingScript>().trialScript.text_TrialDataRight.SetActive(false);
+                        EventSystem.GetComponent<ShootingScript>().trialScript.text_TrialDataRight.GetComponent<Text>().text = "TrialDataRightTextExample";
+                        EventSystem.GetComponent<ShootingScript>().trialScript.GrenadeTrialDataRecord(transform.position.x);
+                        EventSystem.GetComponent<ShootingScript>().trialScript.StopTrial();
+                    }
+                }
+                EventSystem.GetComponent<ShootingScript>().trialScript.grenadeBeforeGone = true;
             }
             this.Destroy();
         }
@@ -129,7 +147,7 @@ public class ProjectileMovement : MonoBehaviour
                 }
                 if (!repeatedTarget)
                 {
-                    //TODO: DAMAGE CALCULATION
+                    //DAMAGE CALCULATION
                     calculatedDamage = Vector3.Distance(hitCollider.transform.position, center) <= maxExplosionDamageRange ? damage : (int)(minExplosionDamage + (explosionDamage - minExplosionDamage) * (radius - Mathf.Min(Vector3.Distance(hitCollider.transform.position, center), radius)) / (Mathf.Max(Vector3.Distance(hitCollider.transform.position, center), radius) - maxExplosionDamageRange));
                     hitCollider.gameObject.GetComponent<TargetBehavior>().DamageBehavior(false, calculatedDamage);
                     var damageDisplay = Instantiate(EventSystem.GetComponent<ShootingScript>().regularDamageDisplayObj, hitCollider.transform.position, Quaternion.Euler(0f, 0f, 0f));
