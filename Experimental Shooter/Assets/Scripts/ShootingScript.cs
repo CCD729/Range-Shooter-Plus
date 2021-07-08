@@ -1259,8 +1259,11 @@ public class ShootingScript : MonoBehaviour
         impactGrenadeObject.transform.localRotation = Quaternion.Euler(modifiedRotation);
         if(currentTrial == 0) //WIP Trial
         {
-            trialScript.grenadeObj = impactGrenadeObject;
-            trialScript.grenadeInitialPosition = projectileFirePoint.transform.position;
+            if(player.transform.position.x <= 8.95f)
+            {
+                trialScript.grenadeObj = impactGrenadeObject;
+                trialScript.grenadeInitialPosition = projectileFirePoint.transform.position;
+            }
         }
         else
         {
