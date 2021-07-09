@@ -1264,6 +1264,10 @@ public class ShootingScript : MonoBehaviour
                 trialScript.grenadeObj = impactGrenadeObject;
                 trialScript.grenadeInitialPosition = projectileFirePoint.transform.position;
             }
+            else
+            {   //This will Not Trigger boundary grenades StopTrial in trial site
+                trialScript.grenadeBeforeGone = false;
+            }
         }
         else
         {

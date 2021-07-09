@@ -32,6 +32,17 @@ public class TrialScript : MonoBehaviour
     public Vector3 grenadeInitialPosition;
     public bool grenadeBeforeGone = true;
 
+    //references needed by Reaction Trial
+    [Header("Reaction Trial References")]
+    public float reactionTrialminPopTime = 3f;
+    public float reactionTrialMaxPopTime = 10f;
+    public GameObject reactionTarget;
+    public bool reactionTrialTargetUp;
+    public float reactionTrialTimeCounter = 0f;
+    public float reactionTrialPenalty = 0f;
+    //public Vector3 initialPosition;
+    //adjustable popup range (optional)
+
     void Start()
     {
         //trialNewScore = new float[4];
@@ -87,7 +98,18 @@ public class TrialScript : MonoBehaviour
                 Debug.Log("Grenade trial interrupted because out of range");
                 StopTrial();
             }
+        }
+        if (ShootingScript.currentTrial == 1)
+        {
+            //Count time begin when Animation started
+            if (!reactionTrialTargetUp)
+                text_TrialDataRight.GetComponent<Text>().text = "0.00 s";
+            else
+                text_TrialDataRight.GetComponent<Text>().text = (reactionTrialTimeCounter + reactionTrialPenalty).ToString("F2") + " s";
 
+            //TBD conditions
+            //Debug.Log("Reaction trial interrupted");
+            //StopTrial();
         }
     }
 
@@ -150,6 +172,17 @@ public class TrialScript : MonoBehaviour
     void StartReactionTrial()
     {
         ShootingScript.currentTrial = 1;
+        reactionTrialPenalty = 0f;
+        reactionTrialTimeCounter = 0f;
+        reactionTrialTargetUp = false;
+        reactionTarget.GetComponent<animController>().TargetPopDownAnimation();
+        StartCoroutine(PopTarget(Random.Range(reactionTrialminPopTime, reactionTrialMaxPopTime)));
+    }
+    public void ReactionTrialDataRecord(float time)
+    {
+        trialNewScore[1] = time+reactionTrialPenalty;
+        Debug.Log("Reaction trial recording score...");
+        UpdateScore(1);
     }
     void StartTimedTrial()
     {
@@ -226,5 +259,12 @@ public class TrialScript : MonoBehaviour
                 Debug.Log("Error: Invalid typeIdentifier found for Trial HiScore in UpdateScore()");
                 break;
         }
+    }
+    IEnumerator PopTarget(float popTime)
+    {
+        yield return new WaitForSecondsRealtime(popTime);
+        reactionTarget.transform.parent.position = new Vector3(Random.Range(20f,50f), reactionTarget.transform.parent.position.y, Random.Range(4f, -18f));
+        reactionTarget.GetComponent<animController>().TargetPopUpAnimation();
+        reactionTrialTargetUp = true;
     }
 }

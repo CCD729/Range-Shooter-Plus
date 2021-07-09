@@ -150,11 +150,16 @@ public class ProjectileMovement : MonoBehaviour
                     //DAMAGE CALCULATION
                     calculatedDamage = Vector3.Distance(hitCollider.transform.position, center) <= maxExplosionDamageRange ? damage : (int)(minExplosionDamage + (explosionDamage - minExplosionDamage) * (radius - Mathf.Min(Vector3.Distance(hitCollider.transform.position, center), radius)) / (Mathf.Max(Vector3.Distance(hitCollider.transform.position, center), radius) - maxExplosionDamageRange));
                     hitCollider.gameObject.GetComponent<TargetBehavior>().DamageBehavior(false, calculatedDamage);
-                    var damageDisplay = Instantiate(EventSystem.GetComponent<ShootingScript>().regularDamageDisplayObj, hitCollider.transform.position, Quaternion.Euler(0f, 0f, 0f));
-                    //damageDisplay.transform.SetParent(canvas1stCamera.transform);
-                    damageDisplay.transform.SetParent(EventSystem.GetComponent<ShootingScript>().canvasHUD.transform);
-                    damageDisplay.GetComponent<DamageDisplay>().hitTarget = hitCollider.gameObject;
-                    damageDisplay.GetComponent<DamageDisplay>().damageDisplayText.text = calculatedDamage.ToString();
+                    {
+                        if (EventSystem.GetComponent<ShootingScript>().currentTrial != 0)
+                        {
+                            var damageDisplay = Instantiate(EventSystem.GetComponent<ShootingScript>().regularDamageDisplayObj, hitCollider.transform.position, Quaternion.Euler(0f, 0f, 0f));
+                            //damageDisplay.transform.SetParent(canvas1stCamera.transform);
+                            damageDisplay.transform.SetParent(EventSystem.GetComponent<ShootingScript>().canvasHUD.transform);
+                            damageDisplay.GetComponent<DamageDisplay>().hitTarget = hitCollider.gameObject;
+                            damageDisplay.GetComponent<DamageDisplay>().damageDisplayText.text = calculatedDamage.ToString();
+                        }
+                    }
                     if (hitCollider.gameObject.GetComponent<TargetBehavior>().physicsReaction)
                         hitCollider.gameObject.GetComponent<TargetBehavior>().HitByProjectile();
                     finishedObj.Add(hitCollider.gameObject);

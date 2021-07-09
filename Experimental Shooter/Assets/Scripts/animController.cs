@@ -55,4 +55,12 @@ public class animController : MonoBehaviour
     {
         animator.Play("ButtonPress", -1, 0f);
     }
+    public void TargetPopDownAnimation()
+    {
+        animator.Play("PopDown", -1, 0f);
+    }
+    public void TargetPopUpAnimation()
+    {
+        animator.Play("PopUp", -1, 0f);
+    }
 }

@@ -15,6 +15,8 @@ public class TargetBehavior : MonoBehaviour
     public bool damageVariant = false;
     public bool physicsReaction = false;
     public bool changeMaterial = false;
+    public bool reactionTrialUse = false;
+    public bool damageTaking = false;
     public int hitPoints = 100;
 
     IEnumerator ChangeMaterial(float time)
