@@ -981,6 +981,11 @@ public class ShootingScript : MonoBehaviour
             targetPoint = playerCam.transform.forward * 1000;
             var bulletObject = Instantiate(currentBullet, firePoint.position, firePoint.rotation);
             bulletObject.transform.LookAt(targetPoint);
+            //Trial Purpose conditions
+            if (currentTrial == 1)
+            {
+                trialScript.reactionTrialPenalty += 0.1f;
+            }
         }
         else
         {
@@ -1007,6 +1012,11 @@ public class ShootingScript : MonoBehaviour
             //Create bullet hit effects
             if (!target.CompareTag("Targets") /*&& !raycastHit.collider.gameObject.CompareTag("MovingTarget") && !raycastHit.collider.gameObject.CompareTag("RailTarget")*/)
             {
+                //Trial Purpose conditions
+                if (currentTrial == 1)
+                {
+                    trialScript.reactionTrialPenalty += 0.1f;
+                }
                 StartCoroutine(HitOtherBulletEffects(0.1f, raycastHit.point, Quaternion.FromToRotation(Vector3.up, raycastHit.normal)));
                 var cloneAu = Instantiate(HittingAudioObject, raycastHit.point, Quaternion.FromToRotation(Vector3.up, raycastHit.normal));
                 cloneAu.GetComponent<HittingAudioManager>().Play(false);
@@ -1020,39 +1030,60 @@ public class ShootingScript : MonoBehaviour
 
                 if (LayerMask.LayerToName(target.layer) == "HitablesDamageCriticalVariant")
                 {
-                    target.transform.parent.GetComponent<TargetBehavior>().DamageBehavior(true, currentWeapon.GetComponent<WeaponInfo>().damage);
-                    damageDisplay = Instantiate(criticalDamageDisplayObj, targetPoint, Quaternion.Euler(0f, 0f, 0f));
-                    //damageDisplay.transform.SetParent(canvas1stCamera.transform);
-                    damageDisplay.transform.SetParent(canvasHUD.transform);
-                    damageDisplay.GetComponent<DamageDisplay>().playerCam = playerCam.GetComponent<Camera>();
-                    damageDisplay.GetComponent<DamageDisplay>().hitTarget = target;
-                    damageDisplay.GetComponent<DamageDisplay>().damageDisplayText.text = (currentWeapon.GetComponent<WeaponInfo>().damage*2).ToString();
+                    //Trial Purpose conditions
+                    if (currentTrial == 1 && !target.transform.parent.GetComponent<TargetBehavior>().reactionTrialUse)
+                    {
+                        trialScript.reactionTrialPenalty += 0.1f;
+                    }
+                    if (target.transform.parent.GetComponent<TargetBehavior>().damageDisplay)
+                    {
+                        damageDisplay = Instantiate(criticalDamageDisplayObj, targetPoint, Quaternion.Euler(0f, 0f, 0f));
+                        //damageDisplay.transform.SetParent(canvas1stCamera.transform);
+                        damageDisplay.transform.SetParent(canvasHUD.transform);
+                        damageDisplay.GetComponent<DamageDisplay>().playerCam = playerCam.GetComponent<Camera>();
+                        damageDisplay.GetComponent<DamageDisplay>().hitTarget = target;
+                        damageDisplay.GetComponent<DamageDisplay>().damageDisplayText.text = (currentWeapon.GetComponent<WeaponInfo>().damage * 2).ToString();
+                    }
+                    target.transform.parent.GetComponent<TargetBehavior>().DamageBehavior(true, currentWeapon.GetComponent<WeaponInfo>().damage, true);
                     if (target.transform.parent.GetComponent<TargetBehavior>().physicsReaction)
                         target.transform.parent.GetComponent<TargetBehavior>().Hit(raycastHit.point, playerCam.transform.forward);
                 }
                 else if (LayerMask.LayerToName(target.layer) == "HitablesDamageVariant")
                 {
-                    target.transform.parent.GetComponent<TargetBehavior>().DamageBehavior(false, currentWeapon.GetComponent<WeaponInfo>().damage);
-                    damageDisplay = Instantiate(regularDamageDisplayObj, targetPoint, Quaternion.Euler(0f, 0f, 0f));
-                    //damageDisplay.transform.SetParent(canvas1stCamera.transform);
-                    damageDisplay.transform.SetParent(canvasHUD.transform);
-                    damageDisplay.GetComponent<DamageDisplay>().playerCam = playerCam.GetComponent<Camera>();
-                    damageDisplay.GetComponent<DamageDisplay>().hitTarget = target;
-                    damageDisplay.GetComponent<DamageDisplay>().damageDisplayText.text = currentWeapon.GetComponent<WeaponInfo>().damage.ToString();
+                    //Trial Purpose conditions
+                    if (currentTrial == 1 && !target.transform.parent.GetComponent<TargetBehavior>().reactionTrialUse)
+                    {
+                        trialScript.reactionTrialPenalty += 0.1f;
+                    }                    
+                    if (target.transform.parent.GetComponent<TargetBehavior>().damageDisplay)
+                    {
+                        damageDisplay = Instantiate(regularDamageDisplayObj, targetPoint, Quaternion.Euler(0f, 0f, 0f));
+                        //damageDisplay.transform.SetParent(canvas1stCamera.transform);
+                        damageDisplay.transform.SetParent(canvasHUD.transform);
+                        damageDisplay.GetComponent<DamageDisplay>().playerCam = playerCam.GetComponent<Camera>();
+                        damageDisplay.GetComponent<DamageDisplay>().hitTarget = target;
+                        damageDisplay.GetComponent<DamageDisplay>().damageDisplayText.text = currentWeapon.GetComponent<WeaponInfo>().damage.ToString();
+                    }
+                    target.transform.parent.GetComponent<TargetBehavior>().DamageBehavior(false, currentWeapon.GetComponent<WeaponInfo>().damage, true);
                     if (target.transform.parent.GetComponent<TargetBehavior>().physicsReaction)
                         target.transform.parent.GetComponent<TargetBehavior>().Hit(raycastHit.point, playerCam.transform.forward);
                 }
                 else
                 {
-                    //target.getComponent<DamageScript>().TakeDamage(currentWeapon);
-                    //TODO: CriticalHit Variants and reorganization
-                    //if(!CriticalHit)
-                    target.GetComponent<TargetBehavior>().DamageBehavior(false, currentWeapon.GetComponent<WeaponInfo>().damage);
-                    damageDisplay = Instantiate(regularDamageDisplayObj, targetPoint, Quaternion.Euler(0f, 0f, 0f));
-                    //damageDisplay.transform.SetParent(canvas1stCamera.transform);
-                    damageDisplay.transform.SetParent(canvasHUD.transform);
-                    damageDisplay.GetComponent<DamageDisplay>().hitTarget = target;
-                    damageDisplay.GetComponent<DamageDisplay>().damageDisplayText.text = currentWeapon.GetComponent<WeaponInfo>().damage.ToString();
+                    //Trial Purpose conditions
+                    if (currentTrial == 1 && !target.GetComponent<TargetBehavior>().reactionTrialUse)
+                    {
+                        trialScript.reactionTrialPenalty += 0.1f;
+                    }                    
+                    if (target.GetComponent<TargetBehavior>().damageDisplay)
+                    {
+                        damageDisplay = Instantiate(regularDamageDisplayObj, targetPoint, Quaternion.Euler(0f, 0f, 0f));
+                        //damageDisplay.transform.SetParent(canvas1stCamera.transform);
+                        damageDisplay.transform.SetParent(canvasHUD.transform);
+                        damageDisplay.GetComponent<DamageDisplay>().hitTarget = target;
+                        damageDisplay.GetComponent<DamageDisplay>().damageDisplayText.text = currentWeapon.GetComponent<WeaponInfo>().damage.ToString();
+                    }
+                    target.GetComponent<TargetBehavior>().DamageBehavior(false, currentWeapon.GetComponent<WeaponInfo>().damage, true);
                     if (target.GetComponent<TargetBehavior>().physicsReaction)
                         target.GetComponent<TargetBehavior>().Hit(raycastHit.point, playerCam.transform.forward);
                 }
@@ -1259,7 +1290,7 @@ public class ShootingScript : MonoBehaviour
         impactGrenadeObject.transform.localRotation = Quaternion.Euler(modifiedRotation);
         if(currentTrial == 0) //WIP Trial
         {
-            if(player.transform.position.x <= 8.95f)
+            if(player.transform.position.x <= 9f)
             {
                 trialScript.grenadeObj = impactGrenadeObject;
                 trialScript.grenadeInitialPosition = projectileFirePoint.transform.position;

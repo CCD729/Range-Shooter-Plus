@@ -149,9 +149,9 @@ public class ProjectileMovement : MonoBehaviour
                 {
                     //DAMAGE CALCULATION
                     calculatedDamage = Vector3.Distance(hitCollider.transform.position, center) <= maxExplosionDamageRange ? damage : (int)(minExplosionDamage + (explosionDamage - minExplosionDamage) * (radius - Mathf.Min(Vector3.Distance(hitCollider.transform.position, center), radius)) / (Mathf.Max(Vector3.Distance(hitCollider.transform.position, center), radius) - maxExplosionDamageRange));
-                    hitCollider.gameObject.GetComponent<TargetBehavior>().DamageBehavior(false, calculatedDamage);
+                    hitCollider.gameObject.GetComponent<TargetBehavior>().DamageBehavior(false, calculatedDamage, false);
                     {
-                        if (EventSystem.GetComponent<ShootingScript>().currentTrial != 0)
+                        if (hitCollider.gameObject.GetComponent<TargetBehavior>().damageDisplay)
                         {
                             var damageDisplay = Instantiate(EventSystem.GetComponent<ShootingScript>().regularDamageDisplayObj, hitCollider.transform.position, Quaternion.Euler(0f, 0f, 0f));
                             //damageDisplay.transform.SetParent(canvas1stCamera.transform);

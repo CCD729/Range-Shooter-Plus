@@ -17,7 +17,9 @@ public class TargetBehavior : MonoBehaviour
     public bool changeMaterial = false;
     public bool reactionTrialUse = false;
     public bool damageTaking = false;
+    public bool damageDisplay = true;
     public int hitPoints = 100;
+    public GameObject eventSystem;
 
     IEnumerator ChangeMaterial(float time)
     {
@@ -91,8 +93,15 @@ public class TargetBehavior : MonoBehaviour
         hit = false;
         recovering = false;
     }
-    public void DamageBehavior(bool isCritical, int damage)
+    public void DamageBehavior(bool isCritical, int damage, bool isWeaponDamage)
     {
         //If the damage should trigger something... like hitPoint lost
+        if(reactionTrialUse && isWeaponDamage && eventSystem.GetComponent<ShootingScript>().currentTrial == 1 && eventSystem.GetComponent<TrialScript>().reactionTrialTargetUp)
+        {
+            //Reaction Trial target hit
+            eventSystem.GetComponent<TrialScript>().ReactionTrialDataRecord();
+            eventSystem.GetComponent<TrialScript>().StopTrial();
+            damageDisplay = false;
+        }
     }
 }
