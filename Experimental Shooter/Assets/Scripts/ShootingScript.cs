@@ -405,9 +405,9 @@ public class ShootingScript : MonoBehaviour
                 else if (interactableObj.GetComponent<ButtonInfo>().ammoBox)
                 {
                     //Refill ammo
-                    Debug.Log("Refilling Ammo");
-                    if (weaponEquipped)
+                    if (weaponEquipped && !interactableObj.GetComponent<SelfRotating>().stopped)
                     {
+                        Debug.Log("Refilling Ammo");
                         currentWeapon.GetComponent<WeaponInfo>().backupAmmo = currentWeapon.GetComponent<WeaponInfo>().maxAmmo;
                         if (weaponFull)
                         {
@@ -1379,18 +1379,19 @@ public class ShootingScript : MonoBehaviour
 
     IEnumerator AmmoBoxCoolDown(GameObject ammoBoxObj)
     {
-        Color _emissionColorValue = ammoBoxObj.GetComponent<MeshRenderer>().material.GetColor("_EmissionColor");
+        //Color _emissionColorValue = ammoBoxObj.GetComponent<MeshRenderer>().material.GetColor("_EmissionColor");
         ammoBoxObj.GetComponent<SelfRotating>().stopped = true;
+        ammoBoxObj.GetComponent<ButtonInfo>().GUIDisplayText[ammoBoxObj.GetComponent<ButtonInfo>().typeIdentifier] = "Cooling Down";
+        //ammoBoxObj.GetComponent<MeshRenderer>().material.SetVector("_EmissionColor", _emissionColorValue * 0f);
+        //ammoBoxObj.GetComponentInChildren<Light>().intensity = 0f;
 
-        ammoBoxObj.GetComponent<MeshRenderer>().material.SetVector("_EmissionColor", _emissionColorValue * 0f);
-        ammoBoxObj.GetComponentInChildren<Light>().intensity = 0f;
-
-        yield return new WaitForSecondsRealtime(ammoBoxObj.GetComponent<ButtonInfo>().coolDown);
+        //yield return new WaitForSecondsRealtime(ammoBoxObj.GetComponent<ButtonInfo>().coolDown);
+        yield return new WaitForSecondsRealtime(ammoBoxObj.GetComponent<ButtonInfo>().coolDown*10f);
         ammoBoxObj.GetComponent<SelfRotating>().stopped = false;
+        ammoBoxObj.GetComponent<ButtonInfo>().GUIDisplayText[ammoBoxObj.GetComponent<ButtonInfo>().typeIdentifier] = "[E] Refill Ammo";
 
-        ammoBoxObj.GetComponent<MeshRenderer>().material.SetVector("_EmissionColor", _emissionColorValue);
-        ammoBoxObj.GetComponentInChildren<Light>().intensity = 2f;
-
+        //ammoBoxObj.GetComponent<MeshRenderer>().material.SetVector("_EmissionColor", _emissionColorValue);
+        //ammoBoxObj.GetComponentInChildren<Light>().intensity = 2f;
     }
 
     //Temporary GUI for pickup

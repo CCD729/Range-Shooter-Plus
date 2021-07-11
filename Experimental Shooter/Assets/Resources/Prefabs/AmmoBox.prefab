@@ -432,15 +432,23 @@ MonoBehaviour:
   floatYPosition: 0
   floatSpeed: 1
   currentScale: 1
+  currentEmissionMultiplier: 1
+  currentLightIntensityMultiplier: 1
   initialPosition: {x: 0, y: 0, z: 0}
+  initColor: {r: 0, g: 0, b: 0, a: 0}
+  initLightIntensity: 0
   stopped: 0
   rotateTarget: 0
   floatTarget: 0
   scaleTarget: 0
+  emissionTarget: 0
+  lightIntensityTarget: 0
   smoothTime: 0.8
   dampVelocityRotation: 0
   dampVelocityFloat: 0
   dampVelocityScale: 0
+  dampVelocityEmission: 0
+  dampVelocityLightIntensity: 0
 --- !u!114 &409661633204924361
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -458,7 +466,7 @@ MonoBehaviour:
   oneTimeButton: 0
   teleportButton: 0
   TeleportPosition: {x: 0, y: 0, z: 0}
-  coolDown: 10
+  coolDown: 1
   typeIdentifier: 5
   GUIDisplayText:
   - '[E] Begin Grenade Trial'
