@@ -244,7 +244,8 @@ public class TrialScript : MonoBehaviour
                 }
                 break;
             case 1:
-                if (PlayerPrefs.GetFloat("Trial1HiScore", 0f) > trialNewScore[1])
+                if ((PlayerPrefs.GetFloat("Trial1HiScore", 0f) != 0f && PlayerPrefs.GetFloat("Trial1HiScore", 0f) > trialNewScore[1])
+                    || PlayerPrefs.GetFloat("Trial1HiScore", 0f) == 0f)
                 {
                     PlayerPrefs.SetFloat("Trial1HiScore", trialNewScore[1]);
                     trialHiScoreTMP[1].GetComponent<TMPro.TextMeshPro>().text = trialNewScore[1].ToString("F2") + " " + trialUnitMark[1];

@@ -393,7 +393,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   trialButton: 1
-  resourceButton: 0
+  ammoBox: 0
   oneTimeButton: 0
   teleportButton: 0
   TeleportPosition: {x: 0, y: 0, z: 0}
@@ -403,6 +403,9 @@ MonoBehaviour:
   - '[E] Begin Grenade Trial'
   - '[E] Begin Reaction Trial'
   - '[E] Begin Timed Trial'
+  - '[E] Begin Freemove Trial'
+  - '[E] Teleport'
+  - '[E] Refill Ammo'
 --- !u!1 &8100920433105717126
 GameObject:
   m_ObjectHideFlags: 0

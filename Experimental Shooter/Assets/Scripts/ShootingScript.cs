@@ -402,10 +402,29 @@ public class ShootingScript : MonoBehaviour
                     StartCoroutine(InteractionCoolDown(interactableObj.GetComponent<ButtonInfo>().coolDown));
                     interactableObj.GetComponent<animController>().ButtonPressAnimation();
                 }
-                else if (interactableObj.GetComponent<ButtonInfo>().resourceButton)
+                else if (interactableObj.GetComponent<ButtonInfo>().ammoBox)
                 {
-                    //TODO: get resource accordingly
-                    StartCoroutine(InteractionCoolDown(interactableObj.GetComponent<ButtonInfo>().coolDown));
+                    //Refill ammo
+                    Debug.Log("Refilling Ammo");
+                    if (weaponEquipped)
+                    {
+                        currentWeapon.GetComponent<WeaponInfo>().backupAmmo = currentWeapon.GetComponent<WeaponInfo>().maxAmmo;
+                        if (weaponFull)
+                        {
+                            if(currentWeaponSlot == 0)
+                            {
+                                secondaryWeapon.GetComponent<WeaponInfo>().backupAmmo = secondaryWeapon.GetComponent<WeaponInfo>().maxAmmo;
+                            }
+                            else
+                            {
+                                primaryWeapon.GetComponent<WeaponInfo>().backupAmmo = primaryWeapon.GetComponent<WeaponInfo>().maxAmmo;
+                            }
+                        }
+                        currentNoAmmo = false;
+                        ammoBackupText.text = currentWeapon.GetComponent<WeaponInfo>().backupAmmo.ToString();
+                        StartCoroutine(InteractionCoolDown(interactableObj.GetComponent<ButtonInfo>().coolDown));
+                        StartCoroutine(AmmoBoxCoolDown(interactableObj));
+                    }
                     //interactableObj.GetComponent<animController>().ButtonPressAnimation();
                 }
                 else if (interactableObj.GetComponent<ButtonInfo>().teleportButton)
@@ -1357,6 +1376,23 @@ public class ShootingScript : MonoBehaviour
         yield return new WaitForSecondsRealtime(time);
         interactionCoolDown = false;
     }
+
+    IEnumerator AmmoBoxCoolDown(GameObject ammoBoxObj)
+    {
+        Color _emissionColorValue = ammoBoxObj.GetComponent<MeshRenderer>().material.GetColor("_EmissionColor");
+        ammoBoxObj.GetComponent<SelfRotating>().stopped = true;
+
+        ammoBoxObj.GetComponent<MeshRenderer>().material.SetVector("_EmissionColor", _emissionColorValue * 0f);
+        ammoBoxObj.GetComponentInChildren<Light>().intensity = 0f;
+
+        yield return new WaitForSecondsRealtime(ammoBoxObj.GetComponent<ButtonInfo>().coolDown);
+        ammoBoxObj.GetComponent<SelfRotating>().stopped = false;
+
+        ammoBoxObj.GetComponent<MeshRenderer>().material.SetVector("_EmissionColor", _emissionColorValue);
+        ammoBoxObj.GetComponentInChildren<Light>().intensity = 2f;
+
+    }
+
     //Temporary GUI for pickup
     private void OnGUI()
     {
