@@ -43,6 +43,10 @@ public class TrialScript : MonoBehaviour
     public Vector3 reactionTargetContainerInitialPosition;
     //adjustable popup range (optional)
 
+    //references needed by Timed Trial
+    public int timedTrialScore = 0;
+    public float timedTrialTimeCounter = 0f;
+
     void Start()
     {
         //trialNewScore = new float[4];
@@ -111,9 +115,27 @@ public class TrialScript : MonoBehaviour
                 reactionTrialTimeCounter += Time.deltaTime;
                 text_TrialDataRight.GetComponent<Text>().text = (reactionTrialTimeCounter + reactionTrialPenalty).ToString("F2") + " s";
             }
-
             //TBD conditions
             //Debug.Log("Reaction trial interrupted");
+            //StopTrial();
+        }
+        if (ShootingScript.currentTrial == 2)
+        {
+            if (timedTrialTimeCounter <= 0f)
+            {
+                timedTrialTimeCounter = 0f;
+                text_TrialDataLeft.GetComponent<Text>().text = "0.00 s";
+                TimedTrialDataRecord();
+                StopTrial();
+            }
+            else
+            {
+                timedTrialTimeCounter -= Time.deltaTime;
+                text_TrialDataLeft.GetComponent<Text>().text = (timedTrialTimeCounter).ToString("F2") + " s";
+                text_TrialDataRight.GetComponent<Text>().text = (timedTrialScore).ToString();
+            }
+            //TBD conditions
+            //Debug.Log("Timed Trial interrupted");
             //StopTrial();
         }
     }
@@ -196,6 +218,21 @@ public class TrialScript : MonoBehaviour
     void StartTimedTrial()
     {
         ShootingScript.currentTrial = 2;
+        timedTrialScore = 0;
+        timedTrialTimeCounter = 30f;
+        //TODO: StartSpawnTimedTargets();
+        text_TrialDataRight.GetComponent<Text>().text = "Score: 0";
+        text_TrialDataRight.SetActive(true);
+        text_TrialDataLeft.GetComponent<Text>().text = "30.00 s";
+        text_TrialDataLeft.SetActive(true);
+
+    }
+    public void TimedTrialDataRecord()
+    {
+        trialNewScore[2] = timedTrialScore;
+        StartCoroutine(ResetTimedTargets());
+        Debug.Log("Timed trial recording score...");
+        UpdateScore(2);
     }
     void StartFreemoveTrial()
     {
@@ -214,7 +251,6 @@ public class TrialScript : MonoBehaviour
     }
     void UpdateScore(int typeIdentifier)
     {
-
         //New Score Display
         if (trialNewScore[typeIdentifier] == 0f)
         {
@@ -283,5 +319,11 @@ public class TrialScript : MonoBehaviour
         yield return new WaitForSecondsRealtime(1f);
         reactionTarget.transform.parent.position = reactionTargetContainerInitialPosition;
         reactionTarget.GetComponent<animController>().TargetPopUpAnimation();
+    }
+    IEnumerator ResetTimedTargets()
+    {
+        //TODO: Reset Displaying Targets to default positions with stepped animations
+        yield return new WaitForSecondsRealtime(1f);
+
     }
 }

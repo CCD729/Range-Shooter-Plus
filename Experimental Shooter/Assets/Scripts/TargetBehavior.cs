@@ -17,6 +17,8 @@ public class TargetBehavior : MonoBehaviour
     public bool physicsReaction = false;
     public bool changeMaterial = false;
     public bool reactionTrialUse = false;
+    public bool TimedTrialUse = false;
+    public bool FreemoveTrialUse = false;
     public bool damageTaking = false;
     public bool damageTakingDefault = false;
     public bool targetDown = false;
@@ -24,6 +26,7 @@ public class TargetBehavior : MonoBehaviour
     public bool damageDisplayDefault = true;
     [SerializeField]private int hitPoints = 100;
     public int maxHitPoints = 100;
+    public int pointWorth = 100;
     public GameObject eventSystem;
 
     IEnumerator ChangeMaterial(float time)
@@ -49,6 +52,11 @@ public class TargetBehavior : MonoBehaviour
         mr = GetComponent<MeshRenderer>();
         initPosition = transform.localPosition;
         initMaterial = mr.material;
+
+        if (TimedTrialUse)
+        {
+            damageTaking = false;
+        }
     }
 
     // Update is called once per frame
@@ -88,6 +96,12 @@ public class TargetBehavior : MonoBehaviour
         targetDown = true;
         damageTaking = false;
         damageDisplay = false;
+        //Consider integrate reaction trial target behavior here. Lock takingDamage until trial start to prevent false scoring
+        if (TimedTrialUse)
+        {
+            //Should Critical Hits be considered precise bonus?
+            eventSystem.GetComponent<TrialScript>().timedTrialScore += pointWorth;
+        }
     }
 
     IEnumerator Recover(float time)
