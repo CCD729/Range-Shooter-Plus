@@ -467,6 +467,12 @@ public class ShootingScript : MonoBehaviour
                                         currentWeaponPOV.GetComponent<animController>().animator.Play("ShootLastRound", -1, 1f);
                                         StartCoroutine(EmptyReloadDelayer());
                                     }
+                                    else
+                                    {
+                                        //This is a safety measure to solve unknown cause animation problems
+                                        currentWeapon.GetComponent<animController>().EmptyReloadAnimation();
+                                        currentWeaponPOV.GetComponent<animController>().EmptyReloadAnimation();
+                                    }
                                     img_reloadRing.GetComponent<ReloadRingAnim>().Play(currentWeapon.GetComponent<WeaponInfo>().emptyReloadTime);
                                     this.weaponEmptyReloadSound();
                                     img_crossHair.enabled = false;
@@ -523,6 +529,12 @@ public class ShootingScript : MonoBehaviour
                     currentWeapon.GetComponent<animController>().animator.Play("ShootLastRound", -1, 1f);
                     currentWeaponPOV.GetComponent<animController>().animator.Play("ShootLastRound", -1, 1f);
                     StartCoroutine(EmptyReloadDelayer());
+                }
+                else
+                {
+                    //This is a safety measure to solve unknown cause animation problems
+                    currentWeapon.GetComponent<animController>().EmptyReloadAnimation();
+                    currentWeaponPOV.GetComponent<animController>().EmptyReloadAnimation();
                 }
                 img_reloadRing.GetComponent<ReloadRingAnim>().Play(currentWeapon.GetComponent<WeaponInfo>().emptyReloadTime);
                 this.weaponEmptyReloadSound();
@@ -1063,9 +1075,7 @@ public class ShootingScript : MonoBehaviour
                         damageDisplay.GetComponent<DamageDisplay>().hitTarget = target;
                         damageDisplay.GetComponent<DamageDisplay>().damageDisplayText.text = (currentWeapon.GetComponent<WeaponInfo>().damage * 2).ToString();
                     }
-                    target.transform.parent.GetComponent<TargetBehavior>().DamageBehavior(true, currentWeapon.GetComponent<WeaponInfo>().damage, true);
-                    if (target.transform.parent.GetComponent<TargetBehavior>().physicsReaction)
-                        target.transform.parent.GetComponent<TargetBehavior>().Hit(raycastHit.point, playerCam.transform.forward);
+                    target.transform.parent.GetComponent<TargetBehavior>().DamageBehavior(true, currentWeapon.GetComponent<WeaponInfo>().damage, raycastHit.point, playerCam.transform.forward);
                 }
                 else if (LayerMask.LayerToName(target.layer) == "HitablesDamageVariant")
                 {
@@ -1083,9 +1093,7 @@ public class ShootingScript : MonoBehaviour
                         damageDisplay.GetComponent<DamageDisplay>().hitTarget = target;
                         damageDisplay.GetComponent<DamageDisplay>().damageDisplayText.text = currentWeapon.GetComponent<WeaponInfo>().damage.ToString();
                     }
-                    target.transform.parent.GetComponent<TargetBehavior>().DamageBehavior(false, currentWeapon.GetComponent<WeaponInfo>().damage, true);
-                    if (target.transform.parent.GetComponent<TargetBehavior>().physicsReaction)
-                        target.transform.parent.GetComponent<TargetBehavior>().Hit(raycastHit.point, playerCam.transform.forward);
+                    target.transform.parent.GetComponent<TargetBehavior>().DamageBehavior(false, currentWeapon.GetComponent<WeaponInfo>().damage, raycastHit.point, playerCam.transform.forward);
                 }
                 else
                 {
@@ -1102,15 +1110,52 @@ public class ShootingScript : MonoBehaviour
                         damageDisplay.GetComponent<DamageDisplay>().hitTarget = target;
                         damageDisplay.GetComponent<DamageDisplay>().damageDisplayText.text = currentWeapon.GetComponent<WeaponInfo>().damage.ToString();
                     }
-                    target.GetComponent<TargetBehavior>().DamageBehavior(false, currentWeapon.GetComponent<WeaponInfo>().damage, true);
-                    if (target.GetComponent<TargetBehavior>().physicsReaction)
-                        target.GetComponent<TargetBehavior>().Hit(raycastHit.point, playerCam.transform.forward);
+                    target.GetComponent<TargetBehavior>().DamageBehavior(false, currentWeapon.GetComponent<WeaponInfo>().damage, raycastHit.point, playerCam.transform.forward);
                 }
-                //Scoring code here
+                //Scoring code here (rework legacy for Trials only)
 
             }
+            //TBC Legacy Scoring/physics code for other targets
+            /*
+                        //TODO: Integrate scoring to above function
+                        if (target.CompareTag("Target"))
+                        {
+                            if (mode_Scored && !target.GetComponent<TargetBehavior>().hit)
+                            {
+                                score++;
+                                scoreText.text = "Score: " + score.ToString();
+                            }
+                            target.GetComponent<TargetBehavior>().Hit(raycastHit.point, playerCam.transform.forward);
+                        }
+                        //Moving target hit
+                        if (target.CompareTag("MovingTarget"))
+                        {
+                            if (mode_Scored && !target.GetComponent<MovingTargetBehavior>().hit)
+                            {
+                                score += 2;
+                                scoreText.text = "Score: " + score.ToString();
+                            }
+                            target.GetComponent<MovingTargetBehavior>().Hit(raycastHit.point, playerCam.transform.forward);
+                        }
+                        //Another version of moving target (needs optimization)
+                        if (target.CompareTag("RailTarget"))
+                        {
+                            if (mode_Scored && !target.GetComponent<RailTargetBehavior>().hit)
+                            {
+                                score += 1;
+                                scoreText.text = "Score: " + score.ToString();
+                            }
+                            target.GetComponent<RailTargetBehavior>().Hit(raycastHit.point, playerCam.transform.forward);
+                        }*/
+        }
+        this.weaponRecoil();
+        this.weaponShootingSound();
+    }
 
-            //TODO: Integrate scoring to above function
+    //TBC Legacy Scoring/physics code for grenade with other targets
+
+    /*    public void hitByProjectile(GameObject target)
+        {
             if (target.CompareTag("Target"))
             {
                 if (mode_Scored && !target.GetComponent<TargetBehavior>().hit)
@@ -1118,7 +1163,7 @@ public class ShootingScript : MonoBehaviour
                     score++;
                     scoreText.text = "Score: " + score.ToString();
                 }
-                target.GetComponent<TargetBehavior>().Hit(raycastHit.point, playerCam.transform.forward);
+                target.GetComponent<TargetBehavior>().HitByProjectile();
             }
             //Moving target hit
             if (target.CompareTag("MovingTarget"))
@@ -1128,7 +1173,7 @@ public class ShootingScript : MonoBehaviour
                     score += 2;
                     scoreText.text = "Score: " + score.ToString();
                 }
-                target.GetComponent<MovingTargetBehavior>().Hit(raycastHit.point, playerCam.transform.forward);
+                target.GetComponent<TargetBehavior>().HitByProjectile();
             }
             //Another version of moving target (needs optimization)
             if (target.CompareTag("RailTarget"))
@@ -1138,45 +1183,9 @@ public class ShootingScript : MonoBehaviour
                     score += 1;
                     scoreText.text = "Score: " + score.ToString();
                 }
-                target.GetComponent<RailTargetBehavior>().Hit(raycastHit.point, playerCam.transform.forward);
+                target.GetComponent<TargetBehavior>().HitByProjectile();
             }
-        }
-        this.weaponRecoil();
-        this.weaponShootingSound();
-    }
-
-    public void hitByProjectile(GameObject target)
-    {
-        if (target.CompareTag("Target"))
-        {
-            if (mode_Scored && !target.GetComponent<TargetBehavior>().hit)
-            {
-                score++;
-                scoreText.text = "Score: " + score.ToString();
-            }
-            target.GetComponent<TargetBehavior>().HitByProjectile();
-        }
-        //Moving target hit
-        if (target.CompareTag("MovingTarget"))
-        {
-            if (mode_Scored && !target.GetComponent<MovingTargetBehavior>().hit)
-            {
-                score += 2;
-                scoreText.text = "Score: " + score.ToString();
-            }
-            target.GetComponent<TargetBehavior>().HitByProjectile();
-        }
-        //Another version of moving target (needs optimization)
-        if (target.CompareTag("RailTarget"))
-        {
-            if (mode_Scored && !target.GetComponent<RailTargetBehavior>().hit)
-            {
-                score += 1;
-                scoreText.text = "Score: " + score.ToString();
-            }
-            target.GetComponent<TargetBehavior>().HitByProjectile();
-        }
-    }
+        }*/
 
     public void Pause()
     {

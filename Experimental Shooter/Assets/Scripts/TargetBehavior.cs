@@ -8,26 +8,29 @@ public class TargetBehavior : MonoBehaviour
     private MeshRenderer mr;
     private Vector3 initPosition;
     private bool recovering;
-    public bool hit = false;
+    //public bool hit = false;
     public Material hitMaterial;
     private Material initMaterial;
     public bool recoverable = false;
+    public float recoverTime = 5f;
     public bool damageVariant = false;
     public bool physicsReaction = false;
     public bool changeMaterial = false;
     public bool reactionTrialUse = false;
     public bool damageTaking = false;
+    public bool damageTakingDefault = false;
+    public bool targetDown = false;
     public bool damageDisplay = true;
-    public int hitPoints = 100;
+    public bool damageDisplayDefault = true;
+    [SerializeField]private int hitPoints = 100;
+    public int maxHitPoints = 100;
     public GameObject eventSystem;
 
     IEnumerator ChangeMaterial(float time)
     {
-        if (!hit)
-        {
-            yield return new WaitForSeconds(time);
+        yield return new WaitForSeconds(time);
+        if(targetDown)
             mr.material = hitMaterial;
-        }
         else
             mr.material = initMaterial;
     }
@@ -51,57 +54,109 @@ public class TargetBehavior : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (hit && !recovering)
+        if (targetDown && !recovering)
         {
             if (recoverable)
             {
                 recovering = true;
-                StartCoroutine(Recover(5f));
+                StartCoroutine(Recover(recoverTime));
             }
         }
     }
 
-    public void Hit(Vector3 hitPos, Vector3 hitDir)
+    //TargetDown for weapon damage
+    void TargetDown(Vector3 hitPos, Vector3 hitDir)
     {
-        if (!hit && changeMaterial)
+        if (changeMaterial)
         {
             StartCoroutine(ChangeMaterial(0.1f));
-            hit = true;
         }
-        if(physicsReaction)
+        if (physicsReaction)
             StartCoroutine(PhysicsPush(0.1f, hitPos, hitDir));
+        targetDown = true;
+        damageTaking = false;
+        damageDisplay = false;
     }
 
-    public void HitByProjectile()
+    //TargetDown for other damage sources
+    void TargetDown()
     {
-        if (!hit)
+        if (changeMaterial)
         {
             StartCoroutine(ChangeMaterial(0.1f));
-            hit = true;
         }
+        targetDown = true;
+        damageTaking = false;
+        damageDisplay = false;
     }
 
     IEnumerator Recover(float time)
     {
         yield return new WaitForSeconds(time);
-        rb.velocity = Vector3.zero;
-        rb.angularVelocity = Vector3.zero;
         transform.localPosition = initPosition;
         transform.localRotation = Quaternion.Euler(Vector3.zero);
-        if(changeMaterial)
+        rb.velocity = Vector3.zero;
+        rb.angularVelocity = Vector3.zero;
+        if (changeMaterial)
             StartCoroutine(ChangeMaterial(0f));
-        hit = false;
         recovering = false;
+        targetDown = false;
+        damageTaking = damageTakingDefault;
+        damageDisplay = damageDisplayDefault;
+        hitPoints = maxHitPoints;
     }
-    public void DamageBehavior(bool isCritical, int damage, bool isWeaponDamage)
+    //Damage behavior from weapon
+    public void DamageBehavior(bool isCritical, int damage, Vector3 hitPos, Vector3 hitDir)
     {
+        int realDamage = isCritical ? damage * 2 : damage; 
         //If the damage should trigger something... like hitPoint lost
-        if(reactionTrialUse && isWeaponDamage && eventSystem.GetComponent<ShootingScript>().currentTrial == 1 && eventSystem.GetComponent<TrialScript>().reactionTrialTargetUp)
+        if(reactionTrialUse && eventSystem.GetComponent<ShootingScript>().currentTrial == 1 && eventSystem.GetComponent<TrialScript>().reactionTrialTargetUp)
         {
             //Reaction Trial target hit
             eventSystem.GetComponent<TrialScript>().ReactionTrialDataRecord();
             eventSystem.GetComponent<TrialScript>().StopTrial();
             damageDisplay = false;
+        }
+        else if (!reactionTrialUse)
+        {
+            if (damageTaking && !targetDown)
+            {
+                if (hitPoints <= realDamage)
+                {
+                    hitPoints = 0;
+                    TargetDown(hitPos, hitDir);
+                }
+                else
+                {
+                    hitPoints -= realDamage;
+                }
+            }
+            else if (targetDown)
+            {
+                if (physicsReaction)
+                    StartCoroutine(PhysicsPush(0.1f, hitPos, hitDir));
+            }
+
+        }
+    }
+    //Damage behavior from other sources (No physics or physics are already done)
+    public void DamageBehavior(int damage)
+    {
+        //If the damage should trigger something... like hitPoint lost
+        if (!reactionTrialUse)
+        {
+            if (damageTaking)
+            {
+                if (hitPoints <= damage)
+                {
+                    hitPoints = 0;
+                    TargetDown();
+                }
+                else
+                {
+                    hitPoints -= damage;
+                }
+            }
         }
     }
 }

@@ -149,7 +149,7 @@ public class ProjectileMovement : MonoBehaviour
                 {
                     //DAMAGE CALCULATION
                     calculatedDamage = Vector3.Distance(hitCollider.transform.position, center) <= maxExplosionDamageRange ? damage : (int)(minExplosionDamage + (explosionDamage - minExplosionDamage) * (radius - Mathf.Min(Vector3.Distance(hitCollider.transform.position, center), radius)) / (Mathf.Max(Vector3.Distance(hitCollider.transform.position, center), radius) - maxExplosionDamageRange));
-                    hitCollider.gameObject.GetComponent<TargetBehavior>().DamageBehavior(false, calculatedDamage, false);
+                    hitCollider.gameObject.GetComponent<TargetBehavior>().DamageBehavior(calculatedDamage);
                     {
                         if (hitCollider.gameObject.GetComponent<TargetBehavior>().damageDisplay)
                         {
@@ -160,18 +160,16 @@ public class ProjectileMovement : MonoBehaviour
                             damageDisplay.GetComponent<DamageDisplay>().damageDisplayText.text = calculatedDamage.ToString();
                         }
                     }
-                    if (hitCollider.gameObject.GetComponent<TargetBehavior>().physicsReaction)
-                        hitCollider.gameObject.GetComponent<TargetBehavior>().HitByProjectile();
                     finishedObj.Add(hitCollider.gameObject);
                 }
             }
             //Require further change to adapt non-target situation or composed colliders
             if (hitCollider.gameObject.GetComponent<Rigidbody>() != null)
                 hitCollider.gameObject.GetComponent<Rigidbody>().AddExplosionForce(force, center, radius, explosionUpwardModifier, ForceMode.Impulse);
-            if (hitCollider.gameObject.CompareTag("Target") || hitCollider.gameObject.CompareTag("MovingTarget") || hitCollider.gameObject.CompareTag("RailTarget"))
+            /*if (hitCollider.gameObject.CompareTag("Target") || hitCollider.gameObject.CompareTag("MovingTarget") || hitCollider.gameObject.CompareTag("RailTarget"))
             {
                 EventSystem.GetComponent<ShootingScript>().hitByProjectile(hitCollider.gameObject);
-            }
+            }*/
         }
     }
     void ExplosionVisual(Vector3 center, float radius, float time)
