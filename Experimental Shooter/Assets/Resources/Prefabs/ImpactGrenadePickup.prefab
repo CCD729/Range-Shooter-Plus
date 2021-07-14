@@ -129,4 +129,4 @@ MonoBehaviour:
   primary: 1
   equipmentType: 1
   equipmentCoolDown: 4
-  equipmentTime: 0.5
+  equipmentTime: 0.1

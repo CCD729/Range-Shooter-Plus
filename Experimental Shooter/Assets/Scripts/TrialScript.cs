@@ -44,8 +44,16 @@ public class TrialScript : MonoBehaviour
     //adjustable popup range (optional)
 
     //references needed by Timed Trial
+    [Header("Timed Trial References")]
     public int timedTrialScore = 0;
     public float timedTrialTimeCounter = 0f;
+    public float timedTrialStartInterval = 1f;
+    public GameObject[] timedFirstPopTargetContainers;
+    public float timedTrialPopInterval = 1f;
+    public GameObject[] timedSecondPopTargetContainers;
+    public GameObject[] timedDefaultDisplayTargetContainers;
+    public int timedCurrentTarget = 0;
+    public int timedMaxTarget = 6;
 
     void Start()
     {
@@ -217,20 +225,29 @@ public class TrialScript : MonoBehaviour
     }
     void StartTimedTrial()
     {
-        ShootingScript.currentTrial = 2;
+        //ShootingScript.currentTrial = 2;
         timedTrialScore = 0;
         timedTrialTimeCounter = 30f;
+        timedCurrentTarget = 0;
         //TODO: StartSpawnTimedTargets();
         text_TrialDataRight.GetComponent<Text>().text = "Score: 0";
         text_TrialDataRight.SetActive(true);
         text_TrialDataLeft.GetComponent<Text>().text = "30.00 s";
         text_TrialDataLeft.SetActive(true);
-
+        foreach (GameObject targetContainer in timedDefaultDisplayTargetContainers[0].GetComponent<MovingTargetContainerBehavior>().TargetGroup)
+        {
+            if (targetContainer.GetComponent<MovingTargetContainerBehavior>().hasAnimation)
+            {
+                targetContainer.GetComponent<MovingTargetContainerBehavior>().TargetObj.GetComponent<animController>().TargetPopDownAnimation();
+            }
+            targetContainer.GetComponent<MovingTargetContainerBehavior>().active = false;
+        }
+        StartCoroutine(TimedTrialPopTargets(timedTrialStartInterval, timedTrialPopInterval, timedFirstPopTargetContainers, timedSecondPopTargetContainers));
     }
     public void TimedTrialDataRecord()
     {
         trialNewScore[2] = timedTrialScore;
-        StartCoroutine(ResetTimedTargets());
+        StartCoroutine(ResetTimedDisplayTargets());
         Debug.Log("Timed trial recording score...");
         UpdateScore(2);
     }
@@ -247,6 +264,10 @@ public class TrialScript : MonoBehaviour
         text_TrialDataRight.GetComponent<Text>().text = "TrialDataRightTextExample";
         text_TrialName.SetActive(false);
         text_TrialHint.SetActive(false);
+        Invoke("TrialEndDelay", 2f);
+    }
+    void TrialEndDelay()
+    {
         trailActive = false;
     }
     void UpdateScore(int typeIdentifier)
@@ -288,7 +309,7 @@ public class TrialScript : MonoBehaviour
                 }
                 break;
             case 2:
-                if (PlayerPrefs.GetFloat("Trial2HiScore", 0f) < trialNewScore[0])
+                if (PlayerPrefs.GetFloat("Trial2HiScore", 0f) < trialNewScore[2])
                 {
                     PlayerPrefs.SetFloat("Trial2HiScore", trialNewScore[2]);
                     trialHiScoreTMP[2].GetComponent<TMPro.TextMeshPro>().text = trialNewScore[2].ToString("F0");
@@ -320,10 +341,48 @@ public class TrialScript : MonoBehaviour
         reactionTarget.transform.parent.position = reactionTargetContainerInitialPosition;
         reactionTarget.GetComponent<animController>().TargetPopUpAnimation();
     }
-    IEnumerator ResetTimedTargets()
+    IEnumerator TimedTrialPopTargets(float startInterval, float popInterval, GameObject[] firstPop, GameObject[] secondPop)
     {
+        yield return new WaitForSecondsRealtime(startInterval);
+        ShootingScript.currentTrial = 2;
+        foreach (GameObject targetContainer in firstPop)
+        {
+            timedCurrentTarget++;
+            targetContainer.GetComponent<MovingTargetContainerBehavior>().StartUp();
+        }
+        yield return new WaitForSecondsRealtime(popInterval);
+        foreach (GameObject targetContainer in secondPop)
+        {
+            timedCurrentTarget++;
+            targetContainer.GetComponent<MovingTargetContainerBehavior>().StartUp();
+        }
+    }
+    IEnumerator ResetTimedDisplayTargets()
+    {
+        foreach (GameObject targetContainer in timedDefaultDisplayTargetContainers[0].GetComponent<MovingTargetContainerBehavior>().TargetGroup)
+        {
+            if (targetContainer.GetComponent<MovingTargetContainerBehavior>().active && targetContainer.GetComponent<MovingTargetContainerBehavior>().hasAnimation)
+            {
+                targetContainer.GetComponent<MovingTargetContainerBehavior>().TargetObj.GetComponent<animController>().TargetPopDownAnimation();
+            }
+            targetContainer.GetComponent<MovingTargetContainerBehavior>().active = false;
+        }
         //TODO: Reset Displaying Targets to default positions with stepped animations
         yield return new WaitForSecondsRealtime(1f);
-
+        
+        foreach (GameObject targetContainer in timedDefaultDisplayTargetContainers[0].GetComponent<MovingTargetContainerBehavior>().TargetGroup)
+        {
+            if(targetContainer.GetComponent<MovingTargetContainerBehavior>().movementType == MovingTargetContainerBehavior.MovementType.StraightLine)
+                targetContainer.GetComponent<MovingTargetContainerBehavior>().transform.position = targetContainer.GetComponent<MovingTargetContainerBehavior>().startPos;
+            targetContainer.GetComponent<MovingTargetContainerBehavior>().TargetObj.GetComponent<TargetBehavior>().targetDown = true;
+            targetContainer.GetComponent<MovingTargetContainerBehavior>().TargetObj.GetComponent<TargetBehavior>().damageTaking = false;
+            targetContainer.GetComponent<MovingTargetContainerBehavior>().TargetObj.GetComponent<TargetBehavior>().damageDisplay = false;
+            targetContainer.GetComponent<MovingTargetContainerBehavior>().TargetObj.GetComponent<TargetBehavior>().hitPoints = targetContainer.GetComponent<MovingTargetContainerBehavior>().TargetObj.GetComponent<TargetBehavior>().maxHitPoints;
+        }
+        foreach (GameObject defaultDisplayContainer in timedDefaultDisplayTargetContainers)
+            if (defaultDisplayContainer.GetComponent<MovingTargetContainerBehavior>().hasAnimation)
+            {
+                defaultDisplayContainer.GetComponent<MovingTargetContainerBehavior>().TargetObj.GetComponent<animController>().TargetPopUpAnimation();
+            }
     }
 }

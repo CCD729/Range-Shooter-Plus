@@ -53,13 +53,13 @@ public class ProjectileMovement : MonoBehaviour
         if (projectileType == ProjectileType.impactGrenade)
         {
             Is_Explosive = true;
-            explosionRadius = 6f;
-            explosionForce = 6f;
-            explosionDamage = 50;
-            explosionUpwardModifier = 1f;
+            explosionRadius = 8f;
+            explosionForce = 7f;
+            explosionDamage = 150;
+            explosionUpwardModifier = 1.5f;
             explosionVisualTime = 1.5f;
             maxExplosionDamageRange = 3f;
-            minExplosionDamage = 10;
+            minExplosionDamage = 30;
         }
 
         //Let the Projectile fly
@@ -149,7 +149,6 @@ public class ProjectileMovement : MonoBehaviour
                 {
                     //DAMAGE CALCULATION
                     calculatedDamage = Vector3.Distance(hitCollider.transform.position, center) <= maxExplosionDamageRange ? damage : (int)(minExplosionDamage + (explosionDamage - minExplosionDamage) * (radius - Mathf.Min(Vector3.Distance(hitCollider.transform.position, center), radius)) / (Mathf.Max(Vector3.Distance(hitCollider.transform.position, center), radius) - maxExplosionDamageRange));
-                    hitCollider.gameObject.GetComponent<TargetBehavior>().DamageBehavior(calculatedDamage);
                     {
                         if (hitCollider.gameObject.GetComponent<TargetBehavior>().damageDisplay)
                         {
@@ -160,6 +159,7 @@ public class ProjectileMovement : MonoBehaviour
                             damageDisplay.GetComponent<DamageDisplay>().damageDisplayText.text = calculatedDamage.ToString();
                         }
                     }
+                    hitCollider.gameObject.GetComponent<TargetBehavior>().DamageBehavior(calculatedDamage);
                     finishedObj.Add(hitCollider.gameObject);
                 }
             }

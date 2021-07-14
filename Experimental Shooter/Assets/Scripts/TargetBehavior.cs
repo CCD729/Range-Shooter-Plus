@@ -24,7 +24,7 @@ public class TargetBehavior : MonoBehaviour
     public bool targetDown = false;
     public bool damageDisplay = true;
     public bool damageDisplayDefault = true;
-    [SerializeField]private int hitPoints = 100;
+    public int hitPoints = 100;
     public int maxHitPoints = 100;
     public int pointWorth = 100;
     public GameObject eventSystem;
@@ -72,6 +72,8 @@ public class TargetBehavior : MonoBehaviour
         }
     }
 
+    //Should TargetDown Pair with animations? if not all distinguishable
+
     //TargetDown for weapon damage
     void TargetDown(Vector3 hitPos, Vector3 hitDir)
     {
@@ -84,6 +86,15 @@ public class TargetBehavior : MonoBehaviour
         targetDown = true;
         damageTaking = false;
         damageDisplay = false;
+
+        //Temporary
+        if (TimedTrialUse)
+        {
+            transform.parent.GetComponent<MovingTargetContainerBehavior>().FinishDown();
+            //Consider integrate reaction trial target behavior here. Lock takingDamage until trial start to prevent false scoring
+            //Should Critical hits get precise bonus?
+            eventSystem.GetComponent<TrialScript>().timedTrialScore += pointWorth;
+        }
     }
 
     //TargetDown for other damage sources
@@ -96,10 +107,12 @@ public class TargetBehavior : MonoBehaviour
         targetDown = true;
         damageTaking = false;
         damageDisplay = false;
-        //Consider integrate reaction trial target behavior here. Lock takingDamage until trial start to prevent false scoring
+
+        //Temporary
         if (TimedTrialUse)
         {
-            //Should Critical Hits be considered precise bonus?
+            transform.parent.GetComponent<MovingTargetContainerBehavior>().FinishDown();
+            //Consider integrate reaction trial target behavior here. Lock takingDamage until trial start to prevent false scoring
             eventSystem.GetComponent<TrialScript>().timedTrialScore += pointWorth;
         }
     }

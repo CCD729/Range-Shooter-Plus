@@ -926,7 +926,7 @@ public class ShootingScript : MonoBehaviour
             if (equipmentPrimaryUsing)
             {
 
-                if (equipmentPrimaryUsingTime < equipmentTimePrimary+weaponPutDownTime+weaponPickupTime+0.3f)
+                if (equipmentPrimaryUsingTime < equipmentTimePrimary+weaponPutDownTime+weaponPickupTime)
                 {
                     equipmentPrimaryUsingTime += Time.fixedDeltaTime;
                 }
