@@ -425,6 +425,10 @@ public class ShootingScript : MonoBehaviour
                         StartCoroutine(InteractionCoolDown(interactableObj.GetComponent<ButtonInfo>().coolDown));
                         StartCoroutine(AmmoBoxCoolDown(interactableObj));
                     }
+                    else
+                    {
+                        StartCoroutine(InteractionCoolDown(interactableObj.GetComponent<ButtonInfo>().coolDown));
+                    }
                     //interactableObj.GetComponent<animController>().ButtonPressAnimation();
                 }
                 else if (interactableObj.GetComponent<ButtonInfo>().teleportButton)

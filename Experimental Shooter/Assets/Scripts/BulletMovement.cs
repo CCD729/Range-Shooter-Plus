@@ -38,7 +38,7 @@ public class BulletMovement : MonoBehaviour
             //transform.position = Vector3.Lerp(startPoint, hitPoint, t);
                 //transform.position = Vector3.MoveTowards(transform.position, hitPoint, Time.fixedDeltaTime * speed);
         }
-        transform.Translate(Vector3.forward * Time.fixedDeltaTime * speed);
+        transform.Translate(Vector3.forward * speed * Time.fixedDeltaTime);
         /* if (t >= 1f)
          {
              this.Destroy();

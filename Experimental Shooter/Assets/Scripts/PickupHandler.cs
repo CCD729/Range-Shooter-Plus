@@ -72,8 +72,8 @@ public class PickupHandler : MonoBehaviour
                                 if (!shootingScript.weaponFull)    //TODO: Animation on Pickup Switch? Check
                                 {
                                     shootingScript.weaponFull = true;
-                                    shootingScript.secondaryWeapon = instanceWeapon.gameObject;
-                                    shootingScript.secondaryWeaponPOV = instanceWeaponPOV.gameObject;
+                                    shootingScript.secondaryWeapon = instanceWeapon;
+                                    shootingScript.secondaryWeaponPOV = instanceWeaponPOV;
                                     shootingScript.secondaryBullet = weaponInfo.bulletObj;
                                     shootingScript.secondaryWeaponBackDisplay = pickupObj;
                                     shootingScript.secondaryWeaponBackDisplay.SetActive(true);
@@ -107,8 +107,8 @@ public class PickupHandler : MonoBehaviour
                                 {
                                     shootingScript.weaponEquipped = true;
                                     shootingScript.noWeapon = false;
-                                    shootingScript.primaryWeapon = instanceWeapon.gameObject;
-                                    shootingScript.primaryWeaponPOV = instanceWeaponPOV.gameObject;
+                                    shootingScript.primaryWeapon = instanceWeapon;
+                                    shootingScript.primaryWeaponPOV = instanceWeaponPOV;
                                     shootingScript.primaryBullet = weaponInfo.bulletObj;
                                     shootingScript.currentWeapon = shootingScript.primaryWeapon;
                                     shootingScript.currentWeaponPOV = shootingScript.primaryWeaponPOV;
@@ -124,8 +124,8 @@ public class PickupHandler : MonoBehaviour
                                 {
                                     shootingScript.weaponEquipped = true;
                                     shootingScript.weaponFull = true;
-                                    shootingScript.secondaryWeapon = instanceWeapon.gameObject;
-                                    shootingScript.secondaryWeaponPOV = instanceWeaponPOV.gameObject;
+                                    shootingScript.secondaryWeapon = instanceWeapon;
+                                    shootingScript.secondaryWeaponPOV = instanceWeaponPOV;
                                     shootingScript.secondaryBullet = weaponInfo.bulletObj;
                                     shootingScript.currentWeapon = shootingScript.secondaryWeapon;
                                     shootingScript.currentWeaponPOV = shootingScript.secondaryWeaponPOV;
@@ -193,8 +193,8 @@ public class PickupHandler : MonoBehaviour
             //shootingScript.primaryWeaponBackDisplay = null;       // is this the correct way to do this when dropping for nothing?
             DropPhysics(shootingScript.primaryWeaponBackDisplay);
             //Add new
-            shootingScript.primaryWeapon = instanceWeapon.gameObject;
-            shootingScript.primaryWeaponPOV = instanceWeaponPOV.gameObject;
+            shootingScript.primaryWeapon = instanceWeapon;
+            shootingScript.primaryWeaponPOV = instanceWeaponPOV;
             shootingScript.primaryBullet = weaponInfo.bulletObj;
             shootingScript.currentWeapon = shootingScript.primaryWeapon;
             shootingScript.currentWeaponPOV = shootingScript.primaryWeaponPOV;
@@ -207,8 +207,8 @@ public class PickupHandler : MonoBehaviour
             shootingScript.secondaryWeaponBackDisplay.transform.SetLayerAllChildren(13);
             DropPhysics(shootingScript.secondaryWeaponBackDisplay);
             //Add new
-            shootingScript.secondaryWeapon = instanceWeapon.gameObject;
-            shootingScript.secondaryWeaponPOV = instanceWeaponPOV.gameObject;
+            shootingScript.secondaryWeapon = instanceWeapon;
+            shootingScript.secondaryWeaponPOV = instanceWeaponPOV;
             shootingScript.secondaryBullet = weaponInfo.bulletObj;
             shootingScript.currentWeapon = shootingScript.secondaryWeapon;
             shootingScript.currentWeaponPOV = shootingScript.secondaryWeaponPOV;

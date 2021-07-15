@@ -11,10 +11,6 @@ public class HittingAudioManager : MonoBehaviour
 
     public AudioSource AS;
 
-    void Start()
-    {
-    }
-
     void FixedUpdate()
     {
         if (started && !AS.isPlaying)

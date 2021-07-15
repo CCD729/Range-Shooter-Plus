@@ -33,11 +33,6 @@ public class RailTargetBehavior : MonoBehaviour
         animator = GetComponent<Animator>();
     }
 
-    // Update is called once per frame
-    void FixedUpdate()
-    {
-
-    }
 
     public void Hit(Vector3 hitPos, Vector3 hitDir)
     {

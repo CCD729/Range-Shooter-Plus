@@ -16,11 +16,11 @@ public class PlayerController : MonoBehaviour
     private bool sprinting = false;
     private float currentSpeed;
 
-    void Start()
+   /* void Start()
     {
         //controller = GetComponent<CharacterController>();
         //rb = GetComponent<Rigidbody>();
-    }
+    }*/
 
     void Update()
     {
@@ -46,8 +46,8 @@ public class PlayerController : MonoBehaviour
         speedVertical -= gravity * Time.deltaTime;
         moveDirection.y = speedVertical;
         currentSpeed = sprinting ? speed * 1.5f : speed;
-        controller.Move(moveDirection * Time.deltaTime * currentSpeed);
-        controller.Move(moveDirection * Time.deltaTime * currentSpeed);
+        controller.Move(moveDirection * currentSpeed * Time.deltaTime);
+        controller.Move(moveDirection * currentSpeed * Time.deltaTime);
         //if (Input.GetKeyDown("escape"))
         //{
         //    if (Cursor.lockState == CursorLockMode.Locked)

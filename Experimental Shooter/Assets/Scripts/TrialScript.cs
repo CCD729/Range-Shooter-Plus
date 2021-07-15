@@ -148,11 +148,6 @@ public class TrialScript : MonoBehaviour
         }
     }
 
-    void FixedUpdate()
-    {
-
-    }
-
     public void BeginTrial(int typeIdentifier)
     {
         //check if any trial active
@@ -364,6 +359,15 @@ public class TrialScript : MonoBehaviour
             if (targetContainer.GetComponent<MovingTargetContainerBehavior>().active && targetContainer.GetComponent<MovingTargetContainerBehavior>().hasAnimation)
             {
                 targetContainer.GetComponent<MovingTargetContainerBehavior>().TargetObj.GetComponent<animController>().TargetPopDownAnimation();
+            }
+            if (targetContainer.GetComponent<MovingTargetContainerBehavior>().active && targetContainer.GetComponent<MovingTargetContainerBehavior>().movementType == MovingTargetContainerBehavior.MovementType.Flying)
+            {
+                targetContainer.transform.localPosition = targetContainer.GetComponent<MovingTargetContainerBehavior>().startPos;
+                targetContainer.transform.localRotation = Quaternion.Euler(Vector3.zero);
+                targetContainer.GetComponent<MovingTargetContainerBehavior>().TargetObj.transform.localPosition = targetContainer.GetComponent<MovingTargetContainerBehavior>().TargetObj.GetComponent<TargetBehavior>().initPosition;
+                targetContainer.GetComponent<MovingTargetContainerBehavior>().TargetObj.transform.localRotation = targetContainer.GetComponent<MovingTargetContainerBehavior>().TargetObj.GetComponent<TargetBehavior>().initRotation;
+                targetContainer.GetComponent<MovingTargetContainerBehavior>().flyingDirection = 0;
+                targetContainer.GetComponent<MovingTargetContainerBehavior>().TargetObj.GetComponent<Rigidbody>().isKinematic = true;
             }
             targetContainer.GetComponent<MovingTargetContainerBehavior>().active = false;
         }

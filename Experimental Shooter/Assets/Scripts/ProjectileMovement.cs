@@ -159,7 +159,7 @@ public class ProjectileMovement : MonoBehaviour
                             damageDisplay.GetComponent<DamageDisplay>().damageDisplayText.text = calculatedDamage.ToString();
                         }
                     }
-                    hitCollider.gameObject.GetComponent<TargetBehavior>().DamageBehavior(calculatedDamage);
+                    hitCollider.gameObject.GetComponent<TargetBehavior>().DamageBehavior(calculatedDamage, force, center, radius, explosionUpwardModifier);
                     finishedObj.Add(hitCollider.gameObject);
                 }
             }

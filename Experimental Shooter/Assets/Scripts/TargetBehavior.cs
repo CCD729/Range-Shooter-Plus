@@ -6,7 +6,8 @@ public class TargetBehavior : MonoBehaviour
 {
     private Rigidbody rb;
     private MeshRenderer mr;
-    private Vector3 initPosition;
+    public Vector3 initPosition;
+    public Quaternion initRotation;
     private bool recovering;
     //public bool hit = false;
     public Material hitMaterial;
@@ -15,6 +16,7 @@ public class TargetBehavior : MonoBehaviour
     public float recoverTime = 5f;
     public bool damageVariant = false;
     public bool physicsReaction = false;
+    public bool kinematicWhenActive = false;
     public bool changeMaterial = false;
     public bool reactionTrialUse = false;
     public bool TimedTrialUse = false;
@@ -51,11 +53,17 @@ public class TargetBehavior : MonoBehaviour
         rb = GetComponent<Rigidbody>();
         mr = GetComponent<MeshRenderer>();
         initPosition = transform.localPosition;
+        initRotation = transform.localRotation;
         initMaterial = mr.material;
+        if (kinematicWhenActive)
+        {
+            rb.isKinematic = true;
+        }
 
         if (TimedTrialUse)
         {
             damageTaking = false;
+            damageDisplay = false;
         }
     }
 
@@ -78,9 +86,9 @@ public class TargetBehavior : MonoBehaviour
     void TargetDown(Vector3 hitPos, Vector3 hitDir)
     {
         if (changeMaterial)
-        {
             StartCoroutine(ChangeMaterial(0.1f));
-        }
+        if (kinematicWhenActive)
+            rb.isKinematic = false;
         if (physicsReaction)
             StartCoroutine(PhysicsPush(0.1f, hitPos, hitDir));
         targetDown = true;
@@ -121,11 +129,13 @@ public class TargetBehavior : MonoBehaviour
     {
         yield return new WaitForSeconds(time);
         transform.localPosition = initPosition;
-        transform.localRotation = Quaternion.Euler(Vector3.zero);
+        transform.localRotation = initRotation;
         rb.velocity = Vector3.zero;
         rb.angularVelocity = Vector3.zero;
         if (changeMaterial)
             StartCoroutine(ChangeMaterial(0f));
+        if (kinematicWhenActive)
+            rb.isKinematic = true;
         recovering = false;
         targetDown = false;
         damageTaking = damageTakingDefault;
@@ -163,9 +173,38 @@ public class TargetBehavior : MonoBehaviour
                 if (physicsReaction)
                     StartCoroutine(PhysicsPush(0.1f, hitPos, hitDir));
             }
-
         }
     }
+    //Damage behavior from Grenade (explosions)
+    public void DamageBehavior(int damage, float force, Vector3 center, float radius, float explosionUpwardModifier)
+    {
+        //If the damage should trigger something... like hitPoint lost
+        if (!reactionTrialUse)
+        {
+            if (damageTaking && !targetDown)
+            {
+                if (hitPoints <= damage)
+                {
+                    hitPoints = 0;
+                    TargetDown();
+                    if (kinematicWhenActive)
+                        rb.isKinematic = false;
+                    if (physicsReaction)
+                        rb.AddExplosionForce(force, center, radius, explosionUpwardModifier, ForceMode.Impulse);
+                }
+                else
+                {
+                    hitPoints -= damage;
+                }
+            }
+            else if (targetDown)
+            {
+                if (physicsReaction)
+                    rb.AddExplosionForce(force, center, radius, explosionUpwardModifier, ForceMode.Impulse);
+            }
+        }
+    }
+
     //Damage behavior from other sources (No physics or physics are already done)
     public void DamageBehavior(int damage)
     {
@@ -186,4 +225,5 @@ public class TargetBehavior : MonoBehaviour
             }
         }
     }
+   
 }

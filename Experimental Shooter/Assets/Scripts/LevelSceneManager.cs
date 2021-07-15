@@ -47,9 +47,6 @@ public class LevelSceneManager : MonoBehaviour
         img_reloadRing.enabled = false;
         currentScene = SceneManager.GetActiveScene().name;
     }
-    void Update()
-    {
-    }
 
     public void Pause(bool reloadingStatus)
     {
