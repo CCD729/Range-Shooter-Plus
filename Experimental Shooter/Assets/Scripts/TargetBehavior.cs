@@ -7,7 +7,7 @@ public class TargetBehavior : MonoBehaviour
     private Rigidbody rb;
     private MeshRenderer mr;
     public Vector3 initPosition;
-    public Quaternion initRotation;
+    public Vector3 initRotationEuler;
     private bool recovering;
     //public bool hit = false;
     public Material hitMaterial;
@@ -52,8 +52,11 @@ public class TargetBehavior : MonoBehaviour
     {
         rb = GetComponent<Rigidbody>();
         mr = GetComponent<MeshRenderer>();
-        initPosition = transform.localPosition;
-        initRotation = transform.localRotation;
+        if (!FreemoveTrialUse)
+        {
+            initPosition = transform.localPosition;
+            initRotationEuler = transform.localRotation.eulerAngles;
+        }
         initMaterial = mr.material;
         if (kinematicWhenActive)
         {
@@ -100,8 +103,13 @@ public class TargetBehavior : MonoBehaviour
         {
             transform.parent.GetComponent<MovingTargetContainerBehavior>().FinishDown();
             //Consider integrate reaction trial target behavior here. Lock takingDamage until trial start to prevent false scoring
-            //Should Critical hits get precise bonus?
             eventSystem.GetComponent<TrialScript>().timedTrialScore += pointWorth;
+        }
+        if (FreemoveTrialUse)
+        {
+            transform.parent.GetComponent<MovingTargetContainerBehavior>().FinishDown();
+            if (++eventSystem.GetComponent<TrialScript>().freemoveTrialTargetCounter == eventSystem.GetComponent<TrialScript>().freemoveTrialTargetAmount)
+                eventSystem.GetComponent<TrialScript>().FreemoveTrialDataRecord();
         }
     }
 
@@ -116,12 +124,18 @@ public class TargetBehavior : MonoBehaviour
         damageTaking = false;
         damageDisplay = false;
 
-        //Temporary
+
         if (TimedTrialUse)
         {
             transform.parent.GetComponent<MovingTargetContainerBehavior>().FinishDown();
             //Consider integrate reaction trial target behavior here. Lock takingDamage until trial start to prevent false scoring
             eventSystem.GetComponent<TrialScript>().timedTrialScore += pointWorth;
+        }
+        if (FreemoveTrialUse)
+        {
+            transform.parent.GetComponent<MovingTargetContainerBehavior>().FinishDown();
+            if (++eventSystem.GetComponent<TrialScript>().freemoveTrialTargetCounter == eventSystem.GetComponent<TrialScript>().freemoveTrialTargetAmount)
+                eventSystem.GetComponent<TrialScript>().FreemoveTrialDataRecord();
         }
     }
 
@@ -129,7 +143,7 @@ public class TargetBehavior : MonoBehaviour
     {
         yield return new WaitForSeconds(time);
         transform.localPosition = initPosition;
-        transform.localRotation = initRotation;
+        transform.localRotation = Quaternion.Euler(initRotationEuler);
         rb.velocity = Vector3.zero;
         rb.angularVelocity = Vector3.zero;
         if (changeMaterial)
@@ -217,6 +231,8 @@ public class TargetBehavior : MonoBehaviour
                 {
                     hitPoints = 0;
                     TargetDown();
+                    if (kinematicWhenActive)
+                        rb.isKinematic = false;
                 }
                 else
                 {
@@ -225,5 +241,8 @@ public class TargetBehavior : MonoBehaviour
             }
         }
     }
-   
+   public void ResetMaterial()
+    {
+        mr.material = initMaterial;
+    }
 }

@@ -55,6 +55,21 @@ public class TrialScript : MonoBehaviour
     public int timedCurrentTarget = 0;
     public int timedMaxTarget = 6;
 
+    //references needed by Freemove Trial
+    [Header("Freemove Trial References")]
+    public float freemoveTrialTimeCounter = 0f;
+    public float freemoveTrialStartInterval = 1f;
+    public int freemoveTrialTargetCounter = 0;
+    public int freemoveTrialTargetAmount = 10;
+    public int freemoveActiveTargetGroup = 0;
+    public Vector3 playerFreemoveTrialStartingPos;
+    public Vector3 playerFreemoveTrialFinishingPos;
+    public Vector3 playerFreemoveTrialRotationEuler;
+    public GameObject[][] freemoveTargetContainersAll = new GameObject[3][];
+    public GameObject[] freemoveTargetContainers1;
+    public GameObject[] freemoveTargetContainers2;
+    public GameObject[] freemoveTargetContainers3;
+
     void Start()
     {
         //trialNewScore = new float[4];
@@ -70,6 +85,10 @@ public class TrialScript : MonoBehaviour
         text_FreemoveTrialProgress.SetActive(false);*/
 
         reactionTargetContainerInitialPosition = reactionTarget.transform.parent.position;
+
+        freemoveTargetContainersAll[0] = freemoveTargetContainers1;
+        freemoveTargetContainersAll[1] = freemoveTargetContainers2;
+        freemoveTargetContainersAll[2] = freemoveTargetContainers3;
 
         //For first time loading hiScores with/without PlayerPrefs
         for (int i = 0; i < 4; i++)
@@ -139,9 +158,18 @@ public class TrialScript : MonoBehaviour
             else
             {
                 timedTrialTimeCounter -= Time.deltaTime;
-                text_TrialDataLeft.GetComponent<Text>().text = (timedTrialTimeCounter).ToString("F2") + " s";
-                text_TrialDataRight.GetComponent<Text>().text = (timedTrialScore).ToString();
+                text_TrialDataLeft.GetComponent<Text>().text = timedTrialTimeCounter.ToString("F2") + " s";
+                text_TrialDataRight.GetComponent<Text>().text = timedTrialScore.ToString();
             }
+            //TBD conditions
+            //Debug.Log("Timed Trial interrupted");
+            //StopTrial();
+        }
+        if (ShootingScript.currentTrial == 3)
+        {
+            freemoveTrialTimeCounter += Time.deltaTime;
+            text_TrialDataRight.GetComponent<Text>().text = freemoveTrialTimeCounter.ToString("F2") + " s";
+            text_TrialDataLeft.GetComponent<Text>().text = freemoveTrialTargetCounter.ToString()+ "/"+ freemoveTrialTargetAmount.ToString() + " Targets";
             //TBD conditions
             //Debug.Log("Timed Trial interrupted");
             //StopTrial();
@@ -224,7 +252,6 @@ public class TrialScript : MonoBehaviour
         timedTrialScore = 0;
         timedTrialTimeCounter = 30f;
         timedCurrentTarget = 0;
-        //TODO: StartSpawnTimedTargets();
         text_TrialDataRight.GetComponent<Text>().text = "Score: 0";
         text_TrialDataRight.SetActive(true);
         text_TrialDataLeft.GetComponent<Text>().text = "30.00 s";
@@ -248,7 +275,22 @@ public class TrialScript : MonoBehaviour
     }
     void StartFreemoveTrial()
     {
-        ShootingScript.currentTrial = 3;
+        freemoveTrialTargetCounter = 0;
+        freemoveTrialTimeCounter = 0f;
+        text_TrialDataRight.GetComponent<Text>().text = "0.00 s";
+        text_TrialDataRight.SetActive(true);
+        text_TrialDataLeft.GetComponent<Text>().text = "0/" + freemoveTrialTargetAmount.ToString() + " Targets";
+        text_TrialDataLeft.SetActive(true);
+        //TODO: Display center GUIText 
+        StartCoroutine(FreemoveTrialPreparation(freemoveTrialStartInterval));
+    }
+    public void FreemoveTrialDataRecord()
+    {
+        trialNewScore[3] = freemoveTrialTimeCounter;
+        StartCoroutine(ResetFreemoveTrial());
+        Debug.Log("Freemove trial recording score...");
+        UpdateScore(3);
+        StopTrial();
     }
     public void StopTrial()
     {
@@ -311,7 +353,8 @@ public class TrialScript : MonoBehaviour
                 }
                 break;
             case 3:
-                if (PlayerPrefs.GetFloat("Trial3HiScore", 0f) > trialNewScore[3])
+                if ((PlayerPrefs.GetFloat("Trial3HiScore", 0f) != 0f && PlayerPrefs.GetFloat("Trial3HiScore", 0f) > trialNewScore[3])
+                    || PlayerPrefs.GetFloat("Trial3HiScore", 0f) == 0f)
                 {
                     PlayerPrefs.SetFloat("Trial3HiScore", trialNewScore[3]);
                     trialHiScoreTMP[3].GetComponent<TMPro.TextMeshPro>().text = trialNewScore[3].ToString("F2") + " " + trialUnitMark[3];
@@ -365,10 +408,11 @@ public class TrialScript : MonoBehaviour
                 targetContainer.transform.localPosition = targetContainer.GetComponent<MovingTargetContainerBehavior>().startPos;
                 targetContainer.transform.localRotation = Quaternion.Euler(Vector3.zero);
                 targetContainer.GetComponent<MovingTargetContainerBehavior>().TargetObj.transform.localPosition = targetContainer.GetComponent<MovingTargetContainerBehavior>().TargetObj.GetComponent<TargetBehavior>().initPosition;
-                targetContainer.GetComponent<MovingTargetContainerBehavior>().TargetObj.transform.localRotation = targetContainer.GetComponent<MovingTargetContainerBehavior>().TargetObj.GetComponent<TargetBehavior>().initRotation;
+                targetContainer.GetComponent<MovingTargetContainerBehavior>().TargetObj.transform.localRotation = Quaternion.Euler(targetContainer.GetComponent<MovingTargetContainerBehavior>().TargetObj.GetComponent<TargetBehavior>().initRotationEuler);
                 targetContainer.GetComponent<MovingTargetContainerBehavior>().flyingDirection = 0;
-                targetContainer.GetComponent<MovingTargetContainerBehavior>().TargetObj.GetComponent<Rigidbody>().isKinematic = true;
             }
+            if(targetContainer.GetComponent<MovingTargetContainerBehavior>().TargetObj.GetComponent<TargetBehavior>().kinematicWhenActive)
+                targetContainer.GetComponent<MovingTargetContainerBehavior>().TargetObj.GetComponent<Rigidbody>().isKinematic = true;
             targetContainer.GetComponent<MovingTargetContainerBehavior>().active = false;
         }
         //TODO: Reset Displaying Targets to default positions with stepped animations
@@ -388,5 +432,65 @@ public class TrialScript : MonoBehaviour
             {
                 defaultDisplayContainer.GetComponent<MovingTargetContainerBehavior>().TargetObj.GetComponent<animController>().TargetPopUpAnimation();
             }
+    }
+    IEnumerator FreemoveTrialPreparation(float startInterval)
+    {
+        foreach (GameObject targetContainer in freemoveTargetContainersAll[0])
+        {
+            if (targetContainer.GetComponent<MovingTargetContainerBehavior>().hasAnimation)
+            {
+                targetContainer.GetComponent<MovingTargetContainerBehavior>().TargetObj.GetComponent<animController>().TargetPopDownAnimation();
+            }
+            targetContainer.GetComponent<MovingTargetContainerBehavior>().active = false;
+            targetContainer.SetActive(false);
+        }
+        freemoveActiveTargetGroup = Random.Range(0, 3);
+        foreach (GameObject targetContainer in freemoveTargetContainersAll[freemoveActiveTargetGroup])
+        {
+            targetContainer.GetComponent<MovingTargetContainerBehavior>().StartUp();
+            targetContainer.GetComponent<MovingTargetContainerBehavior>().active = true;
+        }
+        //TODO: Add some blackout and time maybe? Center display text
+        yield return new WaitForSecondsRealtime(startInterval);
+        ShootingScript.player.transform.localPosition = playerFreemoveTrialStartingPos;
+        ShootingScript.player.transform.localRotation = Quaternion.Euler(playerFreemoveTrialRotationEuler);
+        ShootingScript.currentTrial = 3;
+    }
+    IEnumerator ResetFreemoveTrial()
+    {
+        yield return new WaitForSecondsRealtime(1f);
+        //TODO: Add some blackout and time maybe? Center display text
+        ShootingScript.player.transform.localPosition = playerFreemoveTrialFinishingPos;
+        ShootingScript.player.transform.localRotation =Quaternion.Euler(playerFreemoveTrialRotationEuler);
+        foreach (GameObject targetContainer in freemoveTargetContainersAll[freemoveActiveTargetGroup])
+        {
+            targetContainer.GetComponent<MovingTargetContainerBehavior>().TargetObj.transform.localPosition = targetContainer.GetComponent<MovingTargetContainerBehavior>().TargetObj.GetComponent<TargetBehavior>().initPosition;
+            targetContainer.GetComponent<MovingTargetContainerBehavior>().TargetObj.transform.localRotation = Quaternion.Euler(targetContainer.GetComponent<MovingTargetContainerBehavior>().TargetObj.GetComponent<TargetBehavior>().initRotationEuler);
+            if (targetContainer.GetComponent<MovingTargetContainerBehavior>().TargetObj.GetComponent<TargetBehavior>().kinematicWhenActive)
+                targetContainer.GetComponent<MovingTargetContainerBehavior>().TargetObj.GetComponent<Rigidbody>().isKinematic = true;
+            if (targetContainer.GetComponent<MovingTargetContainerBehavior>().TargetObj.GetComponent<TargetBehavior>().changeMaterial)
+                targetContainer.GetComponent<MovingTargetContainerBehavior>().TargetObj.GetComponent<TargetBehavior>().ResetMaterial();
+            //targetContainer.GetComponent<MovingTargetContainerBehavior>().active = false;
+            targetContainer.SetActive(false);
+        }
+        //TODO: Reset Displaying Targets to default positions
+        yield return new WaitForSecondsRealtime(1f);
+        foreach (GameObject targetContainer in freemoveTargetContainersAll[0])
+        {
+            targetContainer.SetActive(true);
+            targetContainer.GetComponent<MovingTargetContainerBehavior>().TargetObj.GetComponent<TargetBehavior>().targetDown = true;
+            targetContainer.GetComponent<MovingTargetContainerBehavior>().TargetObj.GetComponent<TargetBehavior>().damageTaking = false;
+            targetContainer.GetComponent<MovingTargetContainerBehavior>().TargetObj.GetComponent<TargetBehavior>().damageDisplay = false;
+            targetContainer.GetComponent<MovingTargetContainerBehavior>().TargetObj.GetComponent<TargetBehavior>().hitPoints = targetContainer.GetComponent<MovingTargetContainerBehavior>().TargetObj.GetComponent<TargetBehavior>().maxHitPoints;
+            if (targetContainer.GetComponent<MovingTargetContainerBehavior>().TargetObj.GetComponent<TargetBehavior>().kinematicWhenActive)
+                targetContainer.GetComponent<MovingTargetContainerBehavior>().TargetObj.GetComponent<Rigidbody>().isKinematic = true;
+            if (targetContainer.GetComponent<MovingTargetContainerBehavior>().TargetObj.GetComponent<Rigidbody>())
+            {
+                targetContainer.GetComponent<MovingTargetContainerBehavior>().TargetObj.GetComponent<Rigidbody>().velocity = Vector3.zero;
+                targetContainer.GetComponent<MovingTargetContainerBehavior>().TargetObj.GetComponent<Rigidbody>().angularVelocity = Vector3.zero;
+            }
+            if (targetContainer.GetComponent<MovingTargetContainerBehavior>().hasAnimation)
+                targetContainer.GetComponent<MovingTargetContainerBehavior>().TargetObj.GetComponent<animController>().TargetPopUpAnimation();
+        }
     }
 }

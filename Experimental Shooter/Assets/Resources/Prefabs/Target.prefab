@@ -62,7 +62,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 8979de94ad943864a8a3c0c5ff620b01, type: 2}
+  - {fileID: 2100000, guid: fb0affe3487e11449bc74b2f7a904489, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -112,13 +112,27 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 96af359522834db4b8c7d8f7ad7df815, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  hit: 0
-  hitMaterial: {fileID: 2100000, guid: 093b8460bff837e41bf64ba390b5489f, type: 2}
+  initPosition: {x: 0, y: 0, z: 0}
+  initRotation: {x: 0, y: 0, z: 0, w: 0}
+  hitMaterial: {fileID: 2100000, guid: 0c34c0451ec9cec44af8550bafeefb06, type: 2}
   recoverable: 0
+  recoverTime: 5
   damageVariant: 0
   physicsReaction: 1
+  kinematicWhenActive: 0
   changeMaterial: 1
+  reactionTrialUse: 0
+  TimedTrialUse: 0
+  FreemoveTrialUse: 0
+  damageTaking: 0
+  damageTakingDefault: 0
+  targetDown: 0
+  damageDisplay: 1
+  damageDisplayDefault: 1
   hitPoints: 100
+  maxHitPoints: 100
+  pointWorth: 100
+  eventSystem: {fileID: 0}
 --- !u!64 &6147320997916412697
 MeshCollider:
   m_ObjectHideFlags: 0

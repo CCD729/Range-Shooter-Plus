@@ -14,9 +14,19 @@ public class MovingTargetContainerBehavior : MonoBehaviour
     public GameObject[] TargetGroup;
     public TrialScript trialScript;
 
+    //public Vector3 initPosition;
+    //public Vector3 initRotationEuler;
+
     public bool startUpDown = false;
     public bool active;
     public bool hasAnimation;
+    //If the target has some rotation
+    public bool selfRotating;
+    public float rotateX = 0f;
+    public float rotateY = 1f;
+    public float rotateZ = 0f;
+    public float rotationSpeed = 1f; //Maybe needs rework
+
     public MovementType movementType;
 
     public float timeDuration;
@@ -30,15 +40,12 @@ public class MovingTargetContainerBehavior : MonoBehaviour
     //Flying Properties
     [Header("Flying Properties")]
     //public Vector3 initRotation; // No long needed
-    public float rotateX = 0f;
-    public float rotateY = 1f;
-    public float rotateZ = 0f;
-    public float rotationSpeed = 1f; //Maybe needs rework
     public int flyingDirection = 0; //Maybe could be applied to all targets
 
     void Start()
     {
-        active = false;
+        //initPosition = transform.localPosition;
+        //initRotation = transform.localRotation;
         if (startUpDown)
         {
             if (hasAnimation)
@@ -57,7 +64,7 @@ public class MovingTargetContainerBehavior : MonoBehaviour
         if (active)
         {
             //Time Counting when objective Finished and unhit
-            if (timeCounter >= timeDuration)
+            if (timeCounter >= timeDuration && TargetObj.GetComponent<TargetBehavior>().TimedTrialUse)
             {
                 TargetObj.GetComponent<TargetBehavior>().targetDown = true;
                 TargetObj.GetComponent<TargetBehavior>().damageTaking = false;
@@ -83,6 +90,9 @@ public class MovingTargetContainerBehavior : MonoBehaviour
                     transform.position = Vector3.Lerp(startPos, finishPos, timeCounter / timeDuration);
                 else
                     transform.position = Vector3.Lerp(finishPos, startPos, timeCounter / timeDuration);
+            }
+            if (selfRotating)
+            {
                 transform.Rotate(new Vector3(rotateX, rotateY, rotateZ) * rotationSpeed * Time.timeScale);
             }
         }
@@ -94,26 +104,43 @@ public class MovingTargetContainerBehavior : MonoBehaviour
         {
             TargetObj.GetComponent<animController>().TargetPopDownAnimation();
         }
-        //Trigger another to spawn soon
-        int choice = Random.Range(0,TargetGroup.Length);
-        while (TargetGroup[choice].GetComponent<MovingTargetContainerBehavior>().active)
+        if (TargetObj.GetComponent<TargetBehavior>().TimedTrialUse)
         {
-            choice = Random.Range(0, TargetGroup.Length);
+            //Trigger another to spawn soon
+            int choice = Random.Range(0, TargetGroup.Length);
+            while (TargetGroup[choice].GetComponent<MovingTargetContainerBehavior>().active)
+            {
+                choice = Random.Range(0, TargetGroup.Length);
+            }
+            if (trialScript.timedCurrentTarget < trialScript.timedMaxTarget)
+            {
+                TargetGroup[choice].GetComponent<MovingTargetContainerBehavior>().StartUp();
+                trialScript.timedCurrentTarget++;
+            }
+            trialScript.timedCurrentTarget--;
+            if (movementType == MovementType.Flying)
+            {
+                StartCoroutine(ResetFlyingTargetPosition(5f));
+            }
         }
-        if (trialScript.timedCurrentTarget < trialScript.timedMaxTarget)
-        {
-            TargetGroup[choice].GetComponent<MovingTargetContainerBehavior>().StartUp();
-            trialScript.timedCurrentTarget++;
-        }
-        trialScript.timedCurrentTarget--;
         active = false;
-        if (movementType == MovementType.Flying)
-        {
-            StartCoroutine(ResetFlyingTargetPosition(5f));
-        }
     }
     public void StartUp()
     {
+        if (!gameObject.activeSelf)
+            gameObject.SetActive(true);
+        if (TargetObj.GetComponent<TargetBehavior>().kinematicWhenActive)
+            TargetObj.GetComponent<Rigidbody>().isKinematic = true;
+        if (TargetObj.GetComponent<Rigidbody>())
+        {
+            TargetObj.GetComponent<Rigidbody>().velocity = Vector3.zero;
+            TargetObj.GetComponent<Rigidbody>().angularVelocity = Vector3.zero;
+        }
+        TargetObj.transform.localPosition = TargetObj.GetComponent<TargetBehavior>().initPosition;
+        TargetObj.transform.localRotation = Quaternion.Euler(TargetObj.GetComponent<TargetBehavior>().initRotationEuler);
+        //transform.localPosition = initPosition;
+        //transform.localRotation = Quaternion.Euler(initRotationEuler);
+
         if (movementType == MovementType.StraightLine)
         {
             transform.position = startPos;
@@ -122,9 +149,8 @@ public class MovingTargetContainerBehavior : MonoBehaviour
         {
             transform.localRotation = Quaternion.Euler(Vector3.zero);
             TargetObj.transform.localPosition = TargetObj.GetComponent<TargetBehavior>().initPosition;
-            TargetObj.transform.localRotation = TargetObj.GetComponent<TargetBehavior>().initRotation;
+            TargetObj.transform.localRotation = Quaternion.Euler(TargetObj.GetComponent<TargetBehavior>().initRotationEuler);
             flyingDirection = Random.Range(0, 2);
-            TargetObj.GetComponent<Rigidbody>().isKinematic = true;
             if (flyingDirection == 0)
             {
                 transform.position = startPos;
@@ -133,6 +159,8 @@ public class MovingTargetContainerBehavior : MonoBehaviour
             {
                 transform.position = finishPos;
             }
+            if (TargetObj.GetComponent<TargetBehavior>().changeMaterial)
+                TargetObj.GetComponent<TargetBehavior>().ResetMaterial();
         }
         if (hasAnimation)
         {
@@ -154,7 +182,7 @@ public class MovingTargetContainerBehavior : MonoBehaviour
         transform.localPosition = startPos;
         transform.localRotation = Quaternion.Euler(Vector3.zero);
         TargetObj.transform.localPosition = TargetObj.GetComponent<TargetBehavior>().initPosition;
-        TargetObj.transform.localRotation = TargetObj.GetComponent<TargetBehavior>().initRotation;
+        TargetObj.transform.localRotation = Quaternion.Euler(TargetObj.GetComponent<TargetBehavior>().initRotationEuler);
         flyingDirection = 0;
         TargetObj.GetComponent<Rigidbody>().isKinematic = true;
     }

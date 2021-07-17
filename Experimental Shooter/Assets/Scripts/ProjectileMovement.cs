@@ -164,8 +164,8 @@ public class ProjectileMovement : MonoBehaviour
                 }
             }
             //Require further change to adapt non-target situation or composed colliders
-            if (hitCollider.gameObject.GetComponent<Rigidbody>() != null)
-                hitCollider.gameObject.GetComponent<Rigidbody>().AddExplosionForce(force, center, radius, explosionUpwardModifier, ForceMode.Impulse);
+            //if (hitCollider.gameObject.GetComponent<Rigidbody>() != null)
+            //    hitCollider.gameObject.GetComponent<Rigidbody>().AddExplosionForce(force, center, radius, explosionUpwardModifier, ForceMode.Impulse);
             /*if (hitCollider.gameObject.CompareTag("Target") || hitCollider.gameObject.CompareTag("MovingTarget") || hitCollider.gameObject.CompareTag("RailTarget"))
             {
                 EventSystem.GetComponent<ShootingScript>().hitByProjectile(hitCollider.gameObject);
