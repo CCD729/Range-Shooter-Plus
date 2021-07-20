@@ -451,6 +451,29 @@ public class ShootingScript : MonoBehaviour
                     }
                     else if (fRatePassed && !equipmentPrimaryUsing && !equipmentSecondaryUsing && !pickupHandling && !weaponHandling)
                     {
+                        //ADS experiments
+                        if (Input.GetKeyDown(aimKey))
+                        {
+                            /*if (currentWeapon.GetComponent<animController>().animator.GetCurrentAnimatorStateInfo(currentWeapon.GetComponent<animController>().animator.GetLayerIndex("ADS")).IsName("AimDownSight"))
+                            {
+                            }
+                            else
+                            {*/
+                                currentWeapon.GetComponent<animController>().animator.CrossFade("AimDownSight", 0.3f);
+                                currentWeaponPOV.GetComponent<animController>().animator.CrossFade("AimDownSight", 0.3f);
+                                currentWeapon.GetComponent<animController>().animator.SetFloat("speedADS", 1);
+                                currentWeaponPOV.GetComponent<animController>().animator.SetFloat("speedADS", 1);
+                            /*}*/
+                        }
+                        else if (Input.GetKeyUp(aimKey))
+                        {
+                            if (currentWeapon.GetComponent<animController>().animator.GetCurrentAnimatorStateInfo(currentWeapon.GetComponent<animController>().animator.GetLayerIndex("ADS")).IsName("AimDownSight"))
+                            {
+                                currentWeapon.GetComponent<animController>().animator.SetFloat("speedADS", -1);
+                                currentWeaponPOV.GetComponent<animController>().animator.SetFloat("speedADS", -1);
+                            }
+                        }
+
                         if( (Input.GetKey(attackKey) && currentWeapon.GetComponent<WeaponInfo>().fireMode == FireSelect.auto) ||
                             (Input.GetKeyDown(attackKey) && currentWeapon.GetComponent<WeaponInfo>().fireMode != FireSelect.auto))
                         {
