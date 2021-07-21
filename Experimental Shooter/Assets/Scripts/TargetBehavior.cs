@@ -21,6 +21,7 @@ public class TargetBehavior : MonoBehaviour
     public bool reactionTrialUse = false;
     public bool TimedTrialUse = false;
     public bool FreemoveTrialUse = false;
+    public bool redBoxhitMaterialChange = false;
     public bool damageTaking = false;
     public bool damageTakingDefault = false;
     public bool targetDown = false;
@@ -111,6 +112,7 @@ public class TargetBehavior : MonoBehaviour
             if (++eventSystem.GetComponent<TrialScript>().freemoveTrialTargetCounter == eventSystem.GetComponent<TrialScript>().freemoveTrialTargetAmount)
                 eventSystem.GetComponent<TrialScript>().FreemoveTrialDataRecord();
         }
+
     }
 
     //TargetDown for other damage sources

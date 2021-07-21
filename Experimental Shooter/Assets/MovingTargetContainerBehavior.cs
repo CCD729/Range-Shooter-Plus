@@ -42,6 +42,13 @@ public class MovingTargetContainerBehavior : MonoBehaviour
     //public Vector3 initRotation; // No long needed
     public int flyingDirection = 0; //Maybe could be applied to all targets
 
+    //Color changing Properties
+    [Header("Color Changing Properties")]
+    [SerializeField] private float currentEmissionMultiplier = 1f;
+    [SerializeField] private float currentLightIntensityMultiplier = 1f;
+    [SerializeField] private Color initColor;
+    [SerializeField] private float initLightIntensity;
+
     void Start()
     {
         //initPosition = transform.localPosition;
@@ -55,6 +62,11 @@ public class MovingTargetContainerBehavior : MonoBehaviour
             TargetObj.GetComponent<TargetBehavior>().targetDown = true;
             TargetObj.GetComponent<TargetBehavior>().damageTaking = false;
            TargetObj.GetComponent<TargetBehavior>().damageDisplay = false;
+        }
+        if (TargetObj.GetComponent<TargetBehavior>().redBoxhitMaterialChange)
+        {
+            initColor = TargetObj.GetComponent<MeshRenderer>().material.GetColor("_EmissionColor");
+            initLightIntensity = TargetObj.GetComponentInChildren<Light>().intensity;
         }
     }
 
@@ -96,6 +108,12 @@ public class MovingTargetContainerBehavior : MonoBehaviour
                 transform.Rotate(new Vector3(rotateX, rotateY, rotateZ) * rotationSpeed * Time.timeScale);
             }
         }
+        if (TargetObj.GetComponent<TargetBehavior>().redBoxhitMaterialChange)
+        {
+            TargetObj.GetComponent<MeshRenderer>().material.SetVector("_EmissionColor", initColor * currentEmissionMultiplier);
+            //Light intensity
+            TargetObj.GetComponentInChildren<Light>().intensity = initLightIntensity * currentLightIntensityMultiplier;
+        }
     }
      
     public void FinishDown()
@@ -122,6 +140,11 @@ public class MovingTargetContainerBehavior : MonoBehaviour
             {
                 StartCoroutine(ResetFlyingTargetPosition(5f));
             }
+        }
+        if (TargetObj.GetComponent<TargetBehavior>().redBoxhitMaterialChange)
+        {
+            currentEmissionMultiplier = 0f;
+            currentLightIntensityMultiplier = 0f;
         }
         active = false;
     }
@@ -171,6 +194,11 @@ public class MovingTargetContainerBehavior : MonoBehaviour
         TargetObj.GetComponent<TargetBehavior>().damageDisplay = TargetObj.GetComponent<TargetBehavior>().damageDisplayDefault;
         TargetObj.GetComponent<TargetBehavior>().hitPoints = TargetObj.GetComponent<TargetBehavior>().maxHitPoints;
 
+        if (TargetObj.GetComponent<TargetBehavior>().redBoxhitMaterialChange)
+        {
+            currentEmissionMultiplier = 1f;
+            currentLightIntensityMultiplier = 1f;
+        }
         //Reset time counter
         timeCounter = 0f;
         active = true;
