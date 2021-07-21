@@ -214,6 +214,11 @@ MonoBehaviour:
   FireModes: 0000000002000000
   bulletObj: {fileID: 8388713027766119384, guid: 2646ff4814621c64d9452ebec4911ab1,
     type: 3}
+  aimDownSightsPosition: {x: -0.624, y: 0.103, z: -0.24}
+  aimDownSightsRotation: {x: 358, y: 358.73, z: 0}
+  hipFirePosition: {x: 0, y: 0, z: 0}
+  hipFireRotation: {x: 0, y: 0, z: 0}
+  aimTime: 0.5
 --- !u!1 &2593891158116941524
 GameObject:
   m_ObjectHideFlags: 0

@@ -49,8 +49,10 @@ public class ShootingScript : MonoBehaviour
     [Tooltip("Current player's weapon container for unequipped weapon on back")]
     public GameObject weaponBackDisplayContainer;
 
+    [Header("Crosshair")]
+    public GameObject crossHairReticles;
+
     [Header("Images")]
-    public Image img_crossHair;
     public Image img_bulletIcon;
     public Image img_reloadRing;
 
@@ -154,6 +156,7 @@ public class ShootingScript : MonoBehaviour
     public bool interactablesLookingat = false;
     public string pickupName = "";
     public float distanceUnitRatio = 3.3333f;
+    public float currentWeaponSpreadRadius;
     public GameObject pickupObj;
     public GameObject interactableObj;
     public PickupHandler pickupHandler;
@@ -444,37 +447,40 @@ public class ShootingScript : MonoBehaviour
             {
                 if (!currentWeapon.GetComponent<WeaponInfo>().melee)
                 {
-                    if (reloading)
+                    {
+                        //ADS experiments
+                        if (Input.GetKeyDown(aimKey) && !reloading && fRatePassed && !equipmentPrimaryUsing && !equipmentSecondaryUsing && !pickupHandling && !weaponHandling)
+                        {
+                            //Animation in future
+                            crossHairReticles.SetActive(false);
+
+                            currentWeapon.GetComponent<animController>().animator.CrossFade("ADS", 0.2f);
+                            currentWeaponPOV.GetComponent<animController>().animator.CrossFade("ADS", 0.2f);
+                            //currentWeapon.transform.localPosition = Vector3.Slerp(currentWeapon.transform.localPosition, currentWeapon.GetComponent<WeaponInfo>().aimDownSightsPosition, currentWeapon.GetComponent<WeaponInfo>().aimSpeed * Time.deltaTime);
+                            //currentWeapon.transform.localRotation = Quaternion.Euler(Vector3.Slerp(currentWeapon.transform.localRotation.eulerAngles, currentWeapon.GetComponent<WeaponInfo>().aimDownSightsRotation, currentWeapon.GetComponent<WeaponInfo>().aimSpeed * Time.deltaTime));
+                            //currentWeaponPOV.transform.localPosition = Vector3.Slerp(currentWeapon.transform.localPosition, currentWeapon.GetComponent<WeaponInfo>().aimDownSightsPosition, currentWeapon.GetComponent<WeaponInfo>().aimSpeed * Time.deltaTime);
+                            //currentWeaponPOV.transform.localRotation = Quaternion.Euler(Vector3.Slerp(currentWeapon.transform.localRotation.eulerAngles, currentWeapon.GetComponent<WeaponInfo>().aimDownSightsRotation, currentWeapon.GetComponent<WeaponInfo>().aimSpeed * Time.deltaTime));
+                        }
+                        if (Input.GetKeyUp(aimKey) || reloading || weaponHandling || equipmentPrimaryUsing || equipmentSecondaryUsing || switching)
+                        {
+                            //TODO: Crosshair should be controlled with different handling in future
+                            if(!reloading && !pickupHandling && !equipmentPrimaryUsing && !equipmentSecondaryUsing)
+                                crossHairReticles.SetActive(true);
+                            currentWeapon.GetComponent<animController>().animator.CrossFade("hipFire", 0.2f);
+                            currentWeaponPOV.GetComponent<animController>().animator.CrossFade("hipFire", 0.2f);
+                            //currentWeapon.transform.localPosition = Vector3.Slerp(currentWeapon.transform.localPosition, Vector3.zero, currentWeapon.GetComponent<WeaponInfo>().aimSpeed * Time.deltaTime);
+                            //currentWeapon.transform.localRotation = Quaternion.Euler(Vector3.Slerp(currentWeapon.transform.localRotation.eulerAngles, Vector3.zero, currentWeapon.GetComponent<WeaponInfo>().aimSpeed * Time.deltaTime));
+                            //currentWeaponPOV.transform.localPosition = Vector3.Slerp(currentWeapon.transform.localPosition, Vector3.zero, currentWeapon.GetComponent<WeaponInfo>().aimSpeed * Time.deltaTime);
+                            //currentWeaponPOV.transform.localRotation = Quaternion.Euler(Vector3.Slerp(currentWeapon.transform.localRotation.eulerAngles, Vector3.zero, currentWeapon.GetComponent<WeaponInfo>().aimSpeed * Time.deltaTime));
+                        }
+                        if (reloading)
                     {
                         currentWeapon.GetComponent<animController>().animator.SetBool("isReloading", false);
                         currentWeaponPOV.GetComponent<animController>().animator.SetBool("isReloading", false);
                     }
                     else if (fRatePassed && !equipmentPrimaryUsing && !equipmentSecondaryUsing && !pickupHandling && !weaponHandling)
-                    {
-                        //ADS experiments
-                        if (Input.GetKeyDown(aimKey))
-                        {
-                            /*if (currentWeapon.GetComponent<animController>().animator.GetCurrentAnimatorStateInfo(currentWeapon.GetComponent<animController>().animator.GetLayerIndex("ADS")).IsName("AimDownSight"))
-                            {
-                            }
-                            else
-                            {*/
-                                currentWeapon.GetComponent<animController>().animator.CrossFade("AimDownSight", 0.3f);
-                                currentWeaponPOV.GetComponent<animController>().animator.CrossFade("AimDownSight", 0.3f);
-                                currentWeapon.GetComponent<animController>().animator.SetFloat("speedADS", 1);
-                                currentWeaponPOV.GetComponent<animController>().animator.SetFloat("speedADS", 1);
-                            /*}*/
-                        }
-                        else if (Input.GetKeyUp(aimKey))
-                        {
-                            if (currentWeapon.GetComponent<animController>().animator.GetCurrentAnimatorStateInfo(currentWeapon.GetComponent<animController>().animator.GetLayerIndex("ADS")).IsName("AimDownSight"))
-                            {
-                                currentWeapon.GetComponent<animController>().animator.SetFloat("speedADS", -1);
-                                currentWeaponPOV.GetComponent<animController>().animator.SetFloat("speedADS", -1);
-                            }
-                        }
 
-                        if( (Input.GetKey(attackKey) && currentWeapon.GetComponent<WeaponInfo>().fireMode == FireSelect.auto) ||
+                        if ( (Input.GetKey(attackKey) && currentWeapon.GetComponent<WeaponInfo>().fireMode == FireSelect.auto) ||
                             (Input.GetKeyDown(attackKey) && currentWeapon.GetComponent<WeaponInfo>().fireMode != FireSelect.auto))
                         {
                             if (!bulletEnough)
@@ -502,7 +508,7 @@ public class ShootingScript : MonoBehaviour
                                     }
                                     img_reloadRing.GetComponent<ReloadRingAnim>().Play(currentWeapon.GetComponent<WeaponInfo>().emptyReloadTime);
                                     this.weaponEmptyReloadSound();
-                                    img_crossHair.enabled = false;
+                                    crossHairReticles.SetActive(false);
                                     img_bulletIcon.enabled = true;
                                     img_reloadRing.enabled = true; //WIP: rework reload ring to fit different reload times
                                     Debug.Log("Reloading...");
@@ -596,7 +602,7 @@ public class ShootingScript : MonoBehaviour
             }
             img_bulletIcon.enabled = true;
             img_reloadRing.enabled = true;
-            img_crossHair.enabled = false;
+            crossHairReticles.SetActive(false);
             Debug.Log("Reloading...");
         }
 
@@ -718,7 +724,7 @@ public class ShootingScript : MonoBehaviour
                     reloading = false;
                     img_bulletIcon.enabled = false;
                     img_reloadRing.enabled = false;
-                    img_crossHair.enabled = true;
+                    crossHairReticles.SetActive(false);
                     img_reloadRing.GetComponent<ReloadRingAnim>().Complete();
                     Debug.Log("Reload interrupted for switching");
                     switchCounter = weaponPutDownTime;
@@ -942,7 +948,7 @@ public class ShootingScript : MonoBehaviour
                         tacticalReloading = false;
                         img_bulletIcon.enabled = false;
                         img_reloadRing.enabled = false;
-                        img_crossHair.enabled = true;
+                        crossHairReticles.SetActive(true);
                         img_reloadRing.GetComponent<ReloadRingAnim>().Complete();
                         currentWeapon.GetComponent<WeaponInfo>().requireActionPull = false;
                         Debug.Log("Reloaded");
@@ -1177,6 +1183,8 @@ public class ShootingScript : MonoBehaviour
         }
         this.weaponRecoil();
         this.weaponShootingSound();
+        crossHairReticles.GetComponent<CrossHairReticleDynamics>().shooting = true;
+        crossHairReticles.GetComponent<CrossHairReticleDynamics>().shootingCounter = 0.05f;
     }
 
     //TBC Legacy Scoring/physics code for grenade with other targets
@@ -1276,6 +1284,7 @@ public class ShootingScript : MonoBehaviour
             ammoBackupText.text = currentWeaponInfo.backupAmmo.ToString();
             //Set firing interval according to input firing rate
             fRateInt = 1f / currentWeaponInfo.firingRate;
+            currentWeaponSpreadRadius = currentWeaponInfo.spreadRadius;
             if (currentWeaponInfo.backupAmmo > 0)
             {
                 currentNoAmmo = false;

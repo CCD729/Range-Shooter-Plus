@@ -10,7 +10,7 @@ public class SelfRotating : MonoBehaviour
     [SerializeField] private float rotateZ = 1f;
     [SerializeField] private float floatAmp = 0.4f;
     [SerializeField] private float floatFrequency = 1f;
-    [SerializeField] private float floatYPosition = 0f;
+    //[SerializeField] private float floatYPosition = 0f;
     [SerializeField] private float floatSpeed = 1f;
     [SerializeField] private float currentScale = 1f;
     [SerializeField] private float currentEmissionMultiplier = 1f;

@@ -47,7 +47,13 @@ public class WeaponInfo : MonoBehaviour
     public float maxHorizontalRecoil = 0.5f;
     public float minHorizontalRecoil = 0f;
     public float verticalRecoil = 0.5f;
+    public float spreadRadius = 1f;
     public FireSelect fireMode = FireSelect.auto;
     public FireSelect[] FireModes;
     public GameObject bulletObj;
+    public Vector3 aimDownSightsPosition;
+    public Vector3 aimDownSightsRotation;
+    public Vector3 hipFirePosition;
+    public Vector3 hipFireRotation;
+    public float aimTime = 0.5f;
 }

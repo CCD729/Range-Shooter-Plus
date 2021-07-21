@@ -14,7 +14,7 @@ public class LevelSceneManager : MonoBehaviour
     public Text timeText;
     public Text skillText;
     public Text EndScoreText;
-    public Image img_crossHair;
+    public GameObject crossHairReticles;
     public Image img_bulletsIcon;
     public Image img_reloadRing;
 
@@ -63,7 +63,7 @@ public class LevelSceneManager : MonoBehaviour
         weaponText.enabled = false;
         timeText.enabled = false;
         skillText.enabled = false;
-        img_crossHair.enabled = false;
+        crossHairReticles.SetActive(false);
         img_bulletsIcon.enabled = false;
         img_reloadRing.enabled = false;
         ContinueButton.SetActive(true);
@@ -103,7 +103,7 @@ public class LevelSceneManager : MonoBehaviour
         }
         else
         {
-            img_crossHair.enabled = true;
+            crossHairReticles.SetActive(true);
         }
         if (gameRules.weaponEquipped)
         {
@@ -130,7 +130,7 @@ public class LevelSceneManager : MonoBehaviour
         weaponText.enabled = false;
         timeText.enabled = false;
         skillText.enabled = false;
-        img_crossHair.enabled = false;
+        crossHairReticles.SetActive(false);
         img_bulletsIcon.enabled = false;
         img_reloadRing.enabled = false;
         //var random = new Random();
@@ -157,7 +157,7 @@ public class LevelSceneManager : MonoBehaviour
         weaponText.enabled = false;
         timeText.enabled = false;
         skillText.enabled = false;
-        img_crossHair.enabled = false;
+        crossHairReticles.SetActive(true);
         img_bulletsIcon.enabled = false;
         img_reloadRing.enabled = false;
         EndScoreText.text = "Oh Shit! You're a BADASS!";
