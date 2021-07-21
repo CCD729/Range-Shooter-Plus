@@ -1262,7 +1262,7 @@ public class ShootingScript : MonoBehaviour
     }
     public void weaponRecoil()
     {
-        playerCam.GetComponent<CameraController>().Recoil();
+        playerCam.GetComponent<CameraController>().Recoil(weaponADS);
     }
     public void weaponShootingSound()
     {

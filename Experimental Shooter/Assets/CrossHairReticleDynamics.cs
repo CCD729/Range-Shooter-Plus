@@ -28,13 +28,13 @@ public class CrossHairReticleDynamics : MonoBehaviour
         {
             if (shooting)
             {
-                Debug.Log("Shooting Moving");
+                //Debug.Log("Shooting Moving");
                 currentSize = Mathf.Lerp(currentSize, maxSizeMoving, Time.deltaTime * lerpSpeed);
                 shootingScript.crosshairMultiplier = Mathf.Lerp(shootingScript.crosshairMultiplier, 3f, Time.deltaTime * lerpSpeed);
             }
             else
             {
-                Debug.Log("Moving");
+                //Debug.Log("Moving");
                 currentSize = Mathf.Lerp(currentSize, minSizeMoving, Time.deltaTime * lerpSpeed);
                 shootingScript.crosshairMultiplier = Mathf.Lerp(shootingScript.crosshairMultiplier, 1.5f, Time.deltaTime * lerpSpeed);
             }
@@ -43,13 +43,13 @@ public class CrossHairReticleDynamics : MonoBehaviour
         {
             if (shooting)
             {
-                Debug.Log("Shooting");
+                //Debug.Log("Shooting");
                 currentSize = Mathf.Lerp(currentSize, maxSize, Time.deltaTime * lerpSpeed);
                 shootingScript.crosshairMultiplier = Mathf.Lerp(shootingScript.crosshairMultiplier, 2f, Time.deltaTime * lerpSpeed);
             }
             else
             {
-                Debug.Log("Nothing");
+                //Debug.Log("Nothing");
                 currentSize = Mathf.Lerp(currentSize, minSize, Time.deltaTime * lerpSpeed);
                 shootingScript.crosshairMultiplier = Mathf.Lerp(shootingScript.crosshairMultiplier, 1f, Time.deltaTime * lerpSpeed);
             }
