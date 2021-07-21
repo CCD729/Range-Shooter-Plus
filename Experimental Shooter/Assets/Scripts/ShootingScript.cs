@@ -154,9 +154,11 @@ public class ShootingScript : MonoBehaviour
     public bool switchTrigger = false;
     public bool pickupLookingat = false;
     public bool interactablesLookingat = false;
+    public bool weaponADS = false;
     public string pickupName = "";
     public float distanceUnitRatio = 3.3333f;
     public float currentWeaponSpreadRadius;
+    public float crosshairMultiplier = 1f;
     public GameObject pickupObj;
     public GameObject interactableObj;
     public PickupHandler pickupHandler;
@@ -451,7 +453,7 @@ public class ShootingScript : MonoBehaviour
                         //ADS experiments
                         if (Input.GetKeyDown(aimKey) && !reloading && fRatePassed && !equipmentPrimaryUsing && !equipmentSecondaryUsing && !pickupHandling && !weaponHandling)
                         {
-                            //Animation in future
+                            weaponADS = true;
                             crossHairReticles.SetActive(false);
 
                             currentWeapon.GetComponent<animController>().animator.CrossFade("ADS", 0.2f);
@@ -463,8 +465,9 @@ public class ShootingScript : MonoBehaviour
                         }
                         if (Input.GetKeyUp(aimKey) || reloading || weaponHandling || equipmentPrimaryUsing || equipmentSecondaryUsing || switching)
                         {
+                            weaponADS = false;
                             //TODO: Crosshair should be controlled with different handling in future
-                            if(!reloading && !pickupHandling && !equipmentPrimaryUsing && !equipmentSecondaryUsing)
+                            if (!reloading && !pickupHandling && !equipmentPrimaryUsing && !equipmentSecondaryUsing)
                                 crossHairReticles.SetActive(true);
                             currentWeapon.GetComponent<animController>().animator.CrossFade("hipFire", 0.2f);
                             currentWeaponPOV.GetComponent<animController>().animator.CrossFade("hipFire", 0.2f);
@@ -1029,7 +1032,18 @@ public class ShootingScript : MonoBehaviour
         fRatePassed = false;
         currentWeapon.GetComponent<WeaponInfo>().currentMagAmmo--;
         // Check if we hit anything
-        bool hit = Physics.Raycast(ray, out raycastHit, Mathf.Infinity, layerMask);
+        bool hit;
+        if (weaponADS)
+        {
+            hit = Physics.Raycast(ray, out raycastHit, Mathf.Infinity, layerMask); //LEGACY temp use for ADS
+        }
+        else
+        {
+            //ray = new Ray(playerCam.transform.position, playerCam.transform.forward);
+            Vector3 direction = playerCam.transform.forward * 100f + Random.insideUnitSphere * currentWeaponSpreadRadius * crosshairMultiplier;  // no "- playerCam.transform.position"?
+            //Debug.DrawRay(playerCam.transform.position, direction, Color.red , 2);
+            hit = Physics.Raycast(playerCam.transform.position, direction, out raycastHit, Mathf.Infinity, layerMask);
+        }
         // If we did...Shoot to the hitposition
         if (!hit)
         {
@@ -1293,6 +1307,7 @@ public class ShootingScript : MonoBehaviour
             {
                 currentNoAmmo = true;
             }
+            weaponADS = false;
             firePoint = currentWeapon.transform.GetChild(0).Find("FirePoint");
             playerCam.GetComponent<CameraController>().UpdateWeaponInfo(currentWeaponInfo.maxHorizontalRecoil, currentWeaponInfo.minHorizontalRecoil, currentWeaponInfo.verticalRecoil);
         }

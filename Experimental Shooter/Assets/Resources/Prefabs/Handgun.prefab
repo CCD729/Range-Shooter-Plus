@@ -8535,10 +8535,16 @@ MonoBehaviour:
   maxHorizontalRecoil: 1
   minHorizontalRecoil: 0.1
   verticalRecoil: 0.5
+  spreadRadius: 2
   fireMode: 2
   FireModes: 02000000
   bulletObj: {fileID: 8388713027766119384, guid: 2646ff4814621c64d9452ebec4911ab1,
     type: 3}
+  aimDownSightsPosition: {x: 0, y: 0, z: 0}
+  aimDownSightsRotation: {x: 0, y: 0, z: 0}
+  hipFirePosition: {x: 0, y: 0, z: 0}
+  hipFireRotation: {x: 0, y: 0, z: 0}
+  aimTime: 0.5
 --- !u!1 &2040045059286914267
 GameObject:
   m_ObjectHideFlags: 0
