@@ -13,6 +13,10 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private KeyCode jumpKey = KeyCode.Space;
     [SerializeField] private bool isJumping = false;
 
+    //Avoid Bouncing on Slopes (Aracia)
+    [SerializeField] private float slopeForce;
+    [SerializeField] private float slopeForceRayLength;
+
     Vector2 currentDirection = Vector2.zero;
     Vector2 currentDirectionVelocity = Vector2.zero;
     float currentSpeed;
@@ -61,7 +65,13 @@ public class PlayerController : MonoBehaviour
 
         controller.Move(velocity * Time.deltaTime);
 
-        //New jump (inspired by Acacia)
+        //Prevent Jittering
+        if(currentDirection.magnitude != 0f && OnSlope())
+        {
+            controller.Move(Vector3.down * controller.height / 2 * slopeForce * Time.deltaTime);
+        }
+
+        //New jump and Jitter fix(inspired by Acacia)
         if (Input.GetKeyDown(jumpKey) && !isJumping)
         {
             isJumping = true;
@@ -83,6 +93,19 @@ public class PlayerController : MonoBehaviour
 
             controller.slopeLimit = 45f;
             isJumping = false;
+        }
+
+        bool OnSlope()
+        {
+            if (isJumping)
+                return false;
+
+            RaycastHit hit;
+
+            if (Physics.Raycast(transform.position, Vector3.down, out hit, controller.height / 2 * slopeForceRayLength))
+                if (hit.normal != Vector3.up)
+                    return true;
+            return false;
         }
 
         //Legacy
