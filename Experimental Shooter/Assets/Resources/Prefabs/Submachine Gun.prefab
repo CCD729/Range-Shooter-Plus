@@ -2927,7 +2927,7 @@ MonoBehaviour:
   etcSound: {fileID: -7999708904219970800}
   emptyReloadClip: {fileID: 0}
   tacticalReloadClip: {fileID: 0}
-  shootClip: {fileID: 0}
+  shootClip: {fileID: 8300000, guid: 9793ecf9896f0ff4092a3bca11299f4a, type: 3}
   pickupClip: {fileID: 0}
   putdownClip: {fileID: 0}
   dryShootClip: {fileID: 0}

@@ -16,6 +16,7 @@ public class PlayerController : MonoBehaviour
     //Avoid Bouncing on Slopes (Aracia)
     [SerializeField] private float slopeForce;
     [SerializeField] private float slopeForceRayLength;
+    [SerializeField] private LayerMask slopeLayermask;
 
     Vector2 currentDirection = Vector2.zero;
     Vector2 currentDirectionVelocity = Vector2.zero;
@@ -102,7 +103,7 @@ public class PlayerController : MonoBehaviour
 
             RaycastHit hit;
 
-            if (Physics.Raycast(transform.position, Vector3.down, out hit, controller.height / 2 * slopeForceRayLength))
+            if (Physics.Raycast(transform.position, Vector3.down, out hit, controller.height / 2 * slopeForceRayLength, slopeLayermask))
                 if (hit.normal != Vector3.up)
                     return true;
             return false;
