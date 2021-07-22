@@ -72,7 +72,6 @@ public class CameraController : MonoBehaviour
         }
         /*if (mouseSensChanged)
         {
-            Debug.Log("SHITTTTT");
             mouseSensChanged = false;
             UpdateMouseSensitivity();
         }

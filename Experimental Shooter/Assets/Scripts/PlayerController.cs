@@ -4,36 +4,47 @@ using UnityEngine;
 
 public class PlayerController : MonoBehaviour
 {
-    public float speed = 2.5f;
-    public float jumpSpeed = 2.5f;
-    public float gravity = 10.0F;
-    
     public CharacterController controller;
-    //public Rigidbody rb;
-    private float speedVertical = 0.0f;
-    private int count;
-    private Vector3 moveDirection = Vector3.zero;
-    private bool sprinting = false;
-    private float currentSpeed;
+    [SerializeField] float speed = 2.5f;
+    [SerializeField] float gravity = -12.0f;
+    [SerializeField] float moveSmoothTime = 0.3f;
+    [SerializeField] private AnimationCurve jumpFallOff;
+    [SerializeField] private float jumpMultiplier;
+    [SerializeField] private KeyCode jumpKey = KeyCode.Space;
+    [SerializeField] private bool isJumping = false;
 
-   /* void Start()
+    Vector2 currentDirection = Vector2.zero;
+    Vector2 currentDirectionVelocity = Vector2.zero;
+    float currentSpeed;
+    float velocityY = 0.0f;
+    bool sprinting = false;
+
+
+    //public Rigidbody rb;
+
+    void Start()
     {
-        //controller = GetComponent<CharacterController>();
+        controller = GetComponent<CharacterController>();
         //rb = GetComponent<Rigidbody>();
-    }*/
+    }
 
     void Update()
     {
         //moveDirection = transform.TransformDirection(moveDirection);
+        //Legacy
+        //moveDirection = transform.TransformDirection(new Vector3(Input.GetAxisRaw("Horizontal"), 0, Input.GetAxisRaw("Vertical")));
 
-        moveDirection = transform.TransformDirection(new Vector3(Input.GetAxis("Horizontal"), 0, Input.GetAxis("Vertical")));
+        //New with customized smooth options
+        Vector2 targetDirection = new Vector2(Input.GetAxisRaw("Horizontal"), Input.GetAxisRaw("Vertical"));
+        targetDirection.Normalize();
+
+        currentDirection = Vector2.SmoothDamp(currentDirection, targetDirection, ref currentDirectionVelocity, moveSmoothTime);
+
         if (controller.isGrounded)
         {
-            speedVertical = 0;
-            if (Input.GetKeyDown(KeyCode.Space))
-            {
-                speedVertical = jumpSpeed;
-            }
+            velocityY = 0.0f;
+
+            //Sprinting
             if (Input.GetKey(KeyCode.LeftShift))
             {
                 sprinting = true;
@@ -43,24 +54,54 @@ public class PlayerController : MonoBehaviour
                 sprinting = false;
             }
         }
-        speedVertical -= gravity * Time.deltaTime;
-        moveDirection.y = speedVertical;
+
+        velocityY += gravity * Time.deltaTime;
         currentSpeed = sprinting ? speed * 1.5f : speed;
-        controller.Move(moveDirection * currentSpeed * Time.deltaTime);
-        controller.Move(moveDirection * currentSpeed * Time.deltaTime);
+        Vector3 velocity = (transform.forward * currentDirection.y + transform.right * currentDirection.x) * currentSpeed + Vector3.up * velocityY;
+
+        controller.Move(velocity * Time.deltaTime);
+
+        //New jump (inspired by Acacia)
+        if (Input.GetKeyDown(jumpKey) && !isJumping)
+        {
+            isJumping = true;
+            StartCoroutine(JumpEvent());
+        }
+
+        IEnumerator JumpEvent()
+        {
+            //fix jittering
+            controller.slopeLimit = 90f;
+            float timeInAir = 0f;
+            do
+            {
+                float jumpForce = jumpFallOff.Evaluate(timeInAir);
+                controller.Move(Vector3.up * jumpForce * jumpMultiplier * Time.deltaTime);
+                timeInAir += Time.deltaTime;
+                yield return null;
+            } while (!controller.isGrounded && controller.collisionFlags != CollisionFlags.Above);
+
+            controller.slopeLimit = 45f;
+            isJumping = false;
+        }
+
+        //Legacy
+        //moveDirection.y = speedVertical;
+        //controller.Move(moveDirection * currentSpeed * Time.deltaTime);
+        //controller.Move(moveDirection * currentSpeed * Time.deltaTime);
         //if (Input.GetKeyDown("escape"))
         //{
         //    if (Cursor.lockState == CursorLockMode.Locked)
         //    {
         //        Cursor.lockState = CursorLockMode.None;
-       //         Cursor.visible = true;
+        //         Cursor.visible = true;
         //    }
         //    else if (Cursor.lockState == CursorLockMode.None)
         //    {
         //        Cursor.lockState = CursorLockMode.Locked;
         //        Cursor.visible = false;
         //    }
-       // }
+        // }
 
     }
     

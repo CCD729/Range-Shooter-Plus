@@ -1040,7 +1040,7 @@ public class ShootingScript : MonoBehaviour
         else
         {
             //ray = new Ray(playerCam.transform.position, playerCam.transform.forward);
-            Vector3 direction = playerCam.transform.forward * 100f + Random.insideUnitSphere * currentWeaponSpreadRadius * crosshairMultiplier;  // no "- playerCam.transform.position"?
+            Vector3 direction = playerCam.transform.forward * 80f + Random.insideUnitSphere * currentWeaponSpreadRadius * crosshairMultiplier;  // no "- playerCam.transform.position"?
             //Debug.DrawRay(playerCam.transform.position, direction, Color.red , 2);
             hit = Physics.Raycast(playerCam.transform.position, direction, out raycastHit, Mathf.Infinity, layerMask);
         }
