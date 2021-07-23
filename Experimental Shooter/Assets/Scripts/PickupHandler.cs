@@ -119,6 +119,7 @@ public class PickupHandler : MonoBehaviour
                                     shootingScript.currentWeaponPOV.GetComponent<animController>().PickupPullActionAnimation();
                                     shootingScript.weaponHandling = true;
                                     shootingScript.weaponHandlingTime = shootingScript.weaponPickupActionTime;
+                                    shootingScript.weaponPickupSound();
                                 }
                                 else // Primary weapon is there but switched to unequipped
                                 {
@@ -136,6 +137,7 @@ public class PickupHandler : MonoBehaviour
                                     shootingScript.currentWeaponPOV.GetComponent<animController>().PickupPullActionAnimation();
                                     shootingScript.weaponHandling = true;
                                     shootingScript.weaponHandlingTime = shootingScript.weaponPickupActionTime;
+                                    shootingScript.weaponPickupSound();
                                 }
                             }//CAUTION: Firepoint should be in UpdateWeaponInfo() ?
                              //shootingScript.firePoint = instanceWeapon.transform.GetChild(0).Find("FirePoint");
@@ -182,7 +184,9 @@ public class PickupHandler : MonoBehaviour
 
     IEnumerator PickupDropWeapon(float time, int weaponSlot, GameObject instanceWeapon, GameObject instanceWeaponPOV, WeaponInfo weaponInfo, GameObject pickupObj)
     {
+        shootingScript.weaponPutdownSound();
         yield return new WaitForSeconds(time);
+        shootingScript.weaponPickupSound();
         //Delete old
         Destroy(shootingScript.currentWeapon);
         Destroy(shootingScript.currentWeaponPOV);

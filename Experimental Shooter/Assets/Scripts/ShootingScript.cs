@@ -33,6 +33,10 @@ public class ShootingScript : MonoBehaviour
     [Tooltip("Script that handles Trail rules")]
     public TrialScript trialScript;
 
+    [Header("Audio Manager")]
+    [Tooltip("Current Active AudioManager")]
+    public LevelAudioManager audioManager;
+
     [Header("Player")]
     [Tooltip("Current Active Player")]
     public GameObject player;
@@ -682,19 +686,23 @@ public class ShootingScript : MonoBehaviour
                     {
                         currentWeapon.GetComponent<animController>().animator.CrossFadeInFixedTime("PickupEmptyMag", 0.1f);
                         currentWeaponPOV.GetComponent<animController>().animator.CrossFadeInFixedTime("PickupEmptyMag", 0.1f);
+                        weaponPickupSound();
                     }
-                    else //crossfade seems not working with short period (FIXED)
+                    else
                     {
                         if (currentWeapon.GetComponent<WeaponInfo>().requireActionPull)
                         {
+                            currentWeapon.GetComponent<SoundScript>().weaponManipulationSound.Stop();
                             currentWeapon.GetComponent<animController>().animator.CrossFadeInFixedTime("PickupPullAction", 0.1f);
                             currentWeaponPOV.GetComponent<animController>().animator.CrossFadeInFixedTime("PickupPullAction", 0.1f);
                             weaponHandlingTime = weaponPickupActionTime;
+                            weaponPickupPullActionSound();
                         }
                         else
                         {
                             currentWeapon.GetComponent<animController>().animator.CrossFadeInFixedTime("Pickup", 0.1f);
                             currentWeaponPOV.GetComponent<animController>().animator.CrossFadeInFixedTime("Pickup", 0.1f);
+                            weaponPickupSound();
                         }
                     }
                     Debug.Log("Switching reversed");
@@ -716,13 +724,16 @@ public class ShootingScript : MonoBehaviour
                         emptyReloading = false;
                         currentWeapon.GetComponent<animController>().animator.CrossFadeInFixedTime("PutdownEmptyMag", 0.15f);
                         currentWeaponPOV.GetComponent<animController>().animator.CrossFadeInFixedTime("PutdownEmptyMag", 0.15f);
+                        currentWeapon.GetComponent<SoundScript>().weaponManipulationSound.Stop();
                     }
                     else if (tacticalReloading)
                     {
                         tacticalReloading = false;
                         currentWeapon.GetComponent<animController>().animator.CrossFadeInFixedTime("Putdown", 0.15f);
                         currentWeaponPOV.GetComponent<animController>().animator.CrossFadeInFixedTime("Putdown", 0.15f);
+                        currentWeapon.GetComponent<SoundScript>().weaponManipulationSound.Stop();
                     }
+                    weaponPutdownSound();
                     reloadingTime = 0f;
                     reloading = false;
                     img_bulletIcon.enabled = false;
@@ -737,7 +748,6 @@ public class ShootingScript : MonoBehaviour
                 }
                 else
                 {
-
                     if (currentWeapon.GetComponent<WeaponInfo>().currentMagAmmo == 0)
                     {
                         currentWeapon.GetComponent<animController>().animator.CrossFadeInFixedTime("PutdownEmptyMag", 0.15f);
@@ -750,6 +760,7 @@ public class ShootingScript : MonoBehaviour
                         currentWeaponPOV.GetComponent<animController>().animator.CrossFadeInFixedTime("Putdown", 0.15f);
                         //currentWeapon.GetComponent<animController>().animator.Play("Putdown");
                     }
+                    weaponPutdownSound();
                     switchCounter = weaponPutDownTime;
                     switching = true;
                     weaponHandlingTime = weaponPutDownTime + weaponPickupActionTime; //Temporary, to be reassigned in part 2 to avoid problem
@@ -895,6 +906,7 @@ public class ShootingScript : MonoBehaviour
                     {
                         currentWeapon.GetComponent<animController>().PickupEmptyMagAnimation();
                         currentWeaponPOV.GetComponent<animController>().PickupEmptyMagAnimation();
+                        weaponPickupSound();
                     }
                     else
                     {
@@ -903,11 +915,13 @@ public class ShootingScript : MonoBehaviour
                             currentWeapon.GetComponent<animController>().PickupPullActionAnimation();
                             currentWeaponPOV.GetComponent<animController>().PickupPullActionAnimation();
                             weaponHandlingTime = weaponPickupActionTime;
+                            weaponPickupPullActionSound();
                         }
                         else
                         {
                             currentWeapon.GetComponent<animController>().PickupAnimation();
                             currentWeaponPOV.GetComponent<animController>().PickupAnimation();
+                            weaponPickupSound();
                         }
                     }
                 }
@@ -1014,6 +1028,7 @@ public class ShootingScript : MonoBehaviour
             currentWeaponPOV.GetComponent<animController>().animator.SetBool("isShootingLastRound", true);
             currentWeapon.GetComponent<animController>().ShootLastRoundAnimation(); // NEED FIX on unexpected animation holding problem: This should not be here
             currentWeaponPOV.GetComponent<animController>().ShootLastRoundAnimation();
+            weaponDryShootingSound();
             shootingLastRound = true;
             StopCoroutine(ReloadShootingLastRoundAnimation());
             StartCoroutine(ReloadShootingLastRoundAnimation());
@@ -1274,19 +1289,23 @@ public class ShootingScript : MonoBehaviour
     }
     public void weaponTacticalReloadSound()
     {
-       currentWeapon.GetComponent<SoundScript>().tacticalReloadSound();
+       currentWeapon.GetComponent<SoundScript>().TacticalReloadSound();
     }
     public void weaponEmptyReloadSound()
     {
-        currentWeapon.GetComponent<SoundScript>().emptyReloadSound();
+        currentWeapon.GetComponent<SoundScript>().EmptyReloadSound();
     }
     public void weaponPickupSound()
     {
-        currentWeapon.GetComponent<SoundScript>().emptyReloadSound();
+        currentWeapon.GetComponent<SoundScript>().PickupSound();
+    }
+    public void weaponPickupPullActionSound()
+    {
+        currentWeapon.GetComponent<SoundScript>().PickupPullActionSound();
     }
     public void weaponPutdownSound()
     {
-        currentWeapon.GetComponent<SoundScript>().emptyReloadSound();
+        currentWeapon.GetComponent<SoundScript>().PutdownSound();
     }
     public void UpdateWeaponInfo()
     {

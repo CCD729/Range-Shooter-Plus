@@ -181,6 +181,7 @@ public class TrialScript : MonoBehaviour
         //check if any trial active
         if (!trailActive)
         {
+            ShootingScript.audioManager.TrialStartSound();
             trailActive = true;
 
             switch (typeIdentifier)
@@ -225,6 +226,7 @@ public class TrialScript : MonoBehaviour
         trialNewScore[0] = Mathf.Clamp((lastXValue - 10.5f), 0f, Mathf.Infinity) / ShootingScript.distanceUnitRatio;
         Debug.Log("Grenade trial recording score...");
         UpdateScore(0);
+        ShootingScript.audioManager.TrialCompleteSound();
     }
 
     void StartReactionTrial()
@@ -245,6 +247,7 @@ public class TrialScript : MonoBehaviour
         StartCoroutine(ResetReactionTarget());
         Debug.Log("Reaction trial recording score...");
         UpdateScore(1);
+        ShootingScript.audioManager.TrialCompleteSound();
     }
     void StartTimedTrial()
     {
@@ -272,6 +275,7 @@ public class TrialScript : MonoBehaviour
         StartCoroutine(ResetTimedDisplayTargets());
         Debug.Log("Timed trial recording score...");
         UpdateScore(2);
+        ShootingScript.audioManager.TrialCompleteSound();
     }
     void StartFreemoveTrial()
     {
@@ -291,6 +295,7 @@ public class TrialScript : MonoBehaviour
         Debug.Log("Freemove trial recording score...");
         UpdateScore(3);
         StopTrial();
+        ShootingScript.audioManager.TrialCompleteSound();
     }
     public void StopTrial()
     {

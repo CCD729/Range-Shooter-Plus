@@ -2925,12 +2925,14 @@ MonoBehaviour:
   weaponManipulationSound: {fileID: 7289736487184937589}
   gunShootSound: {fileID: 8986525890044088710}
   etcSound: {fileID: -7999708904219970800}
-  emptyReloadClip: {fileID: 0}
-  tacticalReloadClip: {fileID: 0}
+  emptyReloadClip: {fileID: 8300000, guid: 94148d59ded92984a8bcff63494ce53b, type: 3}
+  tacticalReloadClip: {fileID: 8300000, guid: 6865e5e136408c54491e01fd10cee554, type: 3}
   shootClip: {fileID: 8300000, guid: 9793ecf9896f0ff4092a3bca11299f4a, type: 3}
-  pickupClip: {fileID: 0}
-  putdownClip: {fileID: 0}
-  dryShootClip: {fileID: 0}
+  pickupClip: {fileID: 8300000, guid: e4c1f13378f257d4a97c7beda08b8f4e, type: 3}
+  pickupPullActionClip: {fileID: 8300000, guid: f422c72698129ed419173300b450ca48,
+    type: 3}
+  putdownClip: {fileID: 8300000, guid: 55076c585a05f1b4680deb24a15c5eb4, type: 3}
+  dryShootClip: {fileID: 8300000, guid: 9e95c063c0cfe874c88afb0e8504cefe, type: 3}
 --- !u!114 &7816983494180369988
 MonoBehaviour:
   m_ObjectHideFlags: 0

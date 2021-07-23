@@ -42,6 +42,8 @@ public class ProjectileMovement : MonoBehaviour
     private Rigidbody rb;
     private float destroyTime;
 
+    public GameObject audioExplosion;
+
     void Start()
     {
         EventSystem = GameObject.Find("CustomEventSystem");
@@ -107,7 +109,8 @@ public class ProjectileMovement : MonoBehaviour
             {
                 ExplosionPhysicsDamage(transform.position, explosionRadius, explosionForce, explosionDamage);
                 ExplosionVisual(transform.position, explosionRadius, explosionVisualTime);
-                if(EventSystem.GetComponent<ShootingScript>().currentTrial == 0)
+                Instantiate(audioExplosion, transform.position, Quaternion.Euler(0, 0, 0)); 
+                if (EventSystem.GetComponent<ShootingScript>().currentTrial == 0)
                 {
                     if(EventSystem.GetComponent<ShootingScript>().trialScript.grenadeBeforeGone)
                     {

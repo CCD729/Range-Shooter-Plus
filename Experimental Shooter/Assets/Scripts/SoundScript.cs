@@ -5,19 +5,23 @@ using UnityEngine;
 public class SoundScript : MonoBehaviour
 {
     public AudioSource weaponManipulationSound, gunShootSound, etcSound;
-    public AudioClip emptyReloadClip, tacticalReloadClip, shootClip, pickupClip, putdownClip, dryShootClip;
+    public AudioClip emptyReloadClip, tacticalReloadClip, shootClip, pickupClip, pickupPullActionClip, putdownClip, dryShootClip;
 
-    public void tacticalReloadSound()
+    public void TacticalReloadSound()
     {
         weaponManipulationSound.PlayOneShot(tacticalReloadClip, 0.5F);
     }
-    public void emptyReloadSound()
+    public void EmptyReloadSound()
     {
         weaponManipulationSound.PlayOneShot(emptyReloadClip, 0.5F);
     }
     public void PickupSound()
     {
         weaponManipulationSound.PlayOneShot(pickupClip, 0.5F);
+    }
+    public void PickupPullActionSound()
+    {
+        weaponManipulationSound.PlayOneShot(pickupPullActionClip, 0.5F);
     }
     public void PutdownSound()
     {
@@ -29,7 +33,7 @@ public class SoundScript : MonoBehaviour
     }
     public void dryShootSound()
     {
-        gunShootSound.PlayOneShot(dryShootClip, 0.5F);
+        etcSound.PlayOneShot(dryShootClip, 0.5F);
     }
     //TODO: shell droping sound with shells
 }

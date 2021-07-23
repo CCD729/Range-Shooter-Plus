@@ -25,12 +25,12 @@ public class HittingAudioManager : MonoBehaviour
         if (targetHit)
         {
             AS.clip = hitMetal[index];
-            AS.PlayOneShot(AS.clip, 0.1F);
+            AS.PlayOneShot(AS.clip, 0.07f);
         }
         else
         {
             AS.clip = hitWall[index];
-            AS.PlayOneShot(AS.clip, 0.45F);
+            AS.PlayOneShot(AS.clip, 0.3f);
         }
         started = true;
     }
