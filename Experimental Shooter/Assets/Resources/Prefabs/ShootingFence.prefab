@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 3635922850665286284}
   - component: {fileID: 3635922850665286285}
   - component: {fileID: 3635922850665286282}
-  m_Layer: 10
+  m_Layer: 21
   m_Name: Fence_Plane
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -125,7 +125,7 @@ GameObject:
   - component: {fileID: 3635922850715004026}
   - component: {fileID: 3635922850715004027}
   - component: {fileID: 3635922850715004024}
-  m_Layer: 10
+  m_Layer: 21
   m_Name: Fence_Tall
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -237,7 +237,7 @@ GameObject:
   - component: {fileID: 3635922851608521245}
   - component: {fileID: 3635922851608521242}
   - component: {fileID: 3635922851608521243}
-  m_Layer: 10
+  m_Layer: 21
   m_Name: Fence_Tall (1)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -345,7 +345,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 5084986215969243119}
-  m_Layer: 10
+  m_Layer: 21
   m_Name: ShootingFence
   m_TagString: Untagged
   m_Icon: {fileID: 0}

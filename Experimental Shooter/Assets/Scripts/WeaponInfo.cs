@@ -34,6 +34,7 @@ public class WeaponInfo : MonoBehaviour
     public float attackBackSwing = 0.5f;
 
     //firearm properties
+    public bool silenced = false;
     public float firingRate = 10f;
     public float burstRate = 10f;
     public int magSize = 30;

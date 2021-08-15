@@ -144,8 +144,9 @@ public class ShootingScript : MonoBehaviour
     public GameObject currentBullet;
     public GameObject primaryBullet;
     public GameObject secondaryBullet;
+    public GameObject muzzleFlashObj;
 
-    [Header("WIP Content")]
+   [Header("WIP Content")]
     public float weaponPutDownTime = 0.4f; //Both added 0.1s for transition
     public float weaponPickupTime = 0.6f; //Both added 0.1s for transition
     public float weaponPickupActionTime = 0.8f;
@@ -1212,6 +1213,13 @@ public class ShootingScript : MonoBehaviour
         }
         this.weaponRecoil();
         this.weaponShootingSound();
+        //MuzzleFlash VFX
+        if(currentWeapon.GetComponent<WeaponInfo>().weaponType != WeaponType.Melee && !currentWeapon.GetComponent<WeaponInfo>().silenced)
+        {
+            var muzzleFlash = Instantiate(muzzleFlashObj, firePoint.position, firePoint.rotation);
+            muzzleFlash.transform.SetParent(firePoint);
+            muzzleFlash.transform.localEulerAngles = new Vector3(muzzleFlash.transform.localEulerAngles.x, muzzleFlash.transform.localEulerAngles.y, Random.Range(0f, 90f));
+        }
         crossHairReticles.GetComponent<CrossHairReticleDynamics>().shooting = true;
         crossHairReticles.GetComponent<CrossHairReticleDynamics>().shootingCounter = 0.05f;
     }

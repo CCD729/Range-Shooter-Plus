@@ -10192,6 +10192,7 @@ MonoBehaviour:
   meleeRange: 0
   attackDelay: 0
   attackBackSwing: 0
+  silenced: 1
   firingRate: 20
   burstRate: 20
   magSize: 30
@@ -10205,10 +10206,16 @@ MonoBehaviour:
   maxHorizontalRecoil: 1
   minHorizontalRecoil: 0.1
   verticalRecoil: 0.75
+  spreadRadius: 1
   fireMode: 0
   FireModes: 0000000002000000
   bulletObj: {fileID: 8388713027766119384, guid: 2646ff4814621c64d9452ebec4911ab1,
     type: 3}
+  aimDownSightsPosition: {x: 0, y: 0, z: 0}
+  aimDownSightsRotation: {x: 0, y: 0, z: 0}
+  hipFirePosition: {x: 0, y: 0, z: 0}
+  hipFireRotation: {x: 0, y: 0, z: 0}
+  aimTime: 0.5
 --- !u!54 &1682905450670182049
 Rigidbody:
   m_ObjectHideFlags: 0

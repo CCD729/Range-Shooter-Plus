@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 601855288560167796}
   - component: {fileID: 601855288560167803}
   - component: {fileID: 601855288560167802}
-  m_Layer: 10
+  m_Layer: 21
   m_Name: Stand
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -325,7 +325,7 @@ GameObject:
   - component: {fileID: 7555320613130796191}
   - component: {fileID: 4542765345383468172}
   - component: {fileID: 7415590894582136122}
-  m_Layer: 10
+  m_Layer: 21
   m_Name: ButtonStand
   m_TagString: Interactables
   m_Icon: {fileID: 0}
@@ -419,7 +419,7 @@ GameObject:
   - component: {fileID: 3799930736114707954}
   - component: {fileID: 6501072263124845742}
   - component: {fileID: 2512261266253429467}
-  m_Layer: 10
+  m_Layer: 21
   m_Name: Button
   m_TagString: Untagged
   m_Icon: {fileID: 0}

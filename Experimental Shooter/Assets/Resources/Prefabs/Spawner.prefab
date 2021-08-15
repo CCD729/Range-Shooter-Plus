@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 5850828136986678530}
   - component: {fileID: 5850828136986678531}
-  m_Layer: 10
+  m_Layer: 21
   m_Name: Point Light
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -102,7 +102,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 5850828137276885450}
-  m_Layer: 10
+  m_Layer: 21
   m_Name: Spawner
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -139,7 +139,7 @@ GameObject:
   - component: {fileID: 5850828138109592840}
   - component: {fileID: 5850828138109592839}
   - component: {fileID: 5850828138109592838}
-  m_Layer: 10
+  m_Layer: 21
   m_Name: Pipe
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -3150,7 +3150,7 @@ GameObject:
   - component: {fileID: 5850828138244207495}
   - component: {fileID: 5850828138244207494}
   - component: {fileID: 5850828138244207493}
-  m_Layer: 10
+  m_Layer: 21
   m_Name: Cylinder
   m_TagString: Untagged
   m_Icon: {fileID: 0}

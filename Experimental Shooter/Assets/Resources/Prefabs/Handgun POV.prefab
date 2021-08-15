@@ -5474,6 +5474,7 @@ MonoBehaviour:
   meleeRange: 0
   attackDelay: 0
   attackBackSwing: 0
+  silenced: 0
   firingRate: 8
   burstRate: 8
   magSize: 19

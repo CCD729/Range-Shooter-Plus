@@ -40,21 +40,46 @@ public class DamageDisplay : MonoBehaviour
         if (timeCounter <= moveTime)
         {
             finalPositionWorldSpace = Vector3.Lerp(initPosition, modifiedPosition, timeCounter / moveTime);
+            //Trying to disable number for appearing at behind
+            if (playerCam.WorldToViewportPoint(firstHitPosition).z <= 0f)
+            {
+                damageDisplayText.color = new Color(damageDisplayText.color.r, damageDisplayText.color.g, damageDisplayText.color.b, 0f);
+            }
+            else
+            {
+                damageDisplayText.color = new Color(damageDisplayText.color.r, damageDisplayText.color.g, damageDisplayText.color.b, 1f);
+            }
         }
         else if (timeCounter >= (moveTime + fadeTimeInt) && (timeCounter <= moveTime + fadeTimeInt + fadeTime) )
         {
             finalPositionWorldSpace = modifiedPosition;
             lerpPercentage = 1 - (timeCounter - moveTime - fadeTimeInt) / fadeTime;
-            damageDisplayText.color = new Color(damageDisplayText.color.r, damageDisplayText.color.g, damageDisplayText.color.b, lerpPercentage);
+            if(playerCam.WorldToViewportPoint(firstHitPosition).z <= 0f)
+            {
+                damageDisplayText.color = new Color(damageDisplayText.color.r, damageDisplayText.color.g, damageDisplayText.color.b, 0f);
+            }
+            else
+            {
+                damageDisplayText.color = new Color(damageDisplayText.color.r, damageDisplayText.color.g, damageDisplayText.color.b, lerpPercentage);
+            }
             //Debug.Log(damageDisplayText.color);
         }
         else
         {
             finalPositionWorldSpace = modifiedPosition;
+            if (playerCam.WorldToViewportPoint(firstHitPosition).z <= 0f)
+            {
+                damageDisplayText.color = new Color(damageDisplayText.color.r, damageDisplayText.color.g, damageDisplayText.color.b, 0f);
+            }
+            else
+            {
+                damageDisplayText.color = new Color(damageDisplayText.color.r, damageDisplayText.color.g, damageDisplayText.color.b, 1f);
+            }
         }
         //RectTransformUtility.ScreenPointToLocalPointInRectangle(gameObject.GetComponent<RectTransform>(), finalPositionWorldSpace, playerCam, out canvasPt);
         //gameObject.GetComponent<RectTransform>().anchoredPosition = canvasPt;
         transform.position = finalPositionWorldSpace;
+        //Debug.Log(playerCam.WorldToViewportPoint(transform.position));
         if (timeCounter > moveTime + fadeTimeInt + fadeTime)
         {
             Destroy(gameObject);
