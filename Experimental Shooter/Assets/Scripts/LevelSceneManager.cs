@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
+using UnityEngine.Rendering;
+using UnityEngine.Rendering.PostProcessing;
 
 public class LevelSceneManager : MonoBehaviour
 {
@@ -24,12 +26,20 @@ public class LevelSceneManager : MonoBehaviour
     public GameObject EndButton;
     public GameObject SensSlider;
     public GameObject fovSlider;
-    
+
+    [Header("Post Processing Values")]
+    public PostProcessVolume volume;
+    public Bloom bloom;
+    public DepthOfField dof;
+
     [Header("Other References")]
     public GameObject currentWeapon;
     public Camera cam;
     public ShootingScript gameRules;
-    
+    public float lerpSpeed = 100f;
+    public float targetDOFValue = 5f;
+
+
     List<string> endList;
     private bool reloading = false;
     private string currentScene;
@@ -46,6 +56,14 @@ public class LevelSceneManager : MonoBehaviour
         img_bulletsIcon.enabled = false;
         img_reloadRing.enabled = false;
         currentScene = SceneManager.GetActiveScene().name;
+
+        volume.profile.TryGetSettings(out bloom);
+        volume.profile.TryGetSettings(out dof);
+    }
+
+    void Update()
+    {
+        dof.focusDistance.value = Mathf.Lerp(dof.focusDistance, targetDOFValue, Time.unscaledDeltaTime * lerpSpeed);
     }
 
     public void Pause(bool reloadingStatus)
@@ -56,6 +74,10 @@ public class LevelSceneManager : MonoBehaviour
             currentWeapon.GetComponent<SoundScript>().gunShootSound.Pause();
             currentWeapon.GetComponent<SoundScript>().etcSound.Pause();
         }
+
+        //Post processing
+        targetDOFValue = 0.1f;
+
         reloading = reloadingStatus;
         scoreText.enabled = false;
         ammoBackupText.enabled = false;
@@ -86,6 +108,8 @@ public class LevelSceneManager : MonoBehaviour
         {
             timeText.enabled = true;
         }
+
+        targetDOFValue = 10f;
         ammoBackupText.enabled = true;
         ammoCurrentMagText.enabled = true;
         weaponText.enabled = true;
@@ -124,6 +148,7 @@ public class LevelSceneManager : MonoBehaviour
             currentWeapon.GetComponent<SoundScript>().gunShootSound.Pause();
             currentWeapon.GetComponent<SoundScript>().etcSound.Pause();
         }
+        targetDOFValue = 0.1f;
         scoreText.enabled = false;
         ammoBackupText.enabled = false;
         ammoCurrentMagText.enabled = false;
@@ -151,6 +176,7 @@ public class LevelSceneManager : MonoBehaviour
             currentWeapon.GetComponent<SoundScript>().gunShootSound.Pause();
             currentWeapon.GetComponent<SoundScript>().etcSound.Pause();
         }
+        targetDOFValue = 0.1f;
         scoreText.enabled = false;
         ammoBackupText.enabled = false;
         ammoCurrentMagText.enabled = false;
