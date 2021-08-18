@@ -19,6 +19,8 @@ public class LevelSceneManager : MonoBehaviour
     public GameObject crossHairReticles;
     public Image img_bulletsIcon;
     public Image img_reloadRing;
+    public Text[] TrialTexts = new Text[4];
+    public bool[] TrialTextsEnableStatus = new bool[4];
 
     [Header("Pause Menu UI Elements")]
     public GameObject ContinueButton;
@@ -95,6 +97,11 @@ public class LevelSceneManager : MonoBehaviour
         fovSlider.SetActive(true);
         cam.GetComponent<CameraController>().StopCam();
         img_reloadRing.GetComponent<ReloadRingAnim>().Pause();
+        for(int i=0; i<4; i++)
+        {
+            TrialTextsEnableStatus[i] = TrialTexts[i].enabled;
+            TrialTexts[i].enabled = false;
+        }
         Cursor.lockState = CursorLockMode.None;
         Cursor.visible = true;
     }
@@ -109,7 +116,7 @@ public class LevelSceneManager : MonoBehaviour
             timeText.enabled = true;
         }
 
-        targetDOFValue = 10f;
+        targetDOFValue = 3f;
         ammoBackupText.enabled = true;
         ammoCurrentMagText.enabled = true;
         weaponText.enabled = true;
@@ -137,9 +144,15 @@ public class LevelSceneManager : MonoBehaviour
         }
         img_reloadRing.GetComponent<ReloadRingAnim>().Resume();
         cam.GetComponent<CameraController>().ResumeCam();
+        for (int i = 0; i < 4; i++)
+        {
+            TrialTexts[i].enabled = TrialTextsEnableStatus[i];
+        }
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
     }
+
+    //LEGACY (NO LONGER IN USE)
     public void End(float score)
     {
         if (gameRules.weaponEquipped)

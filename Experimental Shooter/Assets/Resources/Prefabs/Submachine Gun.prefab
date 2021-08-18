@@ -2967,7 +2967,7 @@ MonoBehaviour:
   maxHorizontalRecoil: 1
   minHorizontalRecoil: 0.1
   verticalRecoil: 0.75
-  spreadRadius: 3
+  spreadRadius: 2
   fireMode: 0
   FireModes: 0000000002000000
   bulletObj: {fileID: 8388713027766119384, guid: 2646ff4814621c64d9452ebec4911ab1,
