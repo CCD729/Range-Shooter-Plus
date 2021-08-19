@@ -19,8 +19,8 @@ public class LevelSceneManager : MonoBehaviour
     public GameObject crossHairReticles;
     public Image img_bulletsIcon;
     public Image img_reloadRing;
-    public Text[] TrialTexts = new Text[4];
-    public bool[] TrialTextsEnableStatus = new bool[4];
+    public GameObject[] TrialUI = new GameObject[5];
+    public bool[] TrialUIEnableStatus = new bool[5];
 
     [Header("Pause Menu UI Elements")]
     public GameObject ContinueButton;
@@ -28,6 +28,7 @@ public class LevelSceneManager : MonoBehaviour
     public GameObject EndButton;
     public GameObject SensSlider;
     public GameObject fovSlider;
+    public GameObject PauseBackgroundImage;
 
     [Header("Post Processing Values")]
     public PostProcessVolume volume;
@@ -52,6 +53,7 @@ public class LevelSceneManager : MonoBehaviour
         ContinueButton.SetActive(false);
         RestartButton.SetActive(false);
         EndButton.SetActive(false);
+        PauseBackgroundImage.SetActive(false);
         EndScoreText.enabled = false;
 		SensSlider.SetActive(false);
         fovSlider.SetActive(false);
@@ -95,12 +97,13 @@ public class LevelSceneManager : MonoBehaviour
         EndButton.SetActive(true);
 		SensSlider.SetActive(true);
         fovSlider.SetActive(true);
+        PauseBackgroundImage.SetActive(true);
         cam.GetComponent<CameraController>().StopCam();
         img_reloadRing.GetComponent<ReloadRingAnim>().Pause();
-        for(int i=0; i<4; i++)
+        for(int i=0; i< TrialUI.Length; i++)
         {
-            TrialTextsEnableStatus[i] = TrialTexts[i].enabled;
-            TrialTexts[i].enabled = false;
+            TrialUIEnableStatus[i] = TrialUI[i].activeInHierarchy;
+            TrialUI[i].SetActive(false);
         }
         Cursor.lockState = CursorLockMode.None;
         Cursor.visible = true;
@@ -126,6 +129,7 @@ public class LevelSceneManager : MonoBehaviour
 		SensSlider.SetActive(false);
         fovSlider.SetActive(false);
         EndButton.SetActive(false);
+        PauseBackgroundImage.SetActive(false);
         if (reloading)
         {
             img_bulletsIcon.enabled = true;
@@ -144,9 +148,9 @@ public class LevelSceneManager : MonoBehaviour
         }
         img_reloadRing.GetComponent<ReloadRingAnim>().Resume();
         cam.GetComponent<CameraController>().ResumeCam();
-        for (int i = 0; i < 4; i++)
+        for (int i = 0; i < TrialUI.Length; i++)
         {
-            TrialTexts[i].enabled = TrialTextsEnableStatus[i];
+            TrialUI[i].SetActive(TrialUIEnableStatus[i]);
         }
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
@@ -209,11 +213,11 @@ public class LevelSceneManager : MonoBehaviour
     }
     public void BackToMenu()
     {
-        SceneManager.LoadScene("MainMenu");
+        StartCoroutine(BackToMainMenu(0.4f));
     }
     public void Restart()
     {
-        SceneManager.LoadScene(currentScene);
+        StartCoroutine(RestartLevel(0.4f));
     }
     public void UpdateWeaponInfo()
     {
@@ -221,5 +225,16 @@ public class LevelSceneManager : MonoBehaviour
             currentWeapon = gameRules.currentWeapon;
         else
             currentWeapon = null;
+    }
+
+    IEnumerator RestartLevel(float time)
+    {
+        yield return new WaitForSecondsRealtime(time);
+        SceneManager.LoadScene(currentScene);
+    }
+    IEnumerator BackToMainMenu(float time)
+    {
+        yield return new WaitForSecondsRealtime(time);
+        SceneManager.LoadScene("MainMenu");
     }
 }

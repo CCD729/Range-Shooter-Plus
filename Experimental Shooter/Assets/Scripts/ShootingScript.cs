@@ -160,6 +160,7 @@ public class ShootingScript : MonoBehaviour
     public bool pickupLookingat = false;
     public bool interactablesLookingat = false;
     public bool weaponADS = false;
+    public bool drySoundPlayedForDown = false;
     public string pickupName = "";
     public float distanceUnitRatio = 3.3333f;
     public float currentWeaponSpreadRadius;
@@ -523,9 +524,12 @@ public class ShootingScript : MonoBehaviour
                                 }
                                 else //No backup ammo
                                 {
-                                    //TODO: dry ammo sound/display
-                                    fRatePassed = false;
-                                    this.weaponDryShootingSound();
+                                        if (!drySoundPlayedForDown)
+                                        {
+                                            drySoundPlayedForDown = true;
+                                            fRatePassed = false;
+                                            this.weaponDryShootingSound();
+                                        }
                                 }
                             }
                             else
@@ -536,6 +540,10 @@ public class ShootingScript : MonoBehaviour
                                 else
                                     Shoot();
                             }
+                        }
+                        if(Input.GetKeyUp(attackKey))
+                        {
+                            drySoundPlayedForDown = false;
                         }
                        /* else
                         {
@@ -1270,6 +1278,15 @@ public class ShootingScript : MonoBehaviour
         sceneManager.GetComponent<LevelSceneManager>().Resume();
         levelPaused = false;
         Time.timeScale = 1;
+
+        //temp fix
+        weaponADS = false;
+        //TODO: Crosshair should be controlled with different handling in future
+        if (!reloading && !pickupHandling && !equipmentPrimaryUsing && !equipmentSecondaryUsing)
+            crossHairReticles.SetActive(true);
+        currentWeapon.GetComponent<animController>().animator.CrossFade("hipFire", 0.2f);
+        currentWeaponPOV.GetComponent<animController>().animator.CrossFade("hipFire", 0.2f);
+        drySoundPlayedForDown = false;
     }
     public void End()
     {
@@ -1484,15 +1501,25 @@ public class ShootingScript : MonoBehaviour
     //Temporary GUI for pickup
     private void OnGUI()
     {
-        if (pickupLookingat)
+        if (!levelPaused)
         {
-            GUI.Box(new Rect(Screen.width / 2 +10f, Screen.height / 2 - 50f, Screen.width/4, Screen.height/6), "[E] Pick up " + pickupName, stylePickupBoxGUI);
-        }
+            if (pickupLookingat)
+            {
+                GUI.Box(new Rect(Screen.width / 2 + 45f, Screen.height / 2 - 50f, Screen.width / 4, Screen.height / 6), "[E] Pick up " + pickupName, stylePickupBoxGUI);
+            }
 
-        //TODO: Add temp block for GUIText and add "Trial Active" condition
-        if (interactablesLookingat)
-        {
-            GUI.Box(new Rect(Screen.width / 2 + 10f, Screen.height / 2 - 50f, Screen.width / 4, Screen.height / 6), interactableObj.GetComponent<ButtonInfo>().GUIDisplayText[interactableObj.GetComponent<ButtonInfo>().typeIdentifier], stylePickupBoxGUI);
+            //TODO: Add temp block for GUIText and add "Trial Active" condition
+            if (interactablesLookingat)
+            {
+                if (currentTrial != -1 && interactableObj.GetComponent<ButtonInfo>().trialButton)
+                {
+                    GUI.Box(new Rect(Screen.width / 2 + 45f, Screen.height / 2 - 50f, Screen.width / 4, Screen.height / 6), "Trial Currently Active", stylePickupBoxGUI);
+                }
+                else
+                {
+                    GUI.Box(new Rect(Screen.width / 2 + 45f, Screen.height / 2 - 50f, Screen.width / 4, Screen.height / 6), interactableObj.GetComponent<ButtonInfo>().GUIDisplayText[interactableObj.GetComponent<ButtonInfo>().typeIdentifier], stylePickupBoxGUI);
+                }
+            }
         }
     }
 }

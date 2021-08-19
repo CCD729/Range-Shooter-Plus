@@ -10,6 +10,7 @@ public class TrialScript : MonoBehaviour
     public GameObject text_TrialHint;
     public GameObject text_TrialDataRight;
     public GameObject text_TrialDataLeft;
+    public GameObject text_TrialInfoDisplayBackground;
     public GameObject text_TrialResult;
     public float[] trialNewScore = new float[4];
     //public float[] trialHiScore = new float[4];
@@ -78,6 +79,7 @@ public class TrialScript : MonoBehaviour
         text_TrialHint.SetActive(false);
         text_TrialDataRight.SetActive(false);
         text_TrialDataLeft.SetActive(false);
+        text_TrialInfoDisplayBackground.SetActive(false);
         /*text_ReactionTrialTime.SetActive(false);
         text_TimedTrialTime.SetActive(false);
         text_TimedTrialScore.SetActive(false);
@@ -214,6 +216,7 @@ public class TrialScript : MonoBehaviour
         ShootingScript.currentTrial = 0;
         text_TrialDataRight.GetComponent<Text>().text = "0.00 m";
         text_TrialDataRight.SetActive(true);
+        text_TrialInfoDisplayBackground.SetActive(true);
         //Modify grenade function to sync data to distance indicator
         //make ratio converter unify in Shootingscript
         //modify grenade function to return data when hit within range (with invisible floor if collider works smoother)
@@ -238,6 +241,7 @@ public class TrialScript : MonoBehaviour
         reactionTarget.GetComponent<animController>().TargetPopDownAnimation();
         text_TrialDataRight.GetComponent<Text>().text = "0.00 s";
         text_TrialDataRight.SetActive(true);
+        text_TrialInfoDisplayBackground.SetActive(true);
         StartCoroutine(PopReactionTarget(Random.Range(reactionTrialminPopTime, reactionTrialMaxPopTime)));
     }
     public void ReactionTrialDataRecord()
@@ -259,6 +263,7 @@ public class TrialScript : MonoBehaviour
         text_TrialDataRight.SetActive(true);
         text_TrialDataLeft.GetComponent<Text>().text = "30.00 s";
         text_TrialDataLeft.SetActive(true);
+        text_TrialInfoDisplayBackground.SetActive(true);
         foreach (GameObject targetContainer in timedDefaultDisplayTargetContainers[0].GetComponent<MovingTargetContainerBehavior>().TargetGroup)
         {
             if (targetContainer.GetComponent<MovingTargetContainerBehavior>().hasAnimation)
@@ -285,6 +290,7 @@ public class TrialScript : MonoBehaviour
         text_TrialDataRight.SetActive(true);
         text_TrialDataLeft.GetComponent<Text>().text = "0/" + freemoveTrialTargetAmount.ToString() + " Targets";
         text_TrialDataLeft.SetActive(true);
+        text_TrialInfoDisplayBackground.SetActive(true);
         //TODO: Display center GUIText 
         StartCoroutine(FreemoveTrialPreparation(freemoveTrialStartInterval));
     }
@@ -304,6 +310,7 @@ public class TrialScript : MonoBehaviour
         text_TrialDataLeft.GetComponent<Text>().text = "TrialDataLeftTextExample";
         text_TrialDataRight.SetActive(false);
         text_TrialDataRight.GetComponent<Text>().text = "TrialDataRightTextExample";
+        text_TrialInfoDisplayBackground.SetActive(false);
         text_TrialName.SetActive(false);
         text_TrialHint.SetActive(false);
         Invoke("TrialEndDelay", 2f);
