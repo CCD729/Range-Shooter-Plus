@@ -226,7 +226,14 @@ public class LevelSceneManager : MonoBehaviour
         else
             currentWeapon = null;
     }
-
+    public void SetMouseSensitivitySlider(float sens)
+    {
+        PlayerPrefs.SetFloat("mouseSensitivity", sens);
+    }
+    public void SetFOVSlider(float fov)
+    {
+        PlayerPrefs.SetFloat("FOV", fov);
+    }
     IEnumerator RestartLevel(float time)
     {
         yield return new WaitForSecondsRealtime(time);

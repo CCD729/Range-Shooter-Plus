@@ -1282,7 +1282,7 @@ public class ShootingScript : MonoBehaviour
         //temp fix
         weaponADS = false;
         //TODO: Crosshair should be controlled with different handling in future
-        if (!reloading && !pickupHandling && !equipmentPrimaryUsing && !equipmentSecondaryUsing)
+        if (weaponEquipped && !reloading && !pickupHandling && !equipmentPrimaryUsing && !equipmentSecondaryUsing)
             crossHairReticles.SetActive(true);
         currentWeapon.GetComponent<animController>().animator.CrossFade("hipFire", 0.2f);
         currentWeaponPOV.GetComponent<animController>().animator.CrossFade("hipFire", 0.2f);

@@ -13,6 +13,8 @@ public class MovingTargetContainerBehavior : MonoBehaviour
     public GameObject TargetObj;
     public GameObject[] TargetGroup;
     public TrialScript trialScript;
+    public bool menuDisplay = false;
+    public MenuSceneManager menuSceneManager;
 
     //public Vector3 initPosition;
     //public Vector3 initRotationEuler;
@@ -61,7 +63,7 @@ public class MovingTargetContainerBehavior : MonoBehaviour
             }
             TargetObj.GetComponent<TargetBehavior>().targetDown = true;
             TargetObj.GetComponent<TargetBehavior>().damageTaking = false;
-           TargetObj.GetComponent<TargetBehavior>().damageDisplay = false;
+            TargetObj.GetComponent<TargetBehavior>().damageDisplay = false;
         }
         if (TargetObj.GetComponent<TargetBehavior>().redBoxhitMaterialChange)
         {
@@ -130,16 +132,33 @@ public class MovingTargetContainerBehavior : MonoBehaviour
             {
                 choice = Random.Range(0, TargetGroup.Length);
             }
-            if (trialScript.timedCurrentTarget < trialScript.timedMaxTarget)
+            if (!menuDisplay)
             {
-                TargetGroup[choice].GetComponent<MovingTargetContainerBehavior>().StartUp();
-                trialScript.timedCurrentTarget++;
+                if (trialScript.timedCurrentTarget < trialScript.timedMaxTarget)
+                {
+                    TargetGroup[choice].GetComponent<MovingTargetContainerBehavior>().StartUp();
+                    trialScript.timedCurrentTarget++;
+                }
+                trialScript.timedCurrentTarget--;
+                if (movementType == MovementType.Flying)
+                {
+                    StartCoroutine(ResetFlyingTargetPosition(5f));
+                }
             }
-            trialScript.timedCurrentTarget--;
-            if (movementType == MovementType.Flying)
+            else
             {
-                StartCoroutine(ResetFlyingTargetPosition(5f));
+                if (menuSceneManager.currentTarget < menuSceneManager.maxTarget)
+                {
+                    TargetGroup[choice].GetComponent<MovingTargetContainerBehavior>().StartUp();
+                    menuSceneManager.currentTarget++;
+                }
+                menuSceneManager.currentTarget--;
+                if (movementType == MovementType.Flying)
+                {
+                    StartCoroutine(ResetFlyingTargetPosition(5f));
+                }
             }
+            
         }
         if (TargetObj.GetComponent<TargetBehavior>().redBoxhitMaterialChange)
         {
