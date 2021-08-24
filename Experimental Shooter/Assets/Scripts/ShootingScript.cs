@@ -199,10 +199,10 @@ public class ShootingScript : MonoBehaviour
     public bool equipmentEquippedPrimary = false;
     public bool equipmentEquippedSecondary = false;
     [SerializeField] private bool equipmentPrimaryReady = true;
-    [SerializeField] private bool equipmentSecondaryReady = true;
+    //[SerializeField] private bool equipmentSecondaryReady = true; *NOT FINISHED*
 
     private float equipmentPrimaryCDCounter = 0f;
-    private float equipmentSecondaryCDCounter = 0f;
+    //private float equipmentSecondaryCDCounter = 0f; *NOT FINISHED*
 
     [Header("Bool Conditions")]
     [SerializeField] private bool levelEnded = false;
@@ -240,7 +240,7 @@ public class ShootingScript : MonoBehaviour
 
     [Header("Key Bindings")]
     [SerializeField] private KeyCode equipmentPrimaryKey = KeyCode.G;
-    [SerializeField] private KeyCode equipmentSecondaryKey = KeyCode.Q;
+    //[SerializeField] private KeyCode equipmentSecondaryKey = KeyCode.Q; *NOT FINISHED*
     [SerializeField] private KeyCode reloadKey = KeyCode.R;
     [SerializeField] private KeyCode attackKey = KeyCode.Mouse0;
     [SerializeField] private KeyCode aimKey = KeyCode.Mouse1;
@@ -264,8 +264,8 @@ public class ShootingScript : MonoBehaviour
     private float reloadingTime = 0f;
     //equipment counter
     private float equipmentPrimaryUsingTime = 0f;
-    //equipment counter
-    private float equipmentSecondaryUsingTime = 0f;
+    //equipment counter*NOT FINISHED*
+    //private float equipmentSecondaryUsingTime = 0f;
     //Check if bullets are enough to shoot
     private bool bulletEnough = true;
     //Firing rate interval
@@ -1283,10 +1283,12 @@ public class ShootingScript : MonoBehaviour
         weaponADS = false;
         //TODO: Crosshair should be controlled with different handling in future
         if (weaponEquipped && !reloading && !pickupHandling && !equipmentPrimaryUsing && !equipmentSecondaryUsing)
+        {
             crossHairReticles.SetActive(true);
-        currentWeapon.GetComponent<animController>().animator.CrossFade("hipFire", 0.2f);
-        currentWeaponPOV.GetComponent<animController>().animator.CrossFade("hipFire", 0.2f);
-        drySoundPlayedForDown = false;
+            currentWeapon.GetComponent<animController>().animator.CrossFade("hipFire", 0.2f);
+            currentWeaponPOV.GetComponent<animController>().animator.CrossFade("hipFire", 0.2f);
+            drySoundPlayedForDown = false;
+        }
     }
     public void End()
     {

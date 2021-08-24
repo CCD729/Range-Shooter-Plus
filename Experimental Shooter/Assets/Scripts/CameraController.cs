@@ -17,7 +17,7 @@ public class CameraController : MonoBehaviour
     bool gamePlaying;
 
     //Legacy recoil references
-    bool recoil = false;
+    //bool recoil = false;
     float maxHorizontalRecoil = 0.5f;
     float minHorizontalRecoil = 0f;
     float verticalRecoil = 0.5f;

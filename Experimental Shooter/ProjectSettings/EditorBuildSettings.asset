@@ -9,9 +9,6 @@ EditorBuildSettings:
     path: Assets/Scenes/MainMenu.unity
     guid: 002c69a8a55baa946be34c4a60b2dc43
   - enabled: 1
-    path: Assets/Scenes/TimeTrial.unity
-    guid: 9fc0d4010bbf28b4594072e72b8655ab
-  - enabled: 1
     path: Assets/Scenes/ShootingRange.unity
     guid: 8cb5a481521bf7144b17d874a6f37edf
   m_configObjects: {}
