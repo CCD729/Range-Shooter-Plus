@@ -450,9 +450,11 @@ public class ShootingScript : MonoBehaviour
                     interactableObj.GetComponent<animController>().ButtonPressAnimation();
                 }
             }
-
+            if (!weaponEquipped)
+                crossHairReticles.SetActive(false);
             if (weaponEquipped)
             {
+                //crossHairReticles.SetActive(true);
                 if (!currentWeapon.GetComponent<WeaponInfo>().melee)
                 {
                     {

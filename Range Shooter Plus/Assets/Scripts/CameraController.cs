@@ -6,6 +6,7 @@ using UnityEngine.Events;
 
 public class CameraController : MonoBehaviour
 {
+    public bool tempDisable = false;
 	public Slider sensSlider, fovSlider;
     private Vector2 mouseCurrent;
     [SerializeField]
@@ -44,7 +45,7 @@ public class CameraController : MonoBehaviour
 
     void Update()
     {
-        if (gamePlaying)
+        if (gamePlaying & !tempDisable)
         {
             var mouseGet = new Vector2(Input.GetAxis("Mouse X") * mouseSensitivity / 8, Input.GetAxis("Mouse Y") * mouseSensitivity / 8);
             mouseCurrent += mouseGet;
