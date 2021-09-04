@@ -20,6 +20,7 @@ public class TargetBehavior : MonoBehaviour
     public bool changeMaterial = false;
     public bool reactionTrialUse = false;
     public bool TimedTrialUse = false;
+    public bool DisplayUse = false;
     public bool FreemoveTrialUse = false;
     public bool redBoxhitMaterialChange = false;
     public bool damageTaking = false;
@@ -106,6 +107,10 @@ public class TargetBehavior : MonoBehaviour
             //Consider integrate reaction trial target behavior here. Lock takingDamage until trial start to prevent false scoring
             eventSystem.GetComponent<TrialScript>().timedTrialScore += pointWorth;
         }
+        if (DisplayUse)
+        {
+            transform.GetComponent<animController>().TargetPopDownAnimation();
+        }
         if (FreemoveTrialUse)
         {
             transform.parent.GetComponent<MovingTargetContainerBehavior>().FinishDown();
@@ -132,6 +137,10 @@ public class TargetBehavior : MonoBehaviour
             transform.parent.GetComponent<MovingTargetContainerBehavior>().FinishDown();
             //Consider integrate reaction trial target behavior here. Lock takingDamage until trial start to prevent false scoring
             eventSystem.GetComponent<TrialScript>().timedTrialScore += pointWorth;
+        }
+        if (DisplayUse)
+        {
+            transform.parent.GetComponent<MovingTargetContainerBehavior>().FinishDown();
         }
         if (FreemoveTrialUse)
         {
