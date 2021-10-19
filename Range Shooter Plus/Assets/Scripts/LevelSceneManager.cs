@@ -10,9 +10,6 @@ public class LevelSceneManager : MonoBehaviour
 {
     [Header("Gameplay UI Elements")]
     public Text scoreText;
-    public Text ammoBackupText;
-    public Text ammoCurrentMagText;
-    public Text weaponText;
     public Text timeText;
     public Text skillText;
     public Text EndScoreText;
@@ -21,6 +18,7 @@ public class LevelSceneManager : MonoBehaviour
     public Image img_reloadRing;
     public GameObject[] TrialUI = new GameObject[5];
     public bool[] TrialUIEnableStatus = new bool[5];
+    public GameObject[] weaponHUD = new GameObject[7];
 
     [Header("Pause Menu UI Elements")]
     public GameObject ContinueButton;
@@ -84,9 +82,6 @@ public class LevelSceneManager : MonoBehaviour
 
         reloading = reloadingStatus;
         scoreText.enabled = false;
-        ammoBackupText.enabled = false;
-        ammoCurrentMagText.enabled = false;
-        weaponText.enabled = false;
         timeText.enabled = false;
         skillText.enabled = false;
         crossHairReticles.SetActive(false);
@@ -105,6 +100,10 @@ public class LevelSceneManager : MonoBehaviour
             TrialUIEnableStatus[i] = TrialUI[i].activeInHierarchy;
             TrialUI[i].SetActive(false);
         }
+        foreach (GameObject element in weaponHUD)
+        {
+            element.SetActive(false);
+        }
         Cursor.lockState = CursorLockMode.None;
         Cursor.visible = true;
     }
@@ -120,9 +119,6 @@ public class LevelSceneManager : MonoBehaviour
         }
 
         targetDOFValue = 3f;
-        ammoBackupText.enabled = true;
-        ammoCurrentMagText.enabled = true;
-        weaponText.enabled = true;
         skillText.enabled = true;
         ContinueButton.SetActive(false);
         RestartButton.SetActive(false);
@@ -152,6 +148,10 @@ public class LevelSceneManager : MonoBehaviour
         {
             TrialUI[i].SetActive(TrialUIEnableStatus[i]);
         }
+        foreach (GameObject element in weaponHUD)
+        {
+            element.SetActive(true);
+        }
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
     }
@@ -167,9 +167,6 @@ public class LevelSceneManager : MonoBehaviour
         }
         targetDOFValue = 0.1f;
         scoreText.enabled = false;
-        ammoBackupText.enabled = false;
-        ammoCurrentMagText.enabled = false;
-        weaponText.enabled = false;
         timeText.enabled = false;
         skillText.enabled = false;
         crossHairReticles.SetActive(false);
@@ -180,10 +177,15 @@ public class LevelSceneManager : MonoBehaviour
         EndScoreText.text = endList[index] + "You got: " + score.ToString();
         EndScoreText.enabled = true;
         EndButton.SetActive(true);
+        foreach (GameObject element in weaponHUD)
+        {
+            element.SetActive(false);
+        }
         cam.GetComponent<CameraController>().StopCam();
         img_reloadRing.GetComponent<ReloadRingAnim>().Pause();
         Cursor.lockState = CursorLockMode.None;
         Cursor.visible = true;
+
     }
     public void Perfect()
     {
@@ -195,9 +197,6 @@ public class LevelSceneManager : MonoBehaviour
         }
         targetDOFValue = 0.1f;
         scoreText.enabled = false;
-        ammoBackupText.enabled = false;
-        ammoCurrentMagText.enabled = false;
-        weaponText.enabled = false;
         timeText.enabled = false;
         skillText.enabled = false;
         crossHairReticles.SetActive(true);
@@ -206,6 +205,10 @@ public class LevelSceneManager : MonoBehaviour
         EndScoreText.text = "Oh Shit! You're a BADASS!";
         EndScoreText.enabled = true;
         EndButton.SetActive(true);
+        foreach (GameObject element in weaponHUD)
+        {
+            element.SetActive(false);
+        }
         cam.GetComponent<CameraController>().StopCam();
         img_reloadRing.GetComponent<ReloadRingAnim>().Pause();
         Cursor.lockState = CursorLockMode.None;
