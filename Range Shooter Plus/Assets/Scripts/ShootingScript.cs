@@ -444,6 +444,10 @@ public class ShootingScript : MonoBehaviour
                 }
                 else if (interactableObj.GetComponent<ButtonInfo>().teleportButton)
                 {
+                    if (interactableObj.GetComponent<ButtonInfo>().easterEggButton)
+                    {
+                        sceneManager.GetComponent<LevelSceneManager>().EasterEggEvent();
+                    }
                     player.transform.position = interactableObj.GetComponent<ButtonInfo>().TeleportPosition;
                     player.transform.rotation = Quaternion.Euler(Vector3.zero);
                     StartCoroutine(InteractionCoolDown(interactableObj.GetComponent<ButtonInfo>().coolDown));
@@ -1399,8 +1403,9 @@ public class ShootingScript : MonoBehaviour
             imageHUDEquipmentSecondary.enabled = false;
         }
     }
+
     //Future possibly adapt to all projectile function
-        IEnumerator ThrowImpactGrenade(float time)
+    IEnumerator ThrowImpactGrenade(float time)
     {
         yield return new WaitForSeconds(weaponPutDownTime);
         if (weaponEquipped)
