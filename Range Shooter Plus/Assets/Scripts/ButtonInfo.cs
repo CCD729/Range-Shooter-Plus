@@ -8,6 +8,7 @@ public class ButtonInfo : MonoBehaviour
     public bool ammoBox = false;
     public bool oneTimeButton = false;
     public bool teleportButton = false;
+    public bool easterEggButton = false;
     public Vector3 TeleportPosition = Vector3.zero;
     public float coolDown = 1f; 
     //For Trials

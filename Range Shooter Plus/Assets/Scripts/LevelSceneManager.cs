@@ -10,9 +10,6 @@ public class LevelSceneManager : MonoBehaviour
 {
     [Header("Gameplay UI Elements")]
     public Text scoreText;
-    public Text ammoBackupText;
-    public Text ammoCurrentMagText;
-    public Text weaponText;
     public Text timeText;
     public Text skillText;
     public Text EndScoreText;
@@ -21,6 +18,7 @@ public class LevelSceneManager : MonoBehaviour
     public Image img_reloadRing;
     public GameObject[] TrialUI = new GameObject[5];
     public bool[] TrialUIEnableStatus = new bool[5];
+    public GameObject[] weaponHUD = new GameObject[7];
 
     [Header("Pause Menu UI Elements")]
     public GameObject ContinueButton;
@@ -41,6 +39,11 @@ public class LevelSceneManager : MonoBehaviour
     public ShootingScript gameRules;
     public float lerpSpeed = 100f;
     public float targetDOFValue = 5f;
+    public bool achievementPoped = false;
+    public bool achievementPop = false;
+    public bool achievementBack = false;
+    public float achievementMoveSpeed = 1f;
+    public GameObject achievementBlock;
 
 
     List<string> endList;
@@ -68,6 +71,27 @@ public class LevelSceneManager : MonoBehaviour
     void Update()
     {
         dof.focusDistance.value = Mathf.Lerp(dof.focusDistance, targetDOFValue, Time.unscaledDeltaTime * lerpSpeed);
+
+        if (achievementPop)
+        {
+            if (achievementBlock.GetComponent<RectTransform>().anchoredPosition.y >= 25f)
+                achievementBlock.GetComponent<RectTransform>().anchoredPosition = new Vector2(-10f, achievementBlock.GetComponent<RectTransform>().anchoredPosition.y - achievementMoveSpeed);
+            else
+            {
+                achievementBlock.GetComponent<RectTransform>().anchoredPosition = new Vector2(-10f, 25f);
+                achievementPop = false;
+            }
+        }
+        if (achievementBack)
+        {
+            if (achievementBlock.GetComponent<RectTransform>().anchoredPosition.y <= 250f)
+                achievementBlock.GetComponent<RectTransform>().anchoredPosition = new Vector2(-10f, achievementBlock.GetComponent<RectTransform>().anchoredPosition.y + achievementMoveSpeed);
+            else
+            {
+                achievementBlock.GetComponent<RectTransform>().anchoredPosition = new Vector2(-10f, 250f);
+                achievementBack = false;
+            }
+        }
     }
 
     public void Pause(bool reloadingStatus)
@@ -84,9 +108,6 @@ public class LevelSceneManager : MonoBehaviour
 
         reloading = reloadingStatus;
         scoreText.enabled = false;
-        ammoBackupText.enabled = false;
-        ammoCurrentMagText.enabled = false;
-        weaponText.enabled = false;
         timeText.enabled = false;
         skillText.enabled = false;
         crossHairReticles.SetActive(false);
@@ -105,6 +126,10 @@ public class LevelSceneManager : MonoBehaviour
             TrialUIEnableStatus[i] = TrialUI[i].activeInHierarchy;
             TrialUI[i].SetActive(false);
         }
+        foreach (GameObject element in weaponHUD)
+        {
+            element.SetActive(false);
+        }
         Cursor.lockState = CursorLockMode.None;
         Cursor.visible = true;
     }
@@ -120,9 +145,6 @@ public class LevelSceneManager : MonoBehaviour
         }
 
         targetDOFValue = 3f;
-        ammoBackupText.enabled = true;
-        ammoCurrentMagText.enabled = true;
-        weaponText.enabled = true;
         skillText.enabled = true;
         ContinueButton.SetActive(false);
         RestartButton.SetActive(false);
@@ -152,8 +174,21 @@ public class LevelSceneManager : MonoBehaviour
         {
             TrialUI[i].SetActive(TrialUIEnableStatus[i]);
         }
+        foreach (GameObject element in weaponHUD)
+        {
+            element.SetActive(true);
+        }
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
+    }
+
+    public void EasterEggEvent()
+    {
+        if (!achievementPoped)
+        {
+            achievementPoped = true;
+            StartCoroutine(AchievementPopSequence(6f));
+        }
     }
 
     //LEGACY (NO LONGER IN USE)
@@ -167,9 +202,6 @@ public class LevelSceneManager : MonoBehaviour
         }
         targetDOFValue = 0.1f;
         scoreText.enabled = false;
-        ammoBackupText.enabled = false;
-        ammoCurrentMagText.enabled = false;
-        weaponText.enabled = false;
         timeText.enabled = false;
         skillText.enabled = false;
         crossHairReticles.SetActive(false);
@@ -180,10 +212,15 @@ public class LevelSceneManager : MonoBehaviour
         EndScoreText.text = endList[index] + "You got: " + score.ToString();
         EndScoreText.enabled = true;
         EndButton.SetActive(true);
+        foreach (GameObject element in weaponHUD)
+        {
+            element.SetActive(false);
+        }
         cam.GetComponent<CameraController>().StopCam();
         img_reloadRing.GetComponent<ReloadRingAnim>().Pause();
         Cursor.lockState = CursorLockMode.None;
         Cursor.visible = true;
+
     }
     public void Perfect()
     {
@@ -195,9 +232,6 @@ public class LevelSceneManager : MonoBehaviour
         }
         targetDOFValue = 0.1f;
         scoreText.enabled = false;
-        ammoBackupText.enabled = false;
-        ammoCurrentMagText.enabled = false;
-        weaponText.enabled = false;
         timeText.enabled = false;
         skillText.enabled = false;
         crossHairReticles.SetActive(true);
@@ -206,6 +240,10 @@ public class LevelSceneManager : MonoBehaviour
         EndScoreText.text = "Oh Shit! You're a BADASS!";
         EndScoreText.enabled = true;
         EndButton.SetActive(true);
+        foreach (GameObject element in weaponHUD)
+        {
+            element.SetActive(false);
+        }
         cam.GetComponent<CameraController>().StopCam();
         img_reloadRing.GetComponent<ReloadRingAnim>().Pause();
         Cursor.lockState = CursorLockMode.None;
@@ -235,5 +273,14 @@ public class LevelSceneManager : MonoBehaviour
     {
         yield return new WaitForSecondsRealtime(time);
         SceneManager.LoadScene("MainMenu");
+    }
+    IEnumerator AchievementPopSequence(float time)
+    {
+        achievementPop = true;
+        achievementBlock.GetComponent<CanvasGroup>().alpha = 1f;
+        yield return new WaitForSecondsRealtime(time);
+        achievementBack = true;
+        yield return new WaitForSecondsRealtime(2f);
+        achievementBlock.GetComponent<CanvasGroup>().alpha = 0f;
     }
 }

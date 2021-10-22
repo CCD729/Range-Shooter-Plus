@@ -41,6 +41,7 @@ public class ProjectileMovement : MonoBehaviour
     public Vector3 spawnPoint;
     private Rigidbody rb;
     private float destroyTime;
+    private bool triggered = false;
 
     public GameObject audioExplosion;
 
@@ -82,10 +83,12 @@ public class ProjectileMovement : MonoBehaviour
     void OnCollisionEnter(Collision collision)
     {
         //Deploy explosion effect on collision
-        if (!collision.gameObject.CompareTag("Player"))
+        if (!collision.gameObject.CompareTag("Player") && collision.gameObject.layer!=14 && collision.gameObject.layer != 15)
         {
             //Debug.Log(collision.gameObject);
-            this.Impact();
+            if(!triggered)
+                this.Impact();
+            triggered = true;
         }
     }
 
